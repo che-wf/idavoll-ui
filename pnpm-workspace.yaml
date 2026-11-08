@@ -1,0 +1,8 @@
+# Supply-chain protection: don't install a package version until it has been
+# public for a day. Most poisoned releases are caught and pulled within hours.
+minimumReleaseAge: 1440
+
+# Only these packages may run install scripts. Anything else that tries fails the install.
+onlyBuiltDependencies:
+  - esbuild
+strictDepBuilds: true

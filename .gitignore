@@ -1,0 +1,111 @@
+# ─────────────────────────────────────────────────────────────
+# SECRETS — never commit these. The pre-commit hook also blocks them.
+# ─────────────────────────────────────────────────────────────
+
+# Environment files (keep only the *.example templates)
+.env
+.env.*
+*.env
+!.env.example
+!**/.env.example
+!*.env.example
+!.env.*.example
+
+# Keys, certificates, keystores
+*.pem
+*.key
+*.crt
+*.cer
+*.csr
+*.der
+*.p12
+*.pfx
+*.jks
+*.keystore
+*.gpg
+*.asc
+*.age
+id_rsa*
+id_ed25519*
+id_ecdsa*
+*.ppk
+
+# OAuth client files and service accounts (Google downloads these as JSON)
+client_secret*.json
+credentials*.json
+service-account*.json
+*-service-account.json
+token*.json
+tokens*.json
+*.token
+.secrets/
+secrets/
+
+# Tool credential stores
+.netrc
+.npmrc.local
+.pgpass
+.vercel/
+.supabase/
+
+# ─────────────────────────────────────────────────────────────
+# DATA — personal metrics, comments and backups stay off GitHub
+# ─────────────────────────────────────────────────────────────
+backups/
+dumps/
+*.dump
+*.backup
+*.sql.gz
+*.sql.zst
+*.tar.gz
+*.tgz
+/data/
+/raw-payloads/
+/exports/
+*.csv
+*.xlsx
+
+# Supabase local state
+supabase/.branches/
+supabase/.temp/
+supabase/.env
+supabase/.env.*
+supabase/seed.local.sql
+supabase/volumes/
+
+# ─────────────────────────────────────────────────────────────
+# Build output and dependencies
+# ─────────────────────────────────────────────────────────────
+node_modules/
+.pnpm-store/
+.next/
+out/
+dist/
+build/
+coverage/
+.turbo/
+*.tsbuildinfo
+next-env.d.ts
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+pnpm-debug.log*
+
+# ─────────────────────────────────────────────────────────────
+# Editors, OS, local tools
+# ─────────────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/*
+!.vscode/extensions.json
+*.swp
+*~
+.claude/settings.local.json
+*.local
+*.local.*
+
+# Registry build output (built and published by CI)
+/public/r/

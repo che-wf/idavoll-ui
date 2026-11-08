@@ -1,0 +1,125 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry.json",
+  "name": "idavoll",
+  "homepage": "https://github.com/che-wf/idavoll-ui",
+  "items": [
+    {
+      "name": "platform-badge",
+      "type": "registry:component",
+      "title": "Platform Badge",
+      "description": "A small label naming a social platform (YouTube, TikTok, Instagram, Threads) with a color dot. Props: platform, label?, plus all Badge props.",
+      "registryDependencies": ["badge"],
+      "files": [
+        {
+          "path": "registry/idavoll/components/platform-badge.tsx",
+          "type": "registry:component",
+          "target": "components/idavoll/platform-badge.tsx"
+        }
+      ],
+      "categories": ["social", "badge"]
+    },
+    {
+      "name": "stat-card",
+      "type": "registry:component",
+      "title": "Stat Card",
+      "description": "One headline number with an optional up/down change. Props: label, value, formatValue?, change? (fraction, 0.12 = +12%), changeLabel?, hint?, icon?, className?.",
+      "dependencies": ["lucide-react"],
+      "registryDependencies": ["card"],
+      "files": [
+        {
+          "path": "registry/idavoll/components/stat-card.tsx",
+          "type": "registry:component",
+          "target": "components/idavoll/stat-card.tsx"
+        }
+      ],
+      "categories": ["dashboard", "stats"]
+    },
+    {
+      "name": "challenge-progress",
+      "type": "registry:component",
+      "title": "Challenge Progress",
+      "description": "\"Day 37 of 90\" card with time and goal progress bars and an ahead/on-pace/behind label. Props: day, totalDays? (90), title?, goal? { label, current, target, start?, formatValue? }, className?. Also exports paceStatus().",
+      "registryDependencies": ["card", "progress", "badge"],
+      "files": [
+        {
+          "path": "registry/idavoll/components/challenge-progress.tsx",
+          "type": "registry:component",
+          "target": "components/idavoll/challenge-progress.tsx"
+        }
+      ],
+      "categories": ["dashboard", "challenge"]
+    },
+    {
+      "name": "challenge-chart",
+      "type": "registry:component",
+      "title": "Challenge Chart",
+      "description": "The 90-day challenge graph (Recharts): actual progress against a dashed straight line to the goal, with milestone and Today markers. Props: data [{ day, value }], goal, totalDays? (90), startValue?, today?, milestones? [{ day, label }], valueLabel?, formatValue?, className?.",
+      "dependencies": ["recharts"],
+      "registryDependencies": ["chart"],
+      "files": [
+        {
+          "path": "registry/idavoll/components/challenge-chart.tsx",
+          "type": "registry:component",
+          "target": "components/idavoll/challenge-chart.tsx"
+        }
+      ],
+      "categories": ["dashboard", "chart", "challenge"]
+    },
+    {
+      "name": "platform-badge-demo",
+      "type": "registry:block",
+      "title": "Platform Badge example",
+      "description": "Example usage of platform-badge.",
+      "registryDependencies": ["@idavoll/platform-badge"],
+      "files": [
+        {
+          "path": "registry/idavoll/demos/platform-badge-demo.tsx",
+          "type": "registry:component",
+          "target": "components/idavoll/demos/platform-badge-demo.tsx"
+        }
+      ]
+    },
+    {
+      "name": "stat-card-demo",
+      "type": "registry:block",
+      "title": "Stat Card example",
+      "description": "Example usage of stat-card: three cards with changes, an icon and a hint.",
+      "registryDependencies": ["@idavoll/stat-card"],
+      "files": [
+        {
+          "path": "registry/idavoll/demos/stat-card-demo.tsx",
+          "type": "registry:component",
+          "target": "components/idavoll/demos/stat-card-demo.tsx"
+        }
+      ]
+    },
+    {
+      "name": "challenge-progress-demo",
+      "type": "registry:block",
+      "title": "Challenge Progress example",
+      "description": "Example usage of challenge-progress with a follower goal.",
+      "registryDependencies": ["@idavoll/challenge-progress"],
+      "files": [
+        {
+          "path": "registry/idavoll/demos/challenge-progress-demo.tsx",
+          "type": "registry:component",
+          "target": "components/idavoll/demos/challenge-progress-demo.tsx"
+        }
+      ]
+    },
+    {
+      "name": "challenge-chart-demo",
+      "type": "registry:block",
+      "title": "Challenge Chart example",
+      "description": "Example usage of challenge-chart with 37 days of data, milestones and a Today marker.",
+      "registryDependencies": ["@idavoll/challenge-chart"],
+      "files": [
+        {
+          "path": "registry/idavoll/demos/challenge-chart-demo.tsx",
+          "type": "registry:component",
+          "target": "components/idavoll/demos/challenge-chart-demo.tsx"
+        }
+      ]
+    }
+  ]
+}

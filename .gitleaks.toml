@@ -1,0 +1,8 @@
+title = "idavoll-ui secret scanning"
+
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Lockfile integrity hashes are not secrets"
+paths = ['''pnpm-lock\.yaml$''']
