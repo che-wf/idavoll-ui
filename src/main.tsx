@@ -2,7 +2,9 @@
 import "./index.css";
 import { type ComponentType, StrictMode } from "react";
 import { createRoot } from "react-dom/client";
+import AchievementBadgeDemo from "../registry/idavoll/demos/achievement-badge-demo";
 import AnimatedNumberDemo from "../registry/idavoll/demos/animated-number-demo";
+import BigThreeDemo from "../registry/idavoll/demos/big-three-demo";
 import ChallengeChartDemo from "../registry/idavoll/demos/challenge-chart-demo";
 import ChallengeProgressDemo from "../registry/idavoll/demos/challenge-progress-demo";
 import CommentListDemo from "../registry/idavoll/demos/comment-list-demo";
@@ -71,6 +73,8 @@ const sections: { name: string; title: string; Demo: ComponentType }[] = [
   { name: "source-badge", title: "Source Badge", Demo: SourceBadgeDemo },
   { name: "status-banner", title: "Status Banner", Demo: StatusBannerDemo },
   { name: "empty-state", title: "Empty State", Demo: EmptyStateDemo },
+  { name: "achievement-badge", title: "Achievement Badge", Demo: AchievementBadgeDemo },
+  { name: "big-three", title: "Big Three", Demo: BigThreeDemo },
 ];
 
 function Gallery() {

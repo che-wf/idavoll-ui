@@ -97,7 +97,7 @@
       "name": "profile-stats",
       "type": "registry:component",
       "title": "Profile Stats",
-      "description": "Instagram-style creator header: avatar with a colorful \"posted today\" ring, a row of animated headline numbers, a Day X of 90 pill and per-platform follower chips. Props: name, handle?, avatarUrl?, bio?, active?, activeLabel?, ringColors? (theme chart colors), day?, totalDays? (90), stats [{ label, value, formatValue? }], platforms? [{ platform, followers, handle? }], countUp? (true), ringWidth? (3), classNames? { avatar, stats, value, label, name, pill, chip }, className?.",
+      "description": "Instagram-style creator header: avatar with a colorful \"posted today\" ring, a row of animated headline numbers, a Day X of 90 pill and per-platform follower chips. Props: name, handle?, avatarUrl?, bio?, extra? (content under the bio, e.g. big-three), active?, activeLabel?, ringColors? (theme chart colors), day?, totalDays? (90), stats [{ label, value, formatValue? }], platforms? [{ platform, followers, handle? }], countUp? (true), ringWidth? (3), classNames? { avatar, stats, value, label, name, pill, chip }, className?.",
       "registryDependencies": ["avatar", "@idavoll/animated-number", "@idavoll/social-icon"],
       "files": [
         {
@@ -465,6 +465,67 @@
       "categories": ["status", "feedback"]
     },
     {
+      "name": "challenge-badges",
+      "type": "registry:component",
+      "title": "Challenge Badges",
+      "description": "Badge definitions and rules for a posting challenge, following the research on rewards: they reward effort people control (days posted), never follower counts; surprise badges stay hidden until earned; earned days come from history so a badge is never lost; there are few on purpose. CHALLENGE_BADGES: First post, First week (7 posting days), Steady (5+ days a week, 4 weeks in a row), Halfway (still posting in the week before the halfway day), Comeback (surprise: a post after a 3+ day break), Breakout (surprise: the app passes breakoutDay), Finisher (reached the last day having posted on at least half the days). evaluateBadges({ postedDays, today, totalDays? (90), finisherMinDays?, comebackGap? (3), breakoutDay? }) → [{ badge, earned, earnedOnDay?, progress? }] (progress only for unearned effort badges). Pure; covered by unit tests; the server can reuse it.",
+      "files": [
+        {
+          "path": "registry/idavoll/components/challenge-badges.ts",
+          "type": "registry:component",
+          "target": "components/idavoll/challenge-badges.ts"
+        }
+      ],
+      "categories": ["goals", "utility"]
+    },
+    {
+      "name": "achievement-badge",
+      "type": "registry:component",
+      "title": "Achievement Badge",
+      "description": "Badges for a challenge. AchievementBadge shows one: a medallion with its icon, the name and what it recognises; earned badges are in color with the day earned, unearned ones are muted and dashed with a progress bar; isNew plays shimmer-border once. Props: badge, earned?, earnedOnDay?, progress? { done, total }, isNew?, size? (\"sm\" | \"md\"), labels?, className?. BadgeShelf shows earned badges newest first plus the next effort badge(s) as \"Next up\"; surprise badges never show early; new badges are announced politely; the finisher badge can carry a next-step action. Props: statuses (from evaluateBadges), newIds?, showNext? (1), finisherAction?, labels?, className?. Re-exports CHALLENGE_BADGES and evaluateBadges.",
+      "dependencies": ["lucide-react@1.70.0"],
+      "registryDependencies": ["@idavoll/challenge-badges", "@idavoll/shimmer-border"],
+      "files": [
+        {
+          "path": "registry/idavoll/components/achievement-badge.tsx",
+          "type": "registry:component",
+          "target": "components/idavoll/achievement-badge.tsx"
+        }
+      ],
+      "categories": ["goals", "social"]
+    },
+    {
+      "name": "birth-chart",
+      "type": "registry:component",
+      "title": "Birth Chart Math",
+      "description": "bigThree({ date, time?, timeZone?, latitude?, longitude? }) → { sun, moon?, moonOptions?, rising? } in the tropical zodiac, offline with astronomy-engine. The Moon needs a birth time unless it stayed in one sign all day (otherwise moonOptions lists the two); Rising needs time and place (latitudes beyond 66° are skipped). Also exports SIGNS, signOf(longitude), zonedTime(date, time, timeZone) (wall-clock time in an IANA zone to a Date, handling daylight saving) and ascendantLongitude(ramc, latitude, obliquity). Covered by unit tests, including a check that the rising degree matches the Sun's longitude when the Sun's centre is on the horizon. Runs in the browser, so birth details needn't leave the device.",
+      "dependencies": ["astronomy-engine@2.1.19"],
+      "files": [
+        {
+          "path": "registry/idavoll/components/birth-chart.ts",
+          "type": "registry:component",
+          "target": "components/idavoll/birth-chart.ts"
+        }
+      ],
+      "categories": ["astrology", "utility"]
+    },
+    {
+      "name": "big-three",
+      "type": "registry:component",
+      "title": "Big Three",
+      "description": "Sun, Moon and Rising signs for a profile, opt-in. BigThree shows the signs that are set (with glyphs) as chips or a list, and renders nothing if none are. Props: signs { sun?, moon?, rising? }, variant? (\"chips\" | \"list\"), labels?, className?. BigThreeEditor lets people pick their signs from three selects, with an optional calculator from birth date, time, time zone and birthplace latitude/longitude that runs on the device and passes on only the signs (it says so). Props: value, onChange(signs), labels?, className?. Also exports SIGN_GLYPHS, SIGNS and bigThree.",
+      "dependencies": ["lucide-react@1.70.0"],
+      "registryDependencies": ["button", "input", "label", "@idavoll/birth-chart"],
+      "files": [
+        {
+          "path": "registry/idavoll/components/big-three.tsx",
+          "type": "registry:component",
+          "target": "components/idavoll/big-three.tsx"
+        }
+      ],
+      "categories": ["astrology", "profile"]
+    },
+    {
       "name": "platform-badge-demo",
       "type": "registry:block",
       "title": "Platform Badge example",
@@ -555,7 +616,7 @@
       "title": "Profile Stats example",
       "description": "Example usage of profile-stats with live-updating TikTok followers.",
       "dependencies": ["lucide-react@1.70.0"],
-      "registryDependencies": ["@idavoll/profile-stats", "button", "card"],
+      "registryDependencies": ["@idavoll/big-three", "@idavoll/profile-stats", "button", "card"],
       "files": [
         {
           "path": "registry/idavoll/demos/profile-stats-demo.tsx",
@@ -1314,6 +1375,35 @@
           "path": "registry/idavoll/demos/empty-state-demo.tsx",
           "type": "registry:component",
           "target": "components/idavoll/demos/empty-state-demo.tsx"
+        }
+      ]
+    },
+    {
+      "name": "achievement-badge-demo",
+      "type": "registry:block",
+      "title": "Achievement Badge example",
+      "description": "Example: step through a 90-day challenge with a break in week 3 and watch badges arrive, including surprise Comeback and Breakout badges and a Finisher with a next-chapter button.",
+      "dependencies": ["lucide-react@1.70.0"],
+      "registryDependencies": ["@idavoll/achievement-badge", "button", "card"],
+      "files": [
+        {
+          "path": "registry/idavoll/demos/achievement-badge-demo.tsx",
+          "type": "registry:component",
+          "target": "components/idavoll/demos/achievement-badge-demo.tsx"
+        }
+      ]
+    },
+    {
+      "name": "big-three-demo",
+      "type": "registry:block",
+      "title": "Big Three example",
+      "description": "Example: an opt-in settings card with the editor and calculator, and a profile preview.",
+      "registryDependencies": ["@idavoll/big-three", "@idavoll/settings-group"],
+      "files": [
+        {
+          "path": "registry/idavoll/demos/big-three-demo.tsx",
+          "type": "registry:component",
+          "target": "components/idavoll/demos/big-three-demo.tsx"
         }
       ]
     }

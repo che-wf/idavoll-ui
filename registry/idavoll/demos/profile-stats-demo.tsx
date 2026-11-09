@@ -1,5 +1,6 @@
 import { Pause, Play } from "lucide-react";
 import { useEffect, useState } from "react";
+import { BigThree } from "@/components/idavoll/big-three";
 import { ProfileStats } from "@/components/idavoll/profile-stats";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -25,6 +26,7 @@ export default function ProfileStatsDemo() {
           name="Riley Park"
           handle="@rileymakes"
           bio="Posting one build video a day for 90 days. Follow along!"
+          extra={<BigThree signs={{ sun: "Leo", moon: "Pisces", rising: "Virgo" }} />}
           active
           ringColors={["#f9ce34", "#ee2a7b", "#6228d7"]}
           day={37}

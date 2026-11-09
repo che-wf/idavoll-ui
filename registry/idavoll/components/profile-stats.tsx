@@ -51,6 +51,8 @@ export interface ProfileStatsProps {
   avatarUrl?: string;
   /** Short bio under the name. */
   bio?: ReactNode;
+  /** Extra content under the bio, e.g. the big-three signs. */
+  extra?: ReactNode;
   /** Draws the colorful ring around the photo, like an unseen story. Use it for "posted today". */
   active?: boolean;
   /** Text read by screen readers for the ring. Defaults to "Posted today". */
@@ -91,6 +93,7 @@ export function ProfileStats({
   handle,
   avatarUrl,
   bio,
+  extra,
   active = false,
   activeLabel = "Posted today",
   ringColors = DEFAULT_RING,
@@ -159,6 +162,7 @@ export function ProfileStats({
         </div>
         {handle && <p className="text-muted-foreground text-sm">{handle}</p>}
         {bio && <p className="text-sm">{bio}</p>}
+        {extra}
       </div>
 
       {platforms.length > 0 && (
