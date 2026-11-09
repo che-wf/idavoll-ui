@@ -39,6 +39,9 @@ import VideoPlatformChartDemo from "../registry/idavoll/demos/video-platform-cha
 import WizardStepsDemo from "../registry/idavoll/demos/wizard-steps-demo";
 import { ThemeControls } from "./theme-controls";
 
+// The registry is published next to this page, so the install line uses wherever it's hosted.
+const registryUrl = `${new URL("r/", `${window.location.origin}${window.location.pathname}`).href}{name}.json`;
+
 const sections: { name: string; title: string; Demo: ComponentType }[] = [
   { name: "shimmer-border", title: "Shimmer Border", Demo: ShimmerBorderDemo },
   { name: "profile-stats", title: "Profile Stats", Demo: ProfileStatsDemo },
@@ -98,7 +101,7 @@ function Gallery() {
             tabIndex={0}
             className="overflow-x-auto rounded-lg bg-muted p-3 text-sm focus-visible:outline-2 focus-visible:outline-ring"
           >
-            npx shadcn@latest registry add @idavoll=https://che-wf.github.io/idavoll-ui/r/{"{name}"}.json
+            npx shadcn@latest registry add @idavoll={registryUrl}
           </pre>
         </div>
         {sections.map(({ name, title, Demo }) => (

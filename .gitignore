@@ -109,3 +109,6 @@ Thumbs.db
 
 # Registry build output (built and published by CI)
 /public/r/
+
+# Cloudflare wrangler local state
+.wrangler/

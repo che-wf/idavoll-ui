@@ -78,8 +78,11 @@ pnpm build        # builds public/r/*.json and the gallery
 
 - Components live in `registry/idavoll/components/`, examples in
   `registry/idavoll/demos/`. Each must be listed in `registry.json`.
-- Pushing to `main` publishes the registry and gallery to GitHub Pages
-  (**Settings → Pages → Source: GitHub Actions**, once).
+- Pushing to `main` publishes the registry and gallery. Two hosts are set up:
+  - **Cloudflare Workers:** connect the repo in the Cloudflare dashboard with build command
+    `pnpm build` and deploy command `npx wrangler deploy`; `wrangler.jsonc` serves `dist/`.
+  - **GitHub Pages:** **Settings → Pages → Source: GitHub Actions**, once.
+    The build uses relative paths, so it works at a site root or in a sub-folder.
 - AI assistants: see [`AGENTS.md`](AGENTS.md).
 
 ## License

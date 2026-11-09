@@ -1,0 +1,11 @@
+// Cloudflare Workers settings: serve the built gallery and registry (dist/) as static files.
+// Deploy runs `pnpm build` first, then `npx wrangler deploy`. No Worker code and no
+// Cloudflare packages in this project; this file only stops wrangler from trying to add them.
+{
+  "$schema": "https://unpkg.com/wrangler@4.158.0/config-schema.json",
+  "name": "idavoll-ui",
+  "compatibility_date": "2026-11-01",
+  "assets": {
+    "directory": "./dist"
+  }
+}

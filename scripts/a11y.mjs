@@ -63,7 +63,7 @@ const browser = spawn(
 
 let failed = 0;
 try {
-  await waitFor(`http://localhost:${servePort}/idavoll-ui/`);
+  await waitFor(`http://localhost:${servePort}/`);
   const targets = await (await waitFor(`http://127.0.0.1:${debugPort}/json`)).json();
   const ws = new WebSocket(targets.find((t) => t.type === "page").webSocketDebuggerUrl);
   await new Promise((r) => ws.addEventListener("open", r));
@@ -91,7 +91,7 @@ try {
     for (const theme of themes) {
       for (const mode of ["light", "dark"]) {
         await send("Page.navigate", {
-          url: `http://localhost:${servePort}/idavoll-ui/?theme=${theme}&mode=${mode}`,
+          url: `http://localhost:${servePort}/?theme=${theme}&mode=${mode}`,
         });
         await sleep(2500);
         await evaluate(axeSource);
