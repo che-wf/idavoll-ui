@@ -50,8 +50,8 @@ const comments: CommentItem[] = [
   {
     id: "4",
     platform: "instagram",
-    author: "<script>alert('hi')</script>",
-    text: "Comments are plain text: <b>this isn't bold</b>.",
+    author: "Dana Reyes",
+    text: 'Tip: 1/4" ply > 1/2" for drawer bottoms & sides. Lighter, and the dados are easier <3',
     publishedAt: ago(60 * 24 * 3),
     likes: 2,
   },

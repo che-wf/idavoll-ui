@@ -1331,7 +1331,7 @@
       "name": "comment-list-demo",
       "type": "registry:block",
       "title": "Comment List example",
-      "description": "Example: YouTube, Instagram and Threads comments with a reply thread, a long comment, an HTML-looking comment shown as plain text, and a note that TikTok comments aren't available.",
+      "description": "Example: YouTube, Instagram and Threads comments with a reply thread, a long comment, a comment with <, > and & that shows exactly as typed, and a note that TikTok comments aren't available.",
       "registryDependencies": ["@idavoll/comment-list"],
       "files": [
         {
