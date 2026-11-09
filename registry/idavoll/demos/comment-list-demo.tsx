@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT
+// Copyright (c) 2026 idavoll-ui contributors. Part of idavoll-ui: https://github.com/che-wf/idavoll-ui
 import { type CommentItem, CommentList } from "@/components/idavoll/comment-list";
 
 const ago = (minutes: number) => new Date(Date.now() - minutes * 60_000);

@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT
+// Copyright (c) 2026 idavoll-ui contributors. Part of idavoll-ui: https://github.com/che-wf/idavoll-ui
 /**
  * Round-number milestones between a start value and a goal, using steps of 1, 2.5 or 5
  * times a power of ten (round numbers pull harder as goals). Picks the smallest step that

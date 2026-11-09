@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT
+// Copyright (c) 2026 idavoll-ui contributors. Part of idavoll-ui: https://github.com/che-wf/idavoll-ui
 import { useState } from "react";
 import { GuideSteps } from "@/components/idavoll/guide-steps";
 import { PlatformPicker } from "@/components/idavoll/platform-picker";

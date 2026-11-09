@@ -84,4 +84,12 @@ pnpm build        # builds public/r/*.json and the gallery
 
 ## License
 
-[MIT](LICENSE)
+[MIT](LICENSE). Each component file starts with a short license header, so the notice
+travels with the code when `shadcn add` copies a single file into your project. Keep it.
+
+### Trademarks
+
+Platform names and logos (YouTube, TikTok, Instagram, Threads and others in
+`social-icon`) are trademarks of their owners. They're included so apps can show which
+platform a number comes from. The MIT license covers this code, not those trademarks:
+follow each platform's brand guidelines, and don't use the logos to suggest endorsement.

@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT
+// Copyright (c) 2026 idavoll-ui contributors. Part of idavoll-ui: https://github.com/che-wf/idavoll-ui
 import { useState } from "react";
 import type { SocialPlatform } from "@/components/idavoll/social-icon";
 import { VideoPlatformChart, type VideoViews } from "@/components/idavoll/video-platform-chart";

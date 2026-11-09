@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT
+// Copyright (c) 2026 idavoll-ui contributors. Part of idavoll-ui: https://github.com/che-wf/idavoll-ui
 import { PlatformLeaderboard } from "@/components/idavoll/platform-leaderboard";
 
 // Example data: 37 days of followers on four platforms that grow at different speeds.

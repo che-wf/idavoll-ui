@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT
+// Copyright (c) 2026 idavoll-ui contributors. Part of idavoll-ui: https://github.com/che-wf/idavoll-ui
 /**
  * Badges for a posting challenge, following the research on rewards:
  * - They reward effort people control (days posted), never follower counts.

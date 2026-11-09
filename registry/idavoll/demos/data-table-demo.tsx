@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT
+// Copyright (c) 2026 idavoll-ui contributors. Part of idavoll-ui: https://github.com/che-wf/idavoll-ui
 import type { ColumnDef } from "@tanstack/react-table";
 import { Download } from "lucide-react";
 import { formatCompact } from "@/components/idavoll/animated-number";

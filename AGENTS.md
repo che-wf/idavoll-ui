@@ -28,7 +28,9 @@ public/r/                         Built registry JSON (generated, gitignored)
 
 ## Adding a component
 
-1. Write `registry/idavoll/components/<name>.tsx`.
+1. Write `registry/idavoll/components/<name>.tsx`. Start it (and the demo) with the
+   two-line license header the other files use (`// SPDX-License-Identifier: MIT` and the
+   copyright line).
    - Import shadcn primitives as `@/components/ui/<x>`, utilities as `@/lib/utils`,
      other Idavoll components as `@/components/idavoll/<x>`. The CLI rewrites these to
      the consumer's aliases.

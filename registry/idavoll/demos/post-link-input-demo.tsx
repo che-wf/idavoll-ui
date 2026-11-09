@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT
+// Copyright (c) 2026 idavoll-ui contributors. Part of idavoll-ui: https://github.com/che-wf/idavoll-ui
 import { useState } from "react";
 import { type ParsedPostUrl, PostLinkInput, PostLinkList } from "@/components/idavoll/post-link-input";
 import { SOCIAL_ICONS } from "@/components/idavoll/social-icon";

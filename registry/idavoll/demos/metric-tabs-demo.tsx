@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT
+// Copyright (c) 2026 idavoll-ui contributors. Part of idavoll-ui: https://github.com/che-wf/idavoll-ui
 import { MetricTabs } from "@/components/idavoll/metric-tabs";
 
 // Example data: 37 days of a 90-day challenge.
