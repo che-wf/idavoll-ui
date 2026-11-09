@@ -10,8 +10,12 @@ import ConnectedAccountsDemo from "../registry/idavoll/demos/connected-accounts-
 import ContentCalendarDemo from "../registry/idavoll/demos/content-calendar-demo";
 import CopyFieldDemo from "../registry/idavoll/demos/copy-field-demo";
 import DataTableDemo from "../registry/idavoll/demos/data-table-demo";
+import DateFieldDemo from "../registry/idavoll/demos/date-field-demo";
+import EmptyStateDemo from "../registry/idavoll/demos/empty-state-demo";
 import GuideStepsDemo from "../registry/idavoll/demos/guide-steps-demo";
 import MetricTabsDemo from "../registry/idavoll/demos/metric-tabs-demo";
+import MilestoneEditorDemo from "../registry/idavoll/demos/milestone-editor-demo";
+import NextMilestoneDemo from "../registry/idavoll/demos/next-milestone-demo";
 import NotificationPreferencesDemo from "../registry/idavoll/demos/notification-preferences-demo";
 import PlatformBadgeDemo from "../registry/idavoll/demos/platform-badge-demo";
 import PlatformBreakdownDemo from "../registry/idavoll/demos/platform-breakdown-demo";
@@ -25,7 +29,9 @@ import SegmentedControlDemo from "../registry/idavoll/demos/segmented-control-de
 import SettingsGroupDemo from "../registry/idavoll/demos/settings-group-demo";
 import ShimmerBorderDemo from "../registry/idavoll/demos/shimmer-border-demo";
 import SocialIconDemo from "../registry/idavoll/demos/social-icon-demo";
+import SourceBadgeDemo from "../registry/idavoll/demos/source-badge-demo";
 import StatCardDemo from "../registry/idavoll/demos/stat-card-demo";
+import StatusBannerDemo from "../registry/idavoll/demos/status-banner-demo";
 import SyncStatusDemo from "../registry/idavoll/demos/sync-status-demo";
 import VideoPlatformChartDemo from "../registry/idavoll/demos/video-platform-chart-demo";
 import WizardStepsDemo from "../registry/idavoll/demos/wizard-steps-demo";
@@ -59,6 +65,12 @@ const sections: { name: string; title: string; Demo: ComponentType }[] = [
   { name: "comment-list", title: "Comment List", Demo: CommentListDemo },
   { name: "post-link-input", title: "Post Link Input", Demo: PostLinkInputDemo },
   { name: "video-platform-chart", title: "Video Platform Chart", Demo: VideoPlatformChartDemo },
+  { name: "date-field", title: "Date Field", Demo: DateFieldDemo },
+  { name: "milestone-editor", title: "Milestone Editor", Demo: MilestoneEditorDemo },
+  { name: "next-milestone", title: "Next Milestone", Demo: NextMilestoneDemo },
+  { name: "source-badge", title: "Source Badge", Demo: SourceBadgeDemo },
+  { name: "status-banner", title: "Status Banner", Demo: StatusBannerDemo },
+  { name: "empty-state", title: "Empty State", Demo: EmptyStateDemo },
 ];
 
 function Gallery() {

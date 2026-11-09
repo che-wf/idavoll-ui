@@ -349,6 +349,122 @@
       "categories": ["chart", "social", "data"]
     },
     {
+      "name": "milestones",
+      "type": "registry:component",
+      "title": "Milestone Math",
+      "description": "Pure helpers for milestone components, covered by unit tests. suggestMilestones(start, goal, max = 6) returns round numbers strictly between start and goal using steps of 1, 2.5 or 5 times a power of ten (e.g. 2,000 → 12,000 gives [2500, 5000, 7500, 10000]); works for goals below the start too. milestoneProgress(current, milestones, goal, start = 0) returns { previous, next, isGoal, reached, done, span, remaining, fraction, half (\"first\" | \"second\") } for the stretch between the last passed milestone and the next one.",
+      "files": [
+        {
+          "path": "registry/idavoll/components/milestones.ts",
+          "type": "registry:component",
+          "target": "components/idavoll/milestones.ts"
+        }
+      ],
+      "categories": ["utility", "goals"]
+    },
+    {
+      "name": "date-field",
+      "type": "registry:component",
+      "title": "Date Field",
+      "description": "A date you can type (\"Nov 9, 2026\", \"11/9/2026\" or \"2026-11-09\") or pick from a calendar popover (shadcn calendar). Values go in and out as \"YYYY-MM-DD\" strings, so the app does any time-zone math. Typed dates are reformatted on blur or Enter; unreadable or out-of-range dates get an error linked with aria-describedby, and the calendar greys out dates outside min and max. Props: value, onChange(value), label?, hint?, min?, max?, required?, locale?, labels? (placeholder, choose, invalid, tooEarly, tooLate), id?, className?. Also exports parseTypedDate(text).",
+      "dependencies": ["lucide-react"],
+      "registryDependencies": ["button", "calendar", "input", "label", "popover"],
+      "files": [
+        {
+          "path": "registry/idavoll/components/date-field.tsx",
+          "type": "registry:component",
+          "target": "components/idavoll/date-field.tsx"
+        }
+      ],
+      "categories": ["form"]
+    },
+    {
+      "name": "milestone-editor",
+      "type": "registry:component",
+      "title": "Milestone Editor",
+      "description": "Set milestones between a start value and a goal (\"2,000 → 12,000 followers\"). \"Suggest milestones\" fills in round numbers (1, 2.5 or 5 steps, at most 6). Each row has a target, an optional date (date-field) and an optional name, plus remove; \"Add milestone\" adds an empty row and focuses it. Values outside the range or repeated are flagged inline; the list sorts itself when a number is finished. An optional number line previews the milestones. Props: start, goal, value [{ value, date?, label? }] (a new row's value is NaN until typed), onChange(value), metricLabel?, formatValue? (full numbers), showPreview? (true), minDate?, maxDate?, maxSuggestions? (6), labels?, className?. Re-exports suggestMilestones.",
+      "dependencies": ["lucide-react"],
+      "registryDependencies": [
+        "button",
+        "input",
+        "label",
+        "@idavoll/animated-number",
+        "@idavoll/date-field",
+        "@idavoll/milestones"
+      ],
+      "files": [
+        {
+          "path": "registry/idavoll/components/milestone-editor.tsx",
+          "type": "registry:component",
+          "target": "components/idavoll/milestone-editor.tsx"
+        }
+      ],
+      "categories": ["form", "goals"]
+    },
+    {
+      "name": "next-milestone",
+      "type": "registry:component",
+      "title": "Next Milestone",
+      "description": "Always shows the next goal and how far away it is, with a progress bar from the last milestone to the next. Wording flips at halfway: before, it counts progress made (\"1,600 of 2,500 toward 5K followers\"); after, what's left (\"312 to 10K followers\"). Optional \"At your current pace: about 6 days\". After the last milestone it shows the main goal (trophy icon); once reached, a one-time celebration wrapped in shimmer-border. Numbers animate with animated-number. Props: current, milestones (numbers), goal, start? (0), metricLabel, dailyRate?, formatValue? (compact), celebrate? (true), labels?, children?, className?. Re-exports milestoneProgress.",
+      "dependencies": ["lucide-react"],
+      "registryDependencies": ["@idavoll/animated-number", "@idavoll/milestones", "@idavoll/shimmer-border"],
+      "files": [
+        {
+          "path": "registry/idavoll/components/next-milestone.tsx",
+          "type": "registry:component",
+          "target": "components/idavoll/next-milestone.tsx"
+        }
+      ],
+      "categories": ["goals", "data"]
+    },
+    {
+      "name": "source-badge",
+      "type": "registry:component",
+      "title": "Source Badge",
+      "description": "Says where a number came from: \"Verified\" (check icon, pulled from a platform's API) or \"Self-reported\" (pencil icon, typed in). Words, not only an icon or color; small enough for a table cell. Hover or keyboard focus shows a one-sentence explanation (\"Pulled from YouTube automatically.\"), which screen readers also get. Needs a TooltipProvider above it. Props: source (\"verified\" | \"self-reported\"), platform?, labels? (verified, selfReported, verifiedFrom \"{platform}\", verifiedHelp, selfReportedHelp), className?.",
+      "dependencies": ["lucide-react"],
+      "registryDependencies": ["tooltip", "@idavoll/social-icon"],
+      "files": [
+        {
+          "path": "registry/idavoll/components/source-badge.tsx",
+          "type": "registry:component",
+          "target": "components/idavoll/source-badge.tsx"
+        }
+      ],
+      "categories": ["data", "status"]
+    },
+    {
+      "name": "status-banner",
+      "type": "registry:component",
+      "title": "Status Banner",
+      "description": "A banner across the app for something that needs attention, e.g. \"Your TikTok login expired. Reconnect so today's numbers aren't lost.\" Built on shadcn Alert. Tones info, success, warning and error each have an icon as well as a color; a platform icon can replace it. Optional action button and close button. Only announced (role=alert) when announce is set, so a banner that stays on every page doesn't interrupt each time. Props: tone? (\"warning\"), platform?, title, description?, action? { label, onClick }, onDismiss?, announce? (false), className?.",
+      "dependencies": ["lucide-react"],
+      "registryDependencies": ["alert", "button", "@idavoll/social-icon"],
+      "files": [
+        {
+          "path": "registry/idavoll/components/status-banner.tsx",
+          "type": "registry:component",
+          "target": "components/idavoll/status-banner.tsx"
+        }
+      ],
+      "categories": ["status", "feedback"]
+    },
+    {
+      "name": "empty-state",
+      "type": "registry:component",
+      "title": "Empty State",
+      "description": "An empty state with an icon, one line, one sentence and one action, e.g. \"No videos yet · Videos appear here after the first sync · Sync now\". A thin wrapper over shadcn Empty. Props: icon?, title, description?, action?, headingLevel? (3), className?.",
+      "registryDependencies": ["empty"],
+      "files": [
+        {
+          "path": "registry/idavoll/components/empty-state.tsx",
+          "type": "registry:component",
+          "target": "components/idavoll/empty-state.tsx"
+        }
+      ],
+      "categories": ["status", "feedback"]
+    },
+    {
       "name": "platform-badge-demo",
       "type": "registry:block",
       "title": "Platform Badge example",
@@ -1112,6 +1228,92 @@
           "path": "registry/idavoll/demos/video-platform-chart-demo.tsx",
           "type": "registry:component",
           "target": "components/idavoll/demos/video-platform-chart-demo.tsx"
+        }
+      ]
+    },
+    {
+      "name": "date-field-demo",
+      "type": "registry:block",
+      "title": "Date Field example",
+      "description": "Example: a challenge start date and a payment date that can't be in the future.",
+      "registryDependencies": ["@idavoll/date-field"],
+      "files": [
+        {
+          "path": "registry/idavoll/demos/date-field-demo.tsx",
+          "type": "registry:component",
+          "target": "components/idavoll/demos/date-field-demo.tsx"
+        }
+      ]
+    },
+    {
+      "name": "milestone-editor-demo",
+      "type": "registry:block",
+      "title": "Milestone Editor example",
+      "description": "Example: 2,000 to 12,000 followers with one milestone to start; press Suggest milestones.",
+      "registryDependencies": ["@idavoll/milestone-editor"],
+      "files": [
+        {
+          "path": "registry/idavoll/demos/milestone-editor-demo.tsx",
+          "type": "registry:component",
+          "target": "components/idavoll/demos/milestone-editor-demo.tsx"
+        }
+      ]
+    },
+    {
+      "name": "next-milestone-demo",
+      "type": "registry:block",
+      "title": "Next Milestone example",
+      "description": "Example: progress toward the next milestone with buttons to watch the wording flip at halfway, and a reached goal.",
+      "dependencies": ["lucide-react"],
+      "registryDependencies": ["@idavoll/next-milestone", "button"],
+      "files": [
+        {
+          "path": "registry/idavoll/demos/next-milestone-demo.tsx",
+          "type": "registry:component",
+          "target": "components/idavoll/demos/next-milestone-demo.tsx"
+        }
+      ]
+    },
+    {
+      "name": "source-badge-demo",
+      "type": "registry:block",
+      "title": "Source Badge example",
+      "description": "Example: an income table mixing verified and self-reported amounts.",
+      "registryDependencies": ["@idavoll/source-badge", "tooltip"],
+      "files": [
+        {
+          "path": "registry/idavoll/demos/source-badge-demo.tsx",
+          "type": "registry:component",
+          "target": "components/idavoll/demos/source-badge-demo.tsx"
+        }
+      ]
+    },
+    {
+      "name": "status-banner-demo",
+      "type": "registry:block",
+      "title": "Status Banner example",
+      "description": "Example: an expired TikTok login, a stale sync warning and a dismissible tip.",
+      "registryDependencies": ["@idavoll/status-banner", "button"],
+      "files": [
+        {
+          "path": "registry/idavoll/demos/status-banner-demo.tsx",
+          "type": "registry:component",
+          "target": "components/idavoll/demos/status-banner-demo.tsx"
+        }
+      ]
+    },
+    {
+      "name": "empty-state-demo",
+      "type": "registry:block",
+      "title": "Empty State example",
+      "description": "Example: \"No videos yet\" with a Sync now button, \"Waiting for the first sync\", and a skeleton shaped like a post card for loads over a second.",
+      "dependencies": ["lucide-react"],
+      "registryDependencies": ["@idavoll/empty-state", "button", "skeleton"],
+      "files": [
+        {
+          "path": "registry/idavoll/demos/empty-state-demo.tsx",
+          "type": "registry:component",
+          "target": "components/idavoll/demos/empty-state-demo.tsx"
         }
       ]
     }
