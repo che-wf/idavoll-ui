@@ -38,7 +38,7 @@ export default function ProfileStatsDemo() {
             { label: "Views", value: 1_284_000 },
           ]}
           platforms={[
-            { platform: "tiktok", followers: tiktok },
+            { platform: "tiktok", followers: tiktok, href: "https://www.tiktok.com/@example" },
             { platform: "instagram", followers: instagram },
             { platform: "youtube", followers: youtube, handle: "subscribers" },
           ]}

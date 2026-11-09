@@ -4,7 +4,7 @@
 
 import type { ReactNode } from "react";
 import { AnimatedNumber, formatCompact } from "@/components/idavoll/animated-number";
-import { SocialIcon, type SocialPlatform } from "@/components/idavoll/social-icon";
+import { SOCIAL_ICONS, SocialIcon, type SocialPlatform } from "@/components/idavoll/social-icon";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";
 
@@ -24,6 +24,8 @@ export interface ProfilePlatform {
   followers: number;
   /** Handle on that platform, if different from the main one. */
   handle?: string;
+  /** Link to the profile on that platform. Makes the chip a link that opens in a new tab. */
+  href?: string;
 }
 
 /** Extra classes for the parts inside ProfileStats. */
@@ -169,24 +171,44 @@ export function ProfileStats({
 
       {platforms.length > 0 && (
         <ul className="flex flex-wrap gap-2">
-          {platforms.map((p) => (
-            <li
-              key={p.platform}
-              className={cn(
-                "flex items-center gap-2 rounded-full border bg-card py-1 pr-3 pl-1 text-sm shadow-xs",
-                classNames?.chip,
-              )}
-            >
-              <SocialIcon platform={p.platform} variant="tile" className="size-6 rounded-full" />
-              <AnimatedNumber
-                value={p.followers}
-                from={countUp ? 0 : undefined}
-                className="font-semibold"
-                highlightChange
-              />
-              <span className="text-muted-foreground">{p.handle ?? "followers"}</span>
-            </li>
-          ))}
+          {platforms.map((p) => {
+            const chip = cn(
+              "flex items-center gap-2 rounded-full border bg-card py-1 pr-3 pl-1 text-sm shadow-xs",
+              classNames?.chip,
+            );
+            const content = (
+              <>
+                <SocialIcon platform={p.platform} variant="tile" className="size-6 rounded-full" />
+                <AnimatedNumber
+                  value={p.followers}
+                  from={countUp ? 0 : undefined}
+                  className="font-semibold"
+                  highlightChange
+                />
+                <span className="text-muted-foreground">{p.handle ?? "followers"}</span>
+              </>
+            );
+            return (
+              <li key={p.platform} className={p.href ? undefined : chip}>
+                {p.href ? (
+                  <a
+                    href={p.href}
+                    target="_blank"
+                    rel="noreferrer"
+                    className={cn(
+                      chip,
+                      "transition-colors hover:bg-muted focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring",
+                    )}
+                  >
+                    {content}
+                    <span className="sr-only">on {SOCIAL_ICONS[p.platform].name} (opens in a new tab)</span>
+                  </a>
+                ) : (
+                  content
+                )}
+              </li>
+            );
+          })}
         </ul>
       )}
     </section>

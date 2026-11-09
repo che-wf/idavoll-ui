@@ -97,7 +97,7 @@
       "name": "profile-stats",
       "type": "registry:component",
       "title": "Profile Stats",
-      "description": "Instagram-style creator header: avatar with a colorful \"posted today\" ring, a row of animated headline numbers, a Day X of 90 pill and per-platform follower chips. Props: name, handle?, avatarUrl?, bio?, extra? (content under the bio, e.g. big-three), active?, activeLabel?, ringColors? (theme chart colors), day?, totalDays? (90), stats [{ label, value, formatValue? }], platforms? [{ platform, followers, handle? }], countUp? (true), ringWidth? (3), classNames? { avatar, stats, value, label, name, pill, chip }, className?.",
+      "description": "Instagram-style creator header: avatar with a colorful \"posted today\" ring, a row of animated headline numbers, a Day X of 90 pill and per-platform follower chips. Props: name, handle?, avatarUrl?, bio?, extra? (content under the bio, e.g. big-three), active?, activeLabel?, ringColors? (theme chart colors), day?, totalDays? (90), stats [{ label, value, formatValue? }], platforms? [{ platform, followers, handle? }], countUp? (true), ringWidth? (3), classNames? { avatar, stats, value, label, name, pill, chip }, className?. Each platform chip can take href to link to the profile (opens in a new tab).",
       "registryDependencies": ["avatar", "@idavoll/animated-number", "@idavoll/social-icon"],
       "files": [
         {
