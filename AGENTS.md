@@ -48,15 +48,16 @@ public/r/                         Built registry JSON (generated, gitignored)
    `registryDependencies` (shadcn items like `card`, or `@idavoll/<x>`). The demo is
    `registry:block` with `registryDependencies: ["@idavoll/<name>"]`.
 4. Add the demo to the `sections` list in `src/main.tsx`.
-5. Run `pnpm format && pnpm check && pnpm build && pnpm test:a11y`. All must pass.
+5. Run `pnpm format && pnpm check && pnpm test && pnpm build && pnpm test:a11y`. All must pass.
 
 ## Commands
 
-| Command                | Purpose                                                       |
-| ---------------------- | ------------------------------------------------------------- |
-| `pnpm dev`             | Preview gallery                                               |
-| `pnpm check`           | Biome lint, type checks, `shadcn registry validate`           |
-| `pnpm build`           | Build registry JSON + gallery                                 |
-| `pnpm test:a11y`       | axe-core WCAG 2.2 AA scan of the built gallery, all themes    |
-| `pnpm format`          | Auto-fix formatting                                           |
-| `pnpm exec shadcn mcp` | shadcn MCP server (configured for Claude Code in `.mcp.json`) |
+| Command                | Purpose                                                             |
+| ---------------------- | ------------------------------------------------------------------- |
+| `pnpm dev`             | Preview gallery                                                     |
+| `pnpm check`           | Biome lint, type checks, `shadcn registry validate`                 |
+| `pnpm build`           | Build registry JSON + gallery                                       |
+| `pnpm test`            | Unit tests for pure helpers (`tests/*.test.ts`, Node's test runner) |
+| `pnpm test:a11y`       | axe-core WCAG 2.2 AA scan of the built gallery, all themes          |
+| `pnpm format`          | Auto-fix formatting                                                 |
+| `pnpm exec shadcn mcp` | shadcn MCP server (configured for Claude Code in `.mcp.json`)       |

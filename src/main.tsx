@@ -5,6 +5,7 @@ import { createRoot } from "react-dom/client";
 import AnimatedNumberDemo from "../registry/idavoll/demos/animated-number-demo";
 import ChallengeChartDemo from "../registry/idavoll/demos/challenge-chart-demo";
 import ChallengeProgressDemo from "../registry/idavoll/demos/challenge-progress-demo";
+import CommentListDemo from "../registry/idavoll/demos/comment-list-demo";
 import ConnectedAccountsDemo from "../registry/idavoll/demos/connected-accounts-demo";
 import ContentCalendarDemo from "../registry/idavoll/demos/content-calendar-demo";
 import CopyFieldDemo from "../registry/idavoll/demos/copy-field-demo";
@@ -17,6 +18,8 @@ import PlatformBreakdownDemo from "../registry/idavoll/demos/platform-breakdown-
 import PlatformGrowthChartDemo from "../registry/idavoll/demos/platform-growth-chart-demo";
 import PlatformLeaderboardDemo from "../registry/idavoll/demos/platform-leaderboard-demo";
 import PlatformPickerDemo from "../registry/idavoll/demos/platform-picker-demo";
+import PostCardDemo from "../registry/idavoll/demos/post-card-demo";
+import PostLinkInputDemo from "../registry/idavoll/demos/post-link-input-demo";
 import ProfileStatsDemo from "../registry/idavoll/demos/profile-stats-demo";
 import SegmentedControlDemo from "../registry/idavoll/demos/segmented-control-demo";
 import SettingsGroupDemo from "../registry/idavoll/demos/settings-group-demo";
@@ -24,6 +27,7 @@ import ShimmerBorderDemo from "../registry/idavoll/demos/shimmer-border-demo";
 import SocialIconDemo from "../registry/idavoll/demos/social-icon-demo";
 import StatCardDemo from "../registry/idavoll/demos/stat-card-demo";
 import SyncStatusDemo from "../registry/idavoll/demos/sync-status-demo";
+import VideoPlatformChartDemo from "../registry/idavoll/demos/video-platform-chart-demo";
 import WizardStepsDemo from "../registry/idavoll/demos/wizard-steps-demo";
 import { ThemeControls } from "./theme-controls";
 
@@ -51,6 +55,10 @@ const sections: { name: string; title: string; Demo: ComponentType }[] = [
   { name: "copy-field", title: "Copy Field", Demo: CopyFieldDemo },
   { name: "guide-steps", title: "Guide Steps", Demo: GuideStepsDemo },
   { name: "sync-status", title: "Sync Status", Demo: SyncStatusDemo },
+  { name: "post-card", title: "Post Card", Demo: PostCardDemo },
+  { name: "comment-list", title: "Comment List", Demo: CommentListDemo },
+  { name: "post-link-input", title: "Post Link Input", Demo: PostLinkInputDemo },
+  { name: "video-platform-chart", title: "Video Platform Chart", Demo: VideoPlatformChartDemo },
 ];
 
 function Gallery() {

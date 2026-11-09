@@ -4,9 +4,11 @@ import {
   type Column,
   type ColumnDef,
   type ColumnFiltersState,
+  type ExpandedState,
   type FilterFn,
   flexRender,
   getCoreRowModel,
+  getExpandedRowModel,
   getFacetedRowModel,
   getFacetedUniqueValues,
   getFilteredRowModel,
@@ -22,13 +24,14 @@ import {
   ArrowUp,
   ChevronLeft,
   ChevronRight,
+  ChevronsDownUp,
   ChevronsUpDown,
   Columns3,
   ListFilter,
   Search,
   X,
 } from "lucide-react";
-import { type ReactNode, useId, useState } from "react";
+import { type ElementType, type MouseEvent, type ReactNode, useId, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -98,6 +101,23 @@ export interface DataTableProps<TData> {
   toolbar?: ReactNode;
   /** A stable id for each row. Defaults to the row's index. */
   getRowId?: (row: TData, index: number) => string;
+  /**
+   * Child rows, e.g. a video's per-platform posts. Rows with children get an expand button
+   * and the toolbar gets "Expand all". Search and filters also match children, keeping the
+   * parent and opening it. Pages count top-level rows only.
+   */
+  getSubRows?: (row: TData) => TData[] | undefined;
+  /** Screen-reader name for a row's expand button. Defaults to "Show 3 more rows". */
+  subRowsLabel?: (row: TData, count: number) => string;
+  /**
+   * Makes rows open a page. The first cell becomes a real link (for keyboard and screen
+   * readers), and clicking anywhere else on the row follows it.
+   */
+  getRowHref?: (row: TData) => string | undefined;
+  /** Link component for getRowHref, e.g. your router's Link. It gets href, className and children. Defaults to <a>. */
+  linkComponent?: ElementType;
+  /** Makes rows clickable without a link. The first cell becomes a button for keyboard users. */
+  onRowClick?: (row: TData) => void;
   className?: string;
 }
 
@@ -218,6 +238,11 @@ export function DataTable<TData>({
   emptyMessage = "No results match your search and filters.",
   toolbar,
   getRowId,
+  getSubRows,
+  subRowsLabel = (_row, count) => (count === 1 ? "Show 1 more row" : `Show ${count} more rows`),
+  getRowHref,
+  linkComponent: Link = "a",
+  onRowClick,
   className,
 }: DataTableProps<TData>) {
   const searchId = useId();
@@ -226,6 +251,9 @@ export function DataTable<TData>({
   const [globalFilter, setGlobalFilter] = useState("");
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: pageSize || Number.MAX_SAFE_INTEGER });
+  const [expanded, setExpanded] = useState<ExpandedState>({});
+  // While searching or filtering, open every row so matches inside children are visible.
+  const searching = globalFilter !== "" || columnFilters.length > 0;
 
   // Filtered columns match on "one of the chosen values" unless the column says otherwise.
   const filterIds = new Set(filters.map((f) => f.column));
@@ -237,7 +265,19 @@ export function DataTable<TData>({
   const table = useReactTable({
     data,
     columns: tableColumns,
-    state: { sorting, columnFilters, globalFilter, columnVisibility, pagination },
+    state: {
+      sorting,
+      columnFilters,
+      globalFilter,
+      columnVisibility,
+      pagination,
+      expanded: getSubRows && searching ? true : expanded,
+    },
+    onExpandedChange: setExpanded,
+    getSubRows,
+    getExpandedRowModel: getExpandedRowModel(),
+    filterFromLeafRows: true,
+    paginateExpandedRows: false,
     onSortingChange: setSorting,
     onColumnFiltersChange: (updater) => {
       setColumnFilters(updater);
@@ -263,7 +303,8 @@ export function DataTable<TData>({
   const pageCount = table.getPageCount();
   const { pageIndex } = table.getState().pagination;
   const first = matched === 0 ? 0 : pageIndex * pagination.pageSize + 1;
-  const last = Math.min(matched, first + rows.length - 1);
+  // Sub-rows don't count: pages and totals are top-level rows.
+  const last = Math.min(matched, first + rows.filter((r) => r.depth === 0).length - 1);
   const filtering = columnFilters.length > 0 || globalFilter !== "";
   const visibleColumns = table.getVisibleLeafColumns().length;
 
@@ -279,6 +320,17 @@ export function DataTable<TData>({
       },
     }));
   });
+  const expandable = !!getSubRows && table.getCoreRowModel().rows.some((r) => r.subRows.length > 0);
+  const allExpanded = table.getIsAllRowsExpanded();
+
+  // Clicking a row follows its link, unless the click was on a control inside the row.
+  const onRowClickCapture = (event: MouseEvent<HTMLTableRowElement>, original: TData, href?: string) => {
+    if ((event.target as HTMLElement).closest("a, button, input, select, textarea, label, [role=checkbox]")) return;
+    if (window.getSelection()?.toString()) return;
+    if (href) event.currentTarget.querySelector<HTMLElement>("[data-row-link]")?.click();
+    else onRowClick?.(original);
+  };
+
   const clearAll = () => {
     table.resetColumnFilters();
     setGlobalFilter("");
@@ -336,6 +388,12 @@ export function DataTable<TData>({
                   ))}
               </DropdownMenuContent>
             </DropdownMenu>
+          )}
+          {expandable && (
+            <Button variant="outline" size="sm" onClick={() => table.toggleAllRowsExpanded(!allExpanded)}>
+              {allExpanded ? <ChevronsDownUp aria-hidden /> : <ChevronsUpDown aria-hidden />}
+              {allExpanded ? "Collapse all" : "Expand all"}
+            </Button>
           )}
           {toolbar}
         </div>
@@ -404,15 +462,72 @@ export function DataTable<TData>({
           </TableHeader>
           <TableBody>
             {rows.length ? (
-              rows.map((row) => (
-                <TableRow key={row.id}>
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id} className={cn("px-3", cell.column.columnDef.meta?.className)}>
-                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                    </TableCell>
-                  ))}
-                </TableRow>
-              ))
+              rows.map((row) => {
+                const href = getRowHref?.(row.original);
+                const clickable = !!href || !!onRowClick;
+                const linkClass =
+                  "rounded-sm text-left font-medium underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-ring";
+                return (
+                  <TableRow
+                    key={row.id}
+                    onClick={clickable ? (event) => onRowClickCapture(event, row.original, href) : undefined}
+                    className={cn(clickable && "cursor-pointer", row.depth > 0 && "bg-muted/25")}
+                  >
+                    {row.getVisibleCells().map((cell, i) => {
+                      const content = flexRender(cell.column.columnDef.cell, cell.getContext());
+                      if (i > 0 || (!clickable && !expandable)) {
+                        return (
+                          <TableCell key={cell.id} className={cn("px-3", cell.column.columnDef.meta?.className)}>
+                            {content}
+                          </TableCell>
+                        );
+                      }
+                      return (
+                        <TableCell key={cell.id} className={cn("px-3", cell.column.columnDef.meta?.className)}>
+                          <div className="flex items-center gap-1" style={{ paddingLeft: `${row.depth * 1.75}rem` }}>
+                            {expandable &&
+                              (row.getCanExpand() ? (
+                                <button
+                                  type="button"
+                                  onClick={row.getToggleExpandedHandler()}
+                                  aria-expanded={row.getIsExpanded()}
+                                  aria-label={subRowsLabel(row.original, row.subRows.length)}
+                                  className="grid size-6 shrink-0 place-items-center rounded-md hover:bg-muted focus-visible:outline-2 focus-visible:outline-ring"
+                                >
+                                  <ChevronRight
+                                    aria-hidden
+                                    className={cn(
+                                      "size-4 transition-transform motion-reduce:transition-none",
+                                      row.getIsExpanded() && "rotate-90",
+                                    )}
+                                  />
+                                </button>
+                              ) : (
+                                row.depth === 0 && <span aria-hidden className="size-6 shrink-0" />
+                              ))}
+                            {href ? (
+                              <Link href={href} data-row-link className={linkClass}>
+                                {content}
+                              </Link>
+                            ) : onRowClick ? (
+                              <button
+                                type="button"
+                                data-row-link
+                                onClick={() => onRowClick(row.original)}
+                                className={linkClass}
+                              >
+                                {content}
+                              </button>
+                            ) : (
+                              content
+                            )}
+                          </div>
+                        </TableCell>
+                      );
+                    })}
+                  </TableRow>
+                );
+              })
             ) : (
               <TableRow className="hover:bg-transparent">
                 <TableCell colSpan={visibleColumns} className="h-32 text-center">

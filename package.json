@@ -20,6 +20,7 @@
     "lint": "biome check .",
     "format": "biome check --write .",
     "check": "pnpm lint && pnpm typecheck && pnpm registry:validate",
+    "test": "node --experimental-strip-types --test tests/*.test.ts",
     "test:a11y": "node scripts/a11y.mjs",
     "check:secrets": "gitleaks git --redact --no-banner",
     "check:private": "bash scripts/check-private-terms.sh --all"

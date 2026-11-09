@@ -266,6 +266,89 @@
       "categories": ["data", "status", "social"]
     },
     {
+      "name": "post-card",
+      "type": "registry:component",
+      "title": "Post Card",
+      "description": "A post or video at a glance: thumbnail (16:9 or 9:16, lazy-loaded, neutral placeholder if missing or broken), title clamped to two lines, challenge day, date, platform icons, and 2–4 headline numbers (compact like 12.4K, full number for screen readers). Optional badge over the thumbnail. With href or onClick the whole card is clickable through one link or button (the title), with a visible focus ring. Props: title, thumbnailUrl?, aspect? (\"landscape\" | \"portrait\"), day?, publishedAt (Date or ISO string), platforms, stats? [{ label, value (number or text) }], badge?, href?, linkComponent? (e.g. your router's Link; default <a>), onClick?, locale?, className?.",
+      "dependencies": ["lucide-react"],
+      "registryDependencies": ["@idavoll/animated-number", "@idavoll/social-icon"],
+      "files": [
+        {
+          "path": "registry/idavoll/components/post-card.tsx",
+          "type": "registry:component",
+          "target": "components/idavoll/post-card.tsx"
+        }
+      ],
+      "categories": ["social", "data"]
+    },
+    {
+      "name": "comment-list",
+      "type": "registry:component",
+      "title": "Comment List",
+      "description": "Comments on a post, with replies one level deep (replies to replies join their thread), platform filter chips (All, YouTube…), sort by Newest or Most liked, comments clamped to 4 lines with Show more, and \"Show more comments\" past the page size. Each comment shows avatar (initials fallback), author, platform, relative time (full date on hover) and likes. Text is always plain text, never HTML. Empty state \"No comments yet\"; a note explains platforms that don't share comment text. The visible count is announced politely. Props: comments [{ id, platform, author, avatarUrl?, text, publishedAt, likes?, parentId? }], unavailablePlatforms?, pageSize? (50), now?, locale?, labels? (all, platformFilter, sort, newest, mostLiked, empty, unavailable \"{platforms}\", showMore, showLess, loadMore \"{count}\", count, likes, replies), className?.",
+      "dependencies": ["lucide-react"],
+      "registryDependencies": ["avatar", "button", "@idavoll/segmented-control", "@idavoll/social-icon"],
+      "files": [
+        {
+          "path": "registry/idavoll/components/comment-list.tsx",
+          "type": "registry:component",
+          "target": "components/idavoll/comment-list.tsx"
+        }
+      ],
+      "categories": ["social", "data"]
+    },
+    {
+      "name": "post-url",
+      "type": "registry:component",
+      "title": "Post URL Parser",
+      "description": "parsePostUrl(url) → { platform, id } | null. Recognises single-post links: YouTube (youtube.com/watch?v=, youtu.be/, /shorts/, /live/, /embed/), TikTok (tiktok.com/@user/video/… and /photo/…), Instagram (/p/, /reel/, /reels/, /tv/, optionally after a username) and Threads (threads.net or threads.com /@user/post/…). Accepts links with or without https://, www. or m., ignores tracking parameters, and rejects other schemes and look-alike hosts. Pure and dependency-free, so a server can reuse it; covered by unit tests. Also exports the ParsedPostUrl and PostUrlPlatform types.",
+      "files": [
+        {
+          "path": "registry/idavoll/components/post-url.ts",
+          "type": "registry:component",
+          "target": "components/idavoll/post-url.ts"
+        }
+      ],
+      "categories": ["social", "utility"]
+    },
+    {
+      "name": "post-link-input",
+      "type": "registry:component",
+      "title": "Post Link Input",
+      "description": "A field for pasting a post link. Recognises YouTube, TikTok, Instagram and Threads links as you type and shows the platform icon inside the field (\"YouTube post\" under it). Unrecognised links get a clear message once the field is left or a link is pasted, linked with aria-describedby; links from platforms outside `allowed` are refused. Fetches nothing; onParsed hands the app the platform and id. PostLinkList (same file) shows several fields with \"Add another link\", remove buttons, focus on the new field, and a duplicate check. Re-exports parsePostUrl. Props: value, onChange(value), onParsed?(result | null), allowed? (default all four), error? (replaces the built-in message), hideLabel?, labels? (label, placeholder, invalid, recognised, notAllowed, duplicate, linkN, remove, addAnother), className?. PostLinkList props: value (string[]), onChange, onParsed?(results), allowed?, max?, labels?, className?.",
+      "dependencies": ["lucide-react"],
+      "registryDependencies": ["button", "input", "label", "@idavoll/post-url", "@idavoll/social-icon"],
+      "files": [
+        {
+          "path": "registry/idavoll/components/post-link-input.tsx",
+          "type": "registry:component",
+          "target": "components/idavoll/post-link-input.tsx"
+        }
+      ],
+      "categories": ["form", "social"]
+    },
+    {
+      "name": "video-platform-chart",
+      "type": "registry:component",
+      "title": "Video Platform Chart",
+      "description": "Stacked bars of each video's views split by platform, ordered by challenge day, in brand colors. Switch between total views and views at 48 hours or 7 days old so new and old videos compare fairly; videos too young for the chosen age show a striped \"not yet\" bar, not zero. The tooltip names each platform's number and the total; legend chips hide platforms (legend, stack and tooltip share one order). Only the latest maxBars are shown, and bars keep a usable width with sideways scrolling. Clicking a bar calls onSelect. \"Show as table\" gives the same numbers as a table, with buttons when onSelect is set. Props: videos [{ id, label, day, views (per platform), viewsAt? { \"48h\"?, \"7d\"? } (per platform), ageHours? }], mode? (\"total\" | \"48h\" | \"7d\"), defaultMode? (\"total\"), onModeChange?, onSelect?(id), maxBars? (30), chartClassName? (h-72), labels?, className?.",
+      "dependencies": ["recharts"],
+      "registryDependencies": [
+        "chart",
+        "@idavoll/animated-number",
+        "@idavoll/segmented-control",
+        "@idavoll/social-icon"
+      ],
+      "files": [
+        {
+          "path": "registry/idavoll/components/video-platform-chart.tsx",
+          "type": "registry:component",
+          "target": "components/idavoll/video-platform-chart.tsx"
+        }
+      ],
+      "categories": ["chart", "social", "data"]
+    },
+    {
       "name": "platform-badge-demo",
       "type": "registry:block",
       "title": "Platform Badge example",
@@ -732,7 +815,7 @@
       "name": "data-table",
       "type": "registry:component",
       "title": "Data Table",
-      "description": "A table with search, pick-from-a-list filters (each choice shows how many rows it would match), sortable columns, pages and an optional column menu. Applied filters show as removable chips with \"Clear all\"; the row count is announced to screen readers; an empty result offers to clear filters; wide tables scroll inside a focusable frame. Built on TanStack Table. Props: columns (TanStack ColumnDef[]; meta { label?, className? } per column), data, label (accessible name, e.g. \"Posts\"), searchable? (true), searchPlaceholder? (\"Search…\"), filters? [{ column, title, options? [{ value, label?, icon? }] }] (options default to every value in the column), columnToggle? (false), pageSize? (10; 0 shows all), initialSorting? (e.g. [{ id: \"views\", desc: true }]), countLabel?(count) (\"12 results\"), emptyMessage?, toolbar? (extra controls), getRowId?, className?. Also exports DataTableColumnHeader ({ column, title, className? }) for sortable headers, which set aria-sort.",
+      "description": "A table with search, pick-from-a-list filters (each choice shows how many rows it would match), sortable columns, pages and an optional column menu. Applied filters show as removable chips with \"Clear all\"; the row count is announced to screen readers; an empty result offers to clear filters; wide tables scroll inside a focusable frame. Built on TanStack Table. Props: columns (TanStack ColumnDef[]; meta { label?, className? } per column), data, label (accessible name, e.g. \"Posts\"), searchable? (true), searchPlaceholder? (\"Search…\"), filters? [{ column, title, options? [{ value, label?, icon? }] }] (options default to every value in the column), columnToggle? (false), pageSize? (10; 0 shows all), initialSorting? (e.g. [{ id: \"views\", desc: true }]), countLabel?(count) (\"12 results\"), emptyMessage?, toolbar? (extra controls), getRowId?, getSubRows?(row) (child rows such as per-platform posts: expand buttons with aria-expanded, \"Expand all\" in the toolbar, search and filters match children and keep their parent open, pages count top-level rows), subRowsLabel?(row, count) (expand button name, default \"Show 3 more rows\"), getRowHref?(row) (the first cell becomes a real link and clicking elsewhere on the row follows it; return undefined for rows without a page), linkComponent? (e.g. your router's Link; gets href, className, children; default <a>), onRowClick?(row) (clickable rows without a link; the first cell becomes a button), className?. Also exports DataTableColumnHeader ({ column, title, className? }) for sortable headers, which set aria-sort.",
       "dependencies": ["@tanstack/react-table", "lucide-react"],
       "registryDependencies": ["button", "dropdown-menu", "input", "table"],
       "files": [
@@ -865,7 +948,7 @@
       "name": "data-table-demo",
       "type": "registry:block",
       "title": "Data Table example",
-      "description": "Example: a creator's post log with search, Platform/Format/Status filters, sortable Day/Views/Engagement columns, a column menu and an Export button.",
+      "description": "Example: a Videos table whose rows expand into each platform's post and link to a detail page, and a post log with search, Platform/Format/Status filters, sortable columns, a column menu and an Export button.",
       "dependencies": ["@tanstack/react-table", "lucide-react"],
       "registryDependencies": ["@idavoll/data-table", "@idavoll/social-icon", "@idavoll/animated-number", "button"],
       "files": [
@@ -973,6 +1056,62 @@
           "path": "registry/idavoll/demos/sync-status-demo.tsx",
           "type": "registry:component",
           "target": "components/idavoll/demos/sync-status-demo.tsx"
+        }
+      ]
+    },
+    {
+      "name": "post-card-demo",
+      "type": "registry:block",
+      "title": "Post Card example",
+      "description": "Example: a landscape breakout video with a badge and link, a portrait cross-posted short as a button, and a card with a missing thumbnail.",
+      "registryDependencies": ["@idavoll/post-card"],
+      "files": [
+        {
+          "path": "registry/idavoll/demos/post-card-demo.tsx",
+          "type": "registry:component",
+          "target": "components/idavoll/demos/post-card-demo.tsx"
+        }
+      ]
+    },
+    {
+      "name": "comment-list-demo",
+      "type": "registry:block",
+      "title": "Comment List example",
+      "description": "Example: YouTube, Instagram and Threads comments with a reply thread, a long comment, an HTML-looking comment shown as plain text, and a note that TikTok comments aren't available.",
+      "registryDependencies": ["@idavoll/comment-list"],
+      "files": [
+        {
+          "path": "registry/idavoll/demos/comment-list-demo.tsx",
+          "type": "registry:component",
+          "target": "components/idavoll/demos/comment-list-demo.tsx"
+        }
+      ]
+    },
+    {
+      "name": "post-link-input-demo",
+      "type": "registry:block",
+      "title": "Post Link Input example",
+      "description": "Example: one field for adding a missed post, and a list for grouping the same video's links across platforms.",
+      "registryDependencies": ["@idavoll/post-link-input", "@idavoll/social-icon"],
+      "files": [
+        {
+          "path": "registry/idavoll/demos/post-link-input-demo.tsx",
+          "type": "registry:component",
+          "target": "components/idavoll/demos/post-link-input-demo.tsx"
+        }
+      ]
+    },
+    {
+      "name": "video-platform-chart-demo",
+      "type": "registry:block",
+      "title": "Video Platform Chart example",
+      "description": "Example: 37 days of videos across four platforms, with the age switch, the latest-30 limit and click-to-open.",
+      "registryDependencies": ["@idavoll/video-platform-chart"],
+      "files": [
+        {
+          "path": "registry/idavoll/demos/video-platform-chart-demo.tsx",
+          "type": "registry:component",
+          "target": "components/idavoll/demos/video-platform-chart-demo.tsx"
         }
       ]
     }
