@@ -1,3 +1,4 @@
+import { Pause, Play } from "lucide-react";
 import { useEffect, useState } from "react";
 import { AnimatedNumber } from "@/components/idavoll/animated-number";
 import { Button } from "@/components/ui/button";
@@ -8,12 +9,14 @@ const full = new Intl.NumberFormat();
 export default function AnimatedNumberDemo() {
   const [followers, setFollowers] = useState(12480);
   const [views, setViews] = useState(483200);
+  const [paused, setPaused] = useState(false);
 
-  // Simulate a live follower counter.
+  // Simulate a live follower counter. Anything that updates by itself needs a pause (WCAG 2.2.2).
   useEffect(() => {
+    if (paused) return;
     const timer = setInterval(() => setFollowers((f) => f + Math.ceil(Math.random() * 9)), 1800);
     return () => clearInterval(timer);
-  }, []);
+  }, [paused]);
 
   return (
     <div className="grid gap-4 sm:grid-cols-2">
@@ -21,7 +24,9 @@ export default function AnimatedNumberDemo() {
         <CardHeader>
           <CardDescription className="flex items-center gap-2">
             <span className="relative flex size-2">
-              <span className="absolute inline-flex size-full animate-ping rounded-full bg-red-500 opacity-75" />
+              {!paused && (
+                <span className="absolute inline-flex size-full animate-ping rounded-full bg-red-500 opacity-75 motion-reduce:hidden" />
+              )}
               <span className="relative inline-flex size-2 rounded-full bg-red-500" />
             </span>
             Live followers (roll)
@@ -30,6 +35,12 @@ export default function AnimatedNumberDemo() {
             <AnimatedNumber value={followers} variant="roll" formatValue={full.format} from={0} />
           </CardTitle>
         </CardHeader>
+        <CardContent>
+          <Button size="sm" variant="outline" onClick={() => setPaused((p) => !p)}>
+            {paused ? <Play aria-hidden /> : <Pause aria-hidden />}
+            {paused ? "Resume live updates" : "Pause live updates"}
+          </Button>
+        </CardContent>
       </Card>
       <Card>
         <CardHeader>

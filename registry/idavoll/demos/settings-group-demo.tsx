@@ -1,10 +1,19 @@
 import { CalendarDays, Eye, Flame, Globe, Hash, Languages, LogOut, Sparkles, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { SegmentedControl } from "@/components/idavoll/segmented-control";
-import { SettingsGroup, SettingsRow, SettingsSwitch } from "@/components/idavoll/settings-group";
+import { type SaveState, SettingsGroup, SettingsRow, SettingsSwitch } from "@/components/idavoll/settings-group";
 
 export default function SettingsGroupDemo() {
   const [publicProfile, setPublicProfile] = useState(true);
+  const [reminders, setReminders] = useState(true);
+  const [reminderSave, setReminderSave] = useState<SaveState>("idle");
+
+  // Switches save right away. Pretend to call the server and show the result.
+  const saveReminders = (on: boolean) => {
+    setReminders(on);
+    setReminderSave("saving");
+    setTimeout(() => setReminderSave("saved"), 700);
+  };
 
   return (
     <div className="grid gap-8 md:grid-cols-2">
@@ -37,7 +46,9 @@ export default function SettingsGroupDemo() {
             iconColor="#f97316"
             label="Streak reminders"
             description="A nudge at 8 pm if you haven't posted today."
-            defaultChecked
+            checked={reminders}
+            onCheckedChange={saveReminders}
+            saveStatus={reminderSave}
           />
           <SettingsRow icon={<CalendarDays />} iconColor="#10b981" label="Week starts on">
             <SegmentedControl

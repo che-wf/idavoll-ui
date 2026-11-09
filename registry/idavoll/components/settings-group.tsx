@@ -1,7 +1,7 @@
 "use client";
 
-import { ChevronRight } from "lucide-react";
-import { type ComponentProps, type ReactNode, useId } from "react";
+import { Check, ChevronRight, CircleAlert, Loader2 } from "lucide-react";
+import { type ComponentProps, type ReactNode, useEffect, useId, useState } from "react";
 import { Switch } from "@/components/ui/switch";
 import { cn } from "@/lib/utils";
 
@@ -46,6 +46,74 @@ export function SettingsGroup({
   );
 }
 
+export type SaveState = "idle" | "saving" | "saved" | "error";
+
+export interface SaveStatusProps {
+  /** Where the save is up to. "saved" shows briefly, then hides. */
+  status?: SaveState;
+  /** Defaults to "Saving…". */
+  savingLabel?: string;
+  /** Defaults to "Saved". */
+  savedLabel?: string;
+  /** Defaults to "Couldn't save". Stays until the status changes. */
+  errorLabel?: string;
+  /** Milliseconds to show "Saved" before hiding it. Defaults to 2000. */
+  hideAfter?: number;
+  className?: string;
+}
+
+/**
+ * Small inline save feedback for settings that save right away: "Saving…", then "Saved".
+ * Screen readers hear each change politely, without focus moving.
+ */
+export function SaveStatus({
+  status = "idle",
+  savingLabel = "Saving…",
+  savedLabel = "Saved",
+  errorLabel = "Couldn't save",
+  hideAfter = 2000,
+  className,
+}: SaveStatusProps) {
+  const [visible, setVisible] = useState(status);
+  useEffect(() => {
+    setVisible(status);
+    if (status !== "saved") return;
+    const timer = setTimeout(() => setVisible("idle"), hideAfter);
+    return () => clearTimeout(timer);
+  }, [status, hideAfter]);
+
+  return (
+    // The live region is always present, so screen readers notice when its text changes.
+    <span
+      role="status"
+      className={cn(
+        "inline-flex items-center gap-1 whitespace-nowrap text-xs",
+        visible === "error" ? "text-destructive" : "text-foreground/70",
+        className,
+      )}
+    >
+      {visible === "saving" && (
+        <>
+          <Loader2 aria-hidden className="size-3.5 animate-spin motion-reduce:animate-none" />
+          {savingLabel}
+        </>
+      )}
+      {visible === "saved" && (
+        <>
+          <Check aria-hidden className="size-3.5 text-emerald-700 dark:text-emerald-400" />
+          {savedLabel}
+        </>
+      )}
+      {visible === "error" && (
+        <>
+          <CircleAlert aria-hidden className="size-3.5" />
+          {errorLabel}
+        </>
+      )}
+    </span>
+  );
+}
+
 interface RowBaseProps {
   /** Small icon shown in a rounded tile on the left. */
   icon?: ReactNode;
@@ -57,6 +125,11 @@ interface RowBaseProps {
   description?: ReactNode;
   /** Red text, for actions like "Delete account". */
   destructive?: boolean;
+  /**
+   * Save feedback shown beside the control, for settings that save right away. Set "saving"
+   * when the request starts, then "saved" or "error".
+   */
+  saveStatus?: SaveState;
   className?: string;
 }
 
@@ -101,6 +174,7 @@ export function SettingsRow({
   controlId,
   value,
   onClick,
+  saveStatus,
   children,
   className,
 }: SettingsRowProps) {
@@ -148,6 +222,7 @@ export function SettingsRow({
       {icon && <RowIcon icon={icon} color={iconColor} />}
       {text}
       {value && <span className="truncate text-muted-foreground text-sm">{value}</span>}
+      {saveStatus && <SaveStatus status={saveStatus} />}
       {children && <div className="flex shrink-0 items-center">{children}</div>}
     </div>
   );
@@ -178,6 +253,7 @@ export function SettingsSwitch({
   onCheckedChange,
   disabled,
   name,
+  saveStatus,
   className,
 }: SettingsSwitchProps) {
   const id = useId();
@@ -202,6 +278,7 @@ export function SettingsSwitch({
           </span>
         )}
       </span>
+      {saveStatus && <SaveStatus status={saveStatus} className="relative z-10" />}
       <Switch
         id={id}
         name={name}

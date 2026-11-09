@@ -7,7 +7,7 @@
       "name": "animated-number",
       "type": "registry:component",
       "title": "Animated Number",
-      "description": "A number that animates when it changes, by counting through values or rolling digits like an odometer. Screen readers get the final value; respects reduced motion. Props: value, formatValue? (compact 12.4K), variant? (\"count\" | \"roll\"), duration? (900ms), from? (start value on first show), highlightChange? (green up / red down flash), plus span props. Also exports formatCompact().",
+      "description": "A number that animates when it changes, by counting through values or rolling digits like an odometer. Screen readers get the final value; respects reduced motion. Props: value, formatValue? (compact 12.4K), variant? (\"count\" | \"roll\"), duration? (400 ms for changes), revealDuration? (900 ms for the first count up from `from`), from? (start value on first show), highlightChange? (green up / red down flash), plus span props. Also exports formatCompact().",
       "files": [
         {
           "path": "registry/idavoll/components/animated-number.tsx",
@@ -143,7 +143,7 @@
       "name": "platform-growth-chart",
       "type": "registry:component",
       "title": "Platform Growth Chart",
-      "description": "Line chart with one line per platform in brand colors, switchable between raw totals and % growth since day 1; legend chips hide/show platforms; black brands get dash patterns. Props: platforms [{ platform, data [{ day, value }], label?, color? }], mode? (\"total\" | \"growth\"), defaultMode? (growth), onModeChange?, showModeSwitch? (true), showLegend? (true), totalDays? (90), today?, valueLabel?, formatValue?, strokeWidth? (2.5), curve? (\"monotone\" | \"linear\" | \"step\"), showGrid? (true), chartClassName? (h-72), className?.",
+      "description": "Line chart with one line per platform in brand colors, switchable between raw totals and % growth since day 1; legend chips hide/show platforms; black brands get dash patterns; each line is named at its end so color is not the only cue. Props: platforms [{ platform, data [{ day, value }], label?, color? }], mode? (\"total\" | \"growth\"), defaultMode? (growth), onModeChange?, showModeSwitch? (true), showLegend? (true), totalDays? (90), today?, valueLabel?, formatValue?, strokeWidth? (2.5), curve? (\"monotone\" | \"linear\" | \"step\"), showGrid? (true), endLabels? (true), chartClassName? (h-72), className?.",
       "dependencies": ["recharts"],
       "registryDependencies": ["chart", "@idavoll/animated-number", "@idavoll/social-icon"],
       "files": [
@@ -159,8 +159,8 @@
       "name": "platform-breakdown",
       "type": "registry:component",
       "title": "Platform Breakdown",
-      "description": "Each platform's share of a total (e.g. followers) as a donut with the animated total in the middle, or a single stacked bar, plus a list with values and percentages. Props: platforms [{ platform, value, label?, color? }], variant? (\"donut\" | \"bar\"), valueLabel? (\"Followers\"), formatValue?, thickness? (0.28), chartClassName? (size-44), className?.",
-      "dependencies": ["recharts"],
+      "description": "Each platform's share of a total (e.g. followers) as a donut with the animated total in the middle, or a single stacked bar, plus a list with values and percentages. Small platforms are grouped into one \"Other\" slice. Props: platforms [{ platform, value, label?, color? }], variant? (\"donut\" | \"bar\"), valueLabel? (\"Followers\"), formatValue?, maxSlices? (5), minShare? (0.03), otherLabel? (\"Other\"), thickness? (0.28), chartClassName? (size-44), className?.",
+      "dependencies": ["lucide-react", "recharts"],
       "registryDependencies": ["chart", "@idavoll/animated-number", "@idavoll/social-icon"],
       "files": [
         {
@@ -175,7 +175,7 @@
       "name": "shimmer-border",
       "type": "registry:component",
       "title": "Shimmer Border",
-      "description": "Wraps a button or card and becomes its border, with a gold shimmer that moves along the edge, fading behind it; two shimmers on opposite sides by default. The wrapped element's own border and ring are turned off. Decorative (aria-hidden), still for reduced motion. Props: color? (var(--shimmer-border, gold)), borderColor? (var(--border)), beams? (2), duration? (4 s), width? (1 px), length? (70 deg tail), radius? (the wrapped element's corner radius, default var(--radius); cards use calc(var(--radius) * 1.4)), reverse? (false), backdrop? (solid color behind the wrapped element, default var(--background)), children, plus div props.",
+      "description": "Wraps a button or card and becomes its border, with a gold shimmer that moves along the edge, fading behind it; two shimmers on opposite sides by default. Plays one trip and rests (WCAG 2.2.2), then replays on hover or focus. The wrapped element's own border and ring are turned off. Decorative (aria-hidden), still for reduced motion. Props: color? (var(--shimmer-border, gold)), borderColor? (var(--border)), beams? (2), duration? (4 s), width? (1 px), length? (70 deg tail), radius? (the wrapped element's corner radius, default var(--radius); cards use calc(var(--radius) * 1.4)), reverse? (false), loops? (1; Infinity keeps going), replayOnHover? (true), backdrop? (solid color behind the wrapped element, default var(--background)), children, plus div props.",
       "files": [
         {
           "path": "registry/idavoll/components/shimmer-border.tsx",
@@ -246,6 +246,7 @@
       "type": "registry:block",
       "title": "Animated Number example",
       "description": "Example usage of animated-number: a live rolling follower counter and a counting view total with buttons.",
+      "dependencies": ["lucide-react"],
       "registryDependencies": ["@idavoll/animated-number", "button", "card"],
       "files": [
         {
@@ -274,7 +275,8 @@
       "type": "registry:block",
       "title": "Profile Stats example",
       "description": "Example usage of profile-stats with live-updating TikTok followers.",
-      "registryDependencies": ["@idavoll/profile-stats", "card"],
+      "dependencies": ["lucide-react"],
+      "registryDependencies": ["@idavoll/profile-stats", "button", "card"],
       "files": [
         {
           "path": "registry/idavoll/demos/profile-stats-demo.tsx",
@@ -588,7 +590,7 @@
       "name": "settings-group",
       "type": "registry:component",
       "title": "Settings Group",
-      "description": "Building blocks for a settings page. SettingsGroup is a titled card of rows; props: title?, description?, footer?, headingLevel? (2\u20136, default 3), children, plus section props. SettingsRow is one setting with a control on the right, or a link row with a chevron when onClick is set; props: label, description?, icon?, iconColor? (tile background; icon turns white), destructive?, controlId? (id of the control in children; links the label, and the description gets id `${controlId}-description`), value? (text on the right, e.g. current language), onClick?, children?, className?. SettingsSwitch is a row with an on/off switch where the whole row is clickable; props: label, description?, icon?, iconColor?, destructive?, checked?, defaultChecked?, onCheckedChange?, disabled?, name?, className?.",
+      "description": "Building blocks for a settings page. SettingsGroup is a titled card of rows; props: title?, description?, footer?, headingLevel? (2–6, default 3), children, plus section props. SettingsRow is one setting with a control on the right, or a link row with a chevron when onClick is set; props: label, description?, icon?, iconColor? (tile background; icon turns white), destructive?, controlId? (id of the control in children; links the label, and the description gets id `${controlId}-description`), value? (text on the right, e.g. current language), onClick?, children?, className?. SettingsSwitch is a row with an on/off switch where the whole row is clickable; props: label, description?, icon?, iconColor?, destructive?, checked?, defaultChecked?, onCheckedChange?, disabled?, name?, saveStatus?, className?. SettingsRow also takes saveStatus? (\"idle\" | \"saving\" | \"saved\" | \"error\"; inline feedback for settings that save right away). SaveStatus is that feedback on its own (announced politely; \"Saved\" hides after a moment); props: status?, savingLabel?, savedLabel?, errorLabel?, hideAfter? (2000 ms), className?.",
       "dependencies": ["lucide-react"],
       "registryDependencies": ["switch"],
       "files": [
@@ -647,6 +649,83 @@
       "categories": ["settings", "form"]
     },
     {
+      "name": "data-table",
+      "type": "registry:component",
+      "title": "Data Table",
+      "description": "A table with search, pick-from-a-list filters (each choice shows how many rows it would match), sortable columns, pages and an optional column menu. Applied filters show as removable chips with \"Clear all\"; the row count is announced to screen readers; an empty result offers to clear filters; wide tables scroll inside a focusable frame. Built on TanStack Table. Props: columns (TanStack ColumnDef[]; meta { label?, className? } per column), data, label (accessible name, e.g. \"Posts\"), searchable? (true), searchPlaceholder? (\"Search…\"), filters? [{ column, title, options? [{ value, label?, icon? }] }] (options default to every value in the column), columnToggle? (false), pageSize? (10; 0 shows all), initialSorting? (e.g. [{ id: \"views\", desc: true }]), countLabel?(count) (\"12 results\"), emptyMessage?, toolbar? (extra controls), getRowId?, className?. Also exports DataTableColumnHeader ({ column, title, className? }) for sortable headers, which set aria-sort.",
+      "dependencies": ["@tanstack/react-table", "lucide-react"],
+      "registryDependencies": ["button", "dropdown-menu", "input", "table"],
+      "files": [
+        {
+          "path": "registry/idavoll/components/data-table.tsx",
+          "type": "registry:component",
+          "target": "components/idavoll/data-table.tsx"
+        }
+      ],
+      "categories": ["data", "table"]
+    },
+    {
+      "name": "content-calendar",
+      "type": "registry:component",
+      "title": "Content Calendar",
+      "description": "A calendar for planning and reviewing posts, with month, week and agenda views and a switcher. Days list their events with platform icons, plus markers for holidays, Moon phases or anything else. A \"Show\" menu hides platforms and marker categories (grouped, e.g. Holidays › Federal holidays, Astrology › Retrogrades); the choice can be controlled and saved. Month view: chips with \"+2 more\", colored dots and marker icons on narrow containers, arrow keys move between days, Home/End go to the week's start/end, Page Up/Down change month. Week view: seven columns (stacked when narrow) with every event and marker, with times. Agenda view: only the month's days that have events or markers. Picking a day calls onSelect so you can show its details; today is marked (aria-current). The viewer's own entries get an icon tile in their color (or their category's), a light tint, and a \"Your categories\" filter section; an \"Add\" button and clickable week/agenda entries hook up an entry form such as @idavoll/calendar-entry-dialog. Props: events [{ id, date (\"YYYY-MM-DD\"), title, time? (\"HH:MM\"), description?, platform?, color? (hex), icon? (CALENDAR_ICONS name), category? (category id), tentative? }], categories? [{ id, name, color (hex), icon? }], onAddEvent?(date) (shows an Add button), onEventClick?(event) (week and agenda), markers? [{ date, name, time?, description?, group? (filter section, default \"Other\"), category? (filter option), icon? (\"flag\" | \"star\" | \"moon\" | \"sun\" | \"eclipse\" | \"planet\" | \"retrograde\" | \"sparkles\" or a ReactNode), tone? (\"amber\" | \"violet\" | \"sky\" | \"rose\" | \"emerald\") }] (usHolidays() and astroEvents() return these), filterable? (true), hidden? / defaultHidden? / onHiddenChange?(keys) (keys are \"platform:tiktok\" or \"Group:Category\", e.g. \"Astrology:Retrogrades\"), maxMarkers? (2, month view), view?, defaultView? (\"month\"), onViewChange?, views? (default all three), date?, defaultDate?, onDateChange?, selected?, defaultSelected?, onSelect?(date), today?, weekStartsOn? (0 | 1, default 1), maxEvents? (3), dayLabel?(date), dayClassName?(date), locale?, headingLevel? (3), countLabel?(count), emptyMessage?, className?. Also exports CALENDAR_ICONS (20 icons by name: sparkles, star, heart, camera, video, mic, music, pen, book, coffee, dumbbell, leaf, moon, sun, flame, plane, gift, briefcase, party, flag) and readableOn(hex) (black or white text for a color).",
+      "dependencies": ["lucide-react"],
+      "registryDependencies": ["button", "dropdown-menu", "@idavoll/segmented-control", "@idavoll/social-icon"],
+      "files": [
+        {
+          "path": "registry/idavoll/components/content-calendar.tsx",
+          "type": "registry:component",
+          "target": "components/idavoll/content-calendar.tsx"
+        }
+      ],
+      "categories": ["calendar", "planning"]
+    },
+    {
+      "name": "calendar-entry-dialog",
+      "type": "registry:component",
+      "title": "Calendar Entry Dialog",
+      "description": "A form in a dialog for adding and editing the viewer's own calendar entries: title, date, optional time, category (or a new one made on the spot), icon (from CALENDAR_ICONS), color (preset swatches plus a custom color picker) and notes. Picking a category uses its icon and color unless the viewer picks their own; only overrides are saved, so editing a category updates its entries. Icon tiles pick black or white for contrast. Props: open, onOpenChange(open), entry? (edit this one; unset to add), defaultDate (\"YYYY-MM-DD\"), categories?, onSave(entry) (new entries get crypto.randomUUID()), onDelete?(id) (shows Delete when editing), onCreateCategory?(category) (shows \"New category\"), colors? ([{ name, value (hex) }], default CALENDAR_COLORS). Also exports CALENDAR_COLORS.",
+      "dependencies": ["lucide-react"],
+      "registryDependencies": ["button", "dialog", "input", "label", "@idavoll/content-calendar"],
+      "files": [
+        {
+          "path": "registry/idavoll/components/calendar-entry-dialog.tsx",
+          "type": "registry:component",
+          "target": "components/idavoll/calendar-entry-dialog.tsx"
+        }
+      ],
+      "categories": ["calendar", "form"]
+    },
+    {
+      "name": "us-holidays",
+      "type": "registry:component",
+      "title": "US Holidays",
+      "description": "usHolidays(year, options?) returns US holidays as [{ date (\"YYYY-MM-DD\"), name, kind (\"federal\" | \"observance\"), group, category, icon, tone }], sorted by date, from fixed rules (no API). Includes the 11 federal holidays, and by default well-known days creators plan content around: Valentine's Day, St. Patrick's Day, Easter, Earth Day, Mother's Day, Father's Day, Halloween, Black Friday, Cyber Monday, Christmas Eve, New Year's Eve. Options: observances? (true), observed? (false; adds the weekday a weekend federal holiday is observed on, e.g. \"Independence Day (observed)\"). Each item also has group (\"Holidays\"), category (\"Federal holidays\" | \"Other holidays\"), icon and tone, so the list can be passed straight to content-calendar's markers prop.",
+      "files": [
+        {
+          "path": "registry/idavoll/components/us-holidays.ts",
+          "type": "registry:component",
+          "target": "components/idavoll/us-holidays.ts"
+        }
+      ],
+      "categories": ["calendar", "data"]
+    },
+    {
+      "name": "astro-events",
+      "type": "registry:component",
+      "title": "Astro Events",
+      "description": "astroEvents(year, options?) returns a year of astrological and astronomical events in the viewer's time zone, computed offline with astronomy-engine (no API): new and full Moons with their sign (\"Full Moon in Taurus\") and traditional name (Wolf, Harvest, Hunter's, Blue Moon…), lunar and solar eclipses with kind and sign, equinoxes and solstices, the Sun entering each sign (\"Scorpio season begins\"), Mercury through Pluto changing sign (including retrograding back into a sign), and retrograde and direct stations. Uses the tropical zodiac. Each item: { date, time (\"HH:MM\"), name, description?, kind (\"moon\" | \"eclipse\" | \"season\" | \"ingress\" | \"retrograde\"), sign?, group (\"Astrology\"), category, icon, tone }, ready for content-calendar's markers prop. Options: kinds? (default all), planets? (default Mercury–Pluto), moonQuarters? (false), hemisphere? (\"north\" | \"south\", names equinoxes and solstices). Takes about 0.2 s per year and caches results; compute only the years on screen. Also exports ZODIAC_SIGNS.",
+      "dependencies": ["astronomy-engine"],
+      "files": [
+        {
+          "path": "registry/idavoll/components/astro-events.ts",
+          "type": "registry:component",
+          "target": "components/idavoll/astro-events.ts"
+        }
+      ],
+      "categories": ["calendar", "data"]
+    },
+    {
       "name": "settings-group-demo",
       "type": "registry:block",
       "title": "Settings Group example",
@@ -701,6 +780,44 @@
           "target": "components/idavoll/demos/notification-preferences-demo.tsx"
         }
       ]
+    },
+    {
+      "name": "data-table-demo",
+      "type": "registry:block",
+      "title": "Data Table example",
+      "description": "Example: a creator's post log with search, Platform/Format/Status filters, sortable Day/Views/Engagement columns, a column menu and an Export button.",
+      "dependencies": ["@tanstack/react-table", "lucide-react"],
+      "registryDependencies": ["@idavoll/data-table", "@idavoll/social-icon", "@idavoll/animated-number", "button"],
+      "files": [
+        {
+          "path": "registry/idavoll/demos/data-table-demo.tsx",
+          "type": "registry:component",
+          "target": "components/idavoll/demos/data-table-demo.tsx"
+        }
+      ]
+    },
+    {
+      "name": "content-calendar-demo",
+      "type": "registry:block",
+      "title": "Content Calendar example",
+      "description": "Example: a 90-day challenge calendar with month, week and agenda views, US holidays, astrology (Moon phases, eclipses, Sun signs, planet sign changes, retrogrades), a Show filter, challenge day numbers, rest days, scheduled posts and a panel for the selected day. Includes the creator's own entries and categories (Filming, Rest, Brand deals) with Add and Edit through calendar-entry-dialog.",
+      "registryDependencies": [
+        "@idavoll/content-calendar",
+        "@idavoll/calendar-entry-dialog",
+        "@idavoll/us-holidays",
+        "@idavoll/astro-events",
+        "@idavoll/social-icon",
+        "button",
+        "card"
+      ],
+      "files": [
+        {
+          "path": "registry/idavoll/demos/content-calendar-demo.tsx",
+          "type": "registry:component",
+          "target": "components/idavoll/demos/content-calendar-demo.tsx"
+        }
+      ],
+      "dependencies": ["astronomy-engine", "lucide-react"]
     }
   ]
 }

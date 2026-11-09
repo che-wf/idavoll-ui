@@ -6,6 +6,8 @@ import AnimatedNumberDemo from "../registry/idavoll/demos/animated-number-demo";
 import ChallengeChartDemo from "../registry/idavoll/demos/challenge-chart-demo";
 import ChallengeProgressDemo from "../registry/idavoll/demos/challenge-progress-demo";
 import ConnectedAccountsDemo from "../registry/idavoll/demos/connected-accounts-demo";
+import ContentCalendarDemo from "../registry/idavoll/demos/content-calendar-demo";
+import DataTableDemo from "../registry/idavoll/demos/data-table-demo";
 import MetricTabsDemo from "../registry/idavoll/demos/metric-tabs-demo";
 import NotificationPreferencesDemo from "../registry/idavoll/demos/notification-preferences-demo";
 import PlatformBadgeDemo from "../registry/idavoll/demos/platform-badge-demo";
@@ -31,6 +33,8 @@ const sections: { name: string; title: string; Demo: ComponentType }[] = [
   { name: "segmented-control", title: "Segmented Control", Demo: SegmentedControlDemo },
   { name: "connected-accounts", title: "Connected Accounts", Demo: ConnectedAccountsDemo },
   { name: "notification-preferences", title: "Notification Preferences", Demo: NotificationPreferencesDemo },
+  { name: "data-table", title: "Data Table", Demo: DataTableDemo },
+  { name: "content-calendar", title: "Content Calendar", Demo: ContentCalendarDemo },
   { name: "animated-number", title: "Animated Number", Demo: AnimatedNumberDemo },
   { name: "social-icon", title: "Social Icon", Demo: SocialIconDemo },
   { name: "challenge-chart", title: "Challenge Chart", Demo: ChallengeChartDemo },

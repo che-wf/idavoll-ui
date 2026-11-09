@@ -1,4 +1,6 @@
-import type { ComponentProps, CSSProperties } from "react";
+"use client";
+
+import { type ComponentProps, type CSSProperties, useState } from "react";
 import { cn } from "@/lib/utils";
 
 export interface ShimmerBorderProps extends ComponentProps<"div"> {
@@ -21,6 +23,13 @@ export interface ShimmerBorderProps extends ComponentProps<"div"> {
   radius?: string;
   /** Travel counter-clockwise. Defaults to false. */
   reverse?: boolean;
+  /**
+   * Trips around the border before the shimmer rests. Defaults to 1, so it stops within 5 seconds
+   * (WCAG 2.2.2). Pass Infinity to keep it going, only where people can pause or hide it.
+   */
+  loops?: number;
+  /** Play again when the pointer moves over it or it gets keyboard focus. Defaults to true. */
+  replayOnHover?: boolean;
   /**
    * Solid color behind the wrapped element, so see-through buttons (like outline buttons in dark
    * mode) don't show the shimmer through their middle. Defaults to var(--background).
@@ -51,6 +60,7 @@ function shimmerGradient(color: string, borderColor: string, beams: number, leng
 /**
  * Wraps a button or card and becomes its border, with a gold shimmer that moves along the edge.
  * The wrapped element's own border and ring are turned off so only this border shows.
+ * It plays once and rests, then plays again on hover or focus. Use it on one thing at a time.
  * The shimmer is decorative: hidden from screen readers and still for reduced motion.
  */
 export function ShimmerBorder({
@@ -62,13 +72,24 @@ export function ShimmerBorder({
   length = 70,
   radius = "var(--radius)",
   reverse = false,
+  loops = 1,
+  replayOnHover = true,
   backdrop = "var(--background)",
   className,
   style,
   children,
+  onPointerEnter,
+  onFocus,
   ...props
 }: ShimmerBorderProps) {
+  // Each play remounts the spinning layer, which restarts its CSS animation.
+  const [play, setPlay] = useState({ id: 0, running: true });
+  const replay = () => {
+    if (replayOnHover && !play.running) setPlay({ id: play.id + 1, running: true });
+  };
+
   return (
+    // biome-ignore lint/a11y/noStaticElementInteractions: hover and focus only replay the decoration; the wrapped element is the control.
     <div
       className={cn(
         "relative isolate inline-flex overflow-hidden rounded-[calc(var(--sb-r)+var(--sb-w))] p-(--sb-w)",
@@ -79,16 +100,27 @@ export function ShimmerBorder({
       )}
       style={{ "--sb-w": `${width}px`, "--sb-r": radius, background: borderColor, ...style } as CSSProperties}
       {...props}
+      onPointerEnter={(event) => {
+        replay();
+        onPointerEnter?.(event);
+      }}
+      onFocus={(event) => {
+        replay();
+        onFocus?.(event);
+      }}
     >
       <span data-shimmer aria-hidden className="pointer-events-none absolute inset-0 [container-type:size]">
         {/* A square larger than the frame's diagonal, so the gradient reaches every corner as it turns. */}
         <span className="absolute top-1/2 left-1/2 aspect-square w-[calc(100cqw+100cqh)] -translate-x-1/2 -translate-y-1/2">
           <span
+            key={play.id}
             className="block size-full animate-spin motion-reduce:animate-none"
+            onAnimationEnd={() => setPlay((p) => ({ ...p, running: false }))}
             style={{
               background: shimmerGradient(color, borderColor, beams, length),
               animationDuration: `${duration}s`,
               animationDirection: reverse ? "reverse" : "normal",
+              animationIterationCount: Number.isFinite(loops) ? Math.max(1, loops) : "infinite",
             }}
           />
         </span>

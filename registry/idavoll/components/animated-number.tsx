@@ -21,8 +21,10 @@ export interface AnimatedNumberProps extends Omit<ComponentProps<"span">, "child
    * Defaults to "count".
    */
   variant?: "count" | "roll";
-  /** Animation length in milliseconds. Defaults to 900. */
+  /** Animation length in milliseconds when the value changes. Defaults to 400. */
   duration?: number;
+  /** Animation length in milliseconds for the first count up from `from`. Defaults to 900. */
+  revealDuration?: number;
   /** Animate from this value when the number first appears. Leave unset to show `value` right away. */
   from?: number;
   /** Briefly color the number green when it goes up and red when it goes down. */
@@ -45,13 +47,17 @@ function usePrefersReducedMotion() {
 const easeOutCubic = (t: number) => 1 - (1 - t) ** 3;
 
 /** Tweens from the last shown value to the new one with requestAnimationFrame. */
-function useTweenedValue(value: number, duration: number, from: number | undefined, enabled: boolean) {
+function useTweenedValue(value: number, durations: [number, number], from: number | undefined, enabled: boolean) {
   const [shown, setShown] = useState(from ?? value);
   const shownRef = useRef(shown);
   shownRef.current = shown;
+  const revealed = useRef(false);
+  const [revealDuration, updateDuration] = durations;
 
   useEffect(() => {
     const start = shownRef.current;
+    const duration = revealed.current ? updateDuration : revealDuration;
+    revealed.current = true;
     if (!enabled || start === value) {
       setShown(value);
       return;
@@ -67,7 +73,7 @@ function useTweenedValue(value: number, duration: number, from: number | undefin
     };
     frame = requestAnimationFrame(step);
     return () => cancelAnimationFrame(frame);
-  }, [value, duration, enabled]);
+  }, [value, revealDuration, updateDuration, enabled]);
 
   return shown;
 }
@@ -131,7 +137,8 @@ export function AnimatedNumber({
   value,
   formatValue = formatCompact,
   variant = "count",
-  duration = 900,
+  duration = 400,
+  revealDuration = 900,
   from,
   highlightChange = false,
   className,
@@ -141,16 +148,21 @@ export function AnimatedNumber({
   const animate = !reducedMotion;
   const tweened = useTweenedValue(
     value,
-    duration,
+    [revealDuration, duration],
     variant === "count" ? from : undefined,
     animate && variant === "count",
   );
 
   // The roll variant starts at `from` and rolls to `value` after the first paint.
   const [rollValue, setRollValue] = useState(from ?? value);
+  const [rolled, setRolled] = useState(false);
   useEffect(() => {
     setRollValue(value);
   }, [value]);
+  useEffect(() => {
+    const timer = setTimeout(() => setRolled(true), revealDuration);
+    return () => clearTimeout(timer);
+  }, [revealDuration]);
 
   const direction = useChangeDirection(value, highlightChange, duration + 600);
   const finalText = formatValue(value);
@@ -168,7 +180,7 @@ export function AnimatedNumber({
     >
       <span aria-hidden className="inline-flex items-start whitespace-pre">
         {variant === "roll" && animate ? (
-          <RollingText text={formatValue(rollValue)} duration={duration} />
+          <RollingText text={formatValue(rollValue)} duration={rolled ? duration : revealDuration} />
         ) : (
           formatValue(variant === "count" ? tweened : value)
         )}

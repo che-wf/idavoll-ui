@@ -6,6 +6,9 @@ const followers = [
   { platform: "instagram", value: 4050 },
   { platform: "youtube", value: 2310 },
   { platform: "threads", value: 1540 },
+  // Small platforms are grouped into "Other".
+  { platform: "bluesky", value: 210 },
+  { platform: "pinterest", value: 140 },
 ] as const;
 
 export default function PlatformBreakdownDemo() {

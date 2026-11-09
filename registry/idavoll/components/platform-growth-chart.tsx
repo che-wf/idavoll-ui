@@ -50,6 +50,11 @@ export interface PlatformGrowthChartProps {
   curve?: "monotone" | "linear" | "step";
   /** Show horizontal grid lines. Defaults to true. */
   showGrid?: boolean;
+  /**
+   * Name each line at its last point, so lines can be told apart without relying on color.
+   * Defaults to true.
+   */
+  endLabels?: boolean;
   /** Classes for the chart area, e.g. "h-96". Defaults to h-72. */
   chartClassName?: string;
   className?: string;
@@ -79,6 +84,7 @@ export function PlatformGrowthChart({
   strokeWidth = 2.5,
   curve = "monotone",
   showGrid = true,
+  endLabels = true,
   chartClassName,
   className,
 }: PlatformGrowthChartProps) {
@@ -104,6 +110,7 @@ export function PlatformGrowthChart({
     colorUses.set(color, use + 1);
     const sorted = [...s.data].sort((a, b) => a.day - b.day);
     return {
+      lastDay: sorted.at(-1)?.day,
       ...s,
       color,
       dash: DASHES[use % DASHES.length],
@@ -123,6 +130,30 @@ export function PlatformGrowthChart({
     }
     return row;
   });
+
+  // End labels for lines that finish close together get pushed apart so they don't overlap.
+  const labelOffset = new Map<SocialPlatform, number>();
+  if (endLabels) {
+    const values = rows.flatMap((r) => lines.map((l) => r[l.platform])).filter((v): v is number => v != null);
+    const range = Math.max(...values, 0) - Math.min(...values, 0) || 1;
+    const ends = lines
+      .filter((l) => !hidden.has(l.platform) && l.lastDay !== undefined)
+      .map((l) => ({ platform: l.platform, value: rows[(l.lastDay ?? 1) - 1]?.[l.platform] ?? 0 }))
+      .sort((a, b) => b.value - a.value);
+    let cluster: typeof ends = [];
+    const spread = () => {
+      cluster.forEach((e, i) => {
+        labelOffset.set(e.platform, (i - (cluster.length - 1) / 2) * 12);
+      });
+      cluster = [];
+    };
+    for (const end of ends) {
+      const previous = cluster.at(-1);
+      if (previous && (previous.value - end.value) / range > 0.06) spread();
+      cluster.push(end);
+    }
+    spread();
+  }
 
   const config = Object.fromEntries(lines.map((l) => [l.platform, { label: l.name, color: l.color }])) as ChartConfig;
   const show = (v: number) => (mode === "growth" ? percent.format(v) : formatValue(v));
@@ -181,7 +212,7 @@ export function PlatformGrowthChart({
         </div>
       )}
       <ChartContainer config={config} className={cn("aspect-auto h-72 w-full", chartClassName)}>
-        <LineChart data={rows} margin={{ top: 16, right: 16, bottom: 0, left: 0 }} accessibilityLayer>
+        <LineChart data={rows} margin={{ top: 16, right: endLabels ? 76 : 16, bottom: 0, left: 0 }} accessibilityLayer>
           {showGrid && <CartesianGrid vertical={false} />}
           <XAxis
             dataKey="day"
@@ -230,6 +261,29 @@ export function PlatformGrowthChart({
               dot={false}
               hide={hidden.has(l.platform)}
               connectNulls={false}
+              label={
+                endLabels
+                  ? (props: { x?: number | string; y?: number | string; index?: number }) => {
+                      const { x, y, index } = props;
+                      if (index !== (l.lastDay ?? 0) - 1 || x === undefined || y === undefined) return null;
+                      return (
+                        <g key={`${l.platform}-end`} aria-hidden>
+                          <circle cx={Number(x)} cy={Number(y)} r={3.5} fill={l.color} />
+                          <text
+                            x={Number(x) + 8}
+                            y={Number(y)}
+                            dy={4 + (labelOffset.get(l.platform) ?? 0)}
+                            fontSize={11}
+                            fontWeight={500}
+                            fill="var(--foreground)"
+                          >
+                            {l.name}
+                          </text>
+                        </g>
+                      );
+                    }
+                  : undefined
+              }
             />
           ))}
         </LineChart>
