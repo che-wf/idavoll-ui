@@ -37,7 +37,10 @@ export interface SyncItem {
   progress?: { done: number; total: number };
   /** Error text, e.g. "Login expired". Shown in the error state. */
   message?: string;
-  /** A button for the error state, e.g. { label: "Reconnect", onClick }. */
+  /**
+   * A button for the error state, e.g. { label: "Reconnect", onClick }. In the compact
+   * variant the platform's icon becomes that button.
+   */
   action?: { label: string; onClick: () => void };
 }
 
@@ -171,8 +174,9 @@ export function SyncStatus({
           {items.map((item) => {
             const { icon: Icon, className: tone } = STATE_STYLE[item.state];
             const text = `${SOCIAL_ICONS[item.platform].name}: ${describe(item)}`;
-            return (
-              <li key={item.platform} title={text} className="relative">
+            const action = item.state === "error" ? item.action : undefined;
+            const mark = (
+              <>
                 <SocialIcon platform={item.platform} variant="tile" label="" className="size-7" />
                 <span
                   aria-hidden
@@ -186,7 +190,26 @@ export function SyncStatus({
                     strokeWidth={2.5}
                   />
                 </span>
-                <span className="sr-only">{text}</span>
+              </>
+            );
+            return (
+              <li key={item.platform} className="relative">
+                {action ? (
+                  <button
+                    type="button"
+                    onClick={action.onClick}
+                    title={`${text}. ${action.label}`}
+                    className="relative block cursor-pointer rounded-[22%] transition-transform hover:scale-110 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring motion-reduce:transition-none"
+                  >
+                    {mark}
+                    <span className="sr-only">{`${text}. ${action.label}`}</span>
+                  </button>
+                ) : (
+                  <span title={text} className="relative block">
+                    {mark}
+                    <span className="sr-only">{text}</span>
+                  </span>
+                )}
               </li>
             );
           })}
