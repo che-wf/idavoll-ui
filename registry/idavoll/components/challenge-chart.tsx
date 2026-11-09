@@ -1,3 +1,5 @@
+"use client";
+
 import { CartesianGrid, Line, LineChart, ReferenceLine, XAxis, YAxis } from "recharts";
 import { type ChartConfig, ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 import { cn } from "@/lib/utils";
@@ -31,8 +33,29 @@ export interface ChallengeChartProps {
   valueLabel?: string;
   /** How to show numbers on the axis and tooltip. Defaults to compact (12.4K). */
   formatValue?: (value: number) => string;
+  /** Color of the progress line. Any CSS color or variable. Defaults to var(--primary). */
+  color?: string;
+  /** Color of the dashed "on pace" line. Defaults to var(--muted-foreground). */
+  paceColor?: string;
+  /** Thickness of the progress line in pixels. Defaults to 2.5. */
+  strokeWidth?: number;
+  /** Line shape: "monotone" (smooth), "linear" (straight segments) or "step". Defaults to "monotone". */
+  curve?: ChallengeCurve;
+  /** Show horizontal grid lines. Defaults to true. */
+  showGrid?: boolean;
+  /** Show the dashed "on pace" line. Defaults to true. */
+  showPace?: boolean;
+  /** Size and spacing. The chart fills the width and is h-72 by default; pass e.g. "h-96". */
   className?: string;
 }
+
+export type ChallengeCurve = "monotone" | "linear" | "step";
+
+/** The look-only props of ChallengeChart, for components that render one inside. */
+export type ChallengeChartStyle = Pick<
+  ChallengeChartProps,
+  "color" | "paceColor" | "strokeWidth" | "curve" | "showGrid" | "showPace" | "className"
+>;
 
 const compact = new Intl.NumberFormat(undefined, { notation: "compact", maximumFractionDigits: 1 });
 
@@ -46,6 +69,12 @@ export function ChallengeChart({
   milestones = [],
   valueLabel = "Progress",
   formatValue = (v) => compact.format(v),
+  color = "var(--primary)",
+  paceColor = "var(--muted-foreground)",
+  strokeWidth = 2.5,
+  curve = "monotone",
+  showGrid = true,
+  showPace = true,
   className,
 }: ChallengeChartProps) {
   const start = startValue ?? data[0]?.value ?? 0;
@@ -60,8 +89,8 @@ export function ChallengeChart({
   });
 
   const config = {
-    actual: { label: valueLabel, color: "var(--primary)" },
-    pace: { label: "On pace", color: "var(--muted-foreground)" },
+    actual: { label: valueLabel, color },
+    pace: { label: "On pace", color: paceColor },
   } satisfies ChartConfig;
 
   const ticks = [1, ...Array.from({ length: Math.floor(totalDays / 15) }, (_, i) => (i + 1) * 15)].filter(
@@ -71,7 +100,7 @@ export function ChallengeChart({
   return (
     <ChartContainer config={config} className={cn("aspect-auto h-72 w-full", className)}>
       <LineChart data={rows} margin={{ top: 16, right: 16, bottom: 0, left: 0 }} accessibilityLayer>
-        <CartesianGrid vertical={false} />
+        {showGrid && <CartesianGrid vertical={false} />}
         <XAxis
           dataKey="day"
           type="number"
@@ -111,15 +140,24 @@ export function ChallengeChart({
             label={{ value: "Today", position: "top", fontSize: 11, fill: "var(--foreground)" }}
           />
         )}
+        {showPace && (
+          <Line
+            dataKey="pace"
+            stroke="var(--color-pace)"
+            strokeDasharray="6 4"
+            strokeWidth={1.5}
+            dot={false}
+            isAnimationActive={false}
+          />
+        )}
         <Line
-          dataKey="pace"
-          stroke="var(--color-pace)"
-          strokeDasharray="6 4"
-          strokeWidth={1.5}
+          type={curve}
+          dataKey="actual"
+          stroke="var(--color-actual)"
+          strokeWidth={strokeWidth}
           dot={false}
-          isAnimationActive={false}
+          connectNulls={false}
         />
-        <Line dataKey="actual" stroke="var(--color-actual)" strokeWidth={2.5} dot={false} connectNulls={false} />
       </LineChart>
     </ChartContainer>
   );

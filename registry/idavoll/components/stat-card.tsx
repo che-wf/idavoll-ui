@@ -1,5 +1,8 @@
+"use client";
+
 import { ArrowDownRight, ArrowUpRight, Minus } from "lucide-react";
 import type { ReactNode } from "react";
+import { AnimatedNumber } from "@/components/idavoll/animated-number";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 
@@ -18,6 +21,10 @@ export interface StatCardProps {
   hint?: ReactNode;
   /** Optional icon shown next to the label. */
   icon?: ReactNode;
+  /** Count up from zero when the card first appears. Changes always animate. Defaults to false. */
+  countUp?: boolean;
+  /** Extra classes for inner parts: value (the big number), label. */
+  classNames?: { value?: string; label?: string };
   className?: string;
 }
 
@@ -33,6 +40,8 @@ export function StatCard({
   changeLabel,
   hint,
   icon,
+  countUp = false,
+  classNames,
   className,
 }: StatCardProps) {
   const direction = change === undefined ? null : change > 0 ? "up" : change < 0 ? "down" : "flat";
@@ -41,11 +50,13 @@ export function StatCard({
   return (
     <Card className={cn("gap-2", className)}>
       <CardHeader>
-        <CardDescription className="flex items-center gap-2">
+        <CardDescription className={cn("flex items-center gap-2", classNames?.label)}>
           {icon}
           {label}
         </CardDescription>
-        <CardTitle className="font-heading text-3xl tabular-nums">{formatValue(value)}</CardTitle>
+        <CardTitle className={cn("font-heading text-3xl", classNames?.value)}>
+          <AnimatedNumber value={value} formatValue={formatValue} from={countUp ? 0 : undefined} highlightChange />
+        </CardTitle>
       </CardHeader>
       {(direction || hint) && (
         <CardContent className="space-y-1 text-sm">
@@ -53,8 +64,8 @@ export function StatCard({
             <p
               className={cn(
                 "flex items-center gap-1 font-medium",
-                direction === "up" && "text-emerald-600 dark:text-emerald-400",
-                direction === "down" && "text-red-600 dark:text-red-400",
+                direction === "up" && "text-emerald-700 dark:text-emerald-400",
+                direction === "down" && "text-red-700 dark:text-red-400",
                 direction === "flat" && "text-muted-foreground",
               )}
             >

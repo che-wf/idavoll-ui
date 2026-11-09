@@ -4,6 +4,34 @@
   "homepage": "https://github.com/che-wf/idavoll-ui",
   "items": [
     {
+      "name": "animated-number",
+      "type": "registry:component",
+      "title": "Animated Number",
+      "description": "A number that animates when it changes, by counting through values or rolling digits like an odometer. Screen readers get the final value; respects reduced motion. Props: value, formatValue? (compact 12.4K), variant? (\"count\" | \"roll\"), duration? (900ms), from? (start value on first show), highlightChange? (green up / red down flash), plus span props. Also exports formatCompact().",
+      "files": [
+        {
+          "path": "registry/idavoll/components/animated-number.tsx",
+          "type": "registry:component",
+          "target": "components/idavoll/animated-number.tsx"
+        }
+      ],
+      "categories": ["social", "animation", "stats"]
+    },
+    {
+      "name": "social-icon",
+      "type": "registry:component",
+      "title": "Social Icon",
+      "description": "Social platform logo (Simple Icons, CC0) for YouTube, TikTok, Instagram, Threads, X, Facebook, Bluesky, Snapchat, Pinterest, Twitch, Kick, Discord, Reddit, WhatsApp, Spotify, Patreon, Substack. Props: platform, variant? (\"brand\" | \"mono\" | \"tile\"), label? (screen reader name; \"\" for decorative), className (size, default size-5), plus span props. Also exports SOCIAL_ICONS, platformColor(platform) (brand color for charts; black brands return var(--foreground)) and the SocialPlatform type.",
+      "files": [
+        {
+          "path": "registry/idavoll/components/social-icon.tsx",
+          "type": "registry:component",
+          "target": "components/idavoll/social-icon.tsx"
+        }
+      ],
+      "categories": ["social", "icons"]
+    },
+    {
       "name": "platform-badge",
       "type": "registry:component",
       "title": "Platform Badge",
@@ -22,9 +50,9 @@
       "name": "stat-card",
       "type": "registry:component",
       "title": "Stat Card",
-      "description": "One headline number with an optional up/down change. Props: label, value, formatValue?, change? (fraction, 0.12 = +12%), changeLabel?, hint?, icon?, className?.",
+      "description": "One headline number with an optional up/down change; the number animates when it changes. Props: label, value, formatValue?, change? (fraction, 0.12 = +12%), changeLabel?, hint?, icon?, countUp? (false), classNames? { value, label }, className?.",
       "dependencies": ["lucide-react"],
-      "registryDependencies": ["card"],
+      "registryDependencies": ["card", "@idavoll/animated-number"],
       "files": [
         {
           "path": "registry/idavoll/components/stat-card.tsx",
@@ -53,7 +81,7 @@
       "name": "challenge-chart",
       "type": "registry:component",
       "title": "Challenge Chart",
-      "description": "The 90-day challenge graph (Recharts): actual progress against a dashed straight line to the goal, with milestone and Today markers. Props: data [{ day, value }], goal, totalDays? (90), startValue?, today?, milestones? [{ day, label }], valueLabel?, formatValue?, className?.",
+      "description": "The 90-day challenge graph (Recharts): actual progress against a dashed straight line to the goal, with milestone and Today markers. Props: data [{ day, value }], goal, totalDays? (90), startValue?, today?, milestones? [{ day, label }], valueLabel?, formatValue?, color? (var(--primary)), paceColor? (var(--muted-foreground)), strokeWidth? (2.5), curve? (\"monotone\" | \"linear\" | \"step\"), showGrid? (true), showPace? (true), className? (size, default h-72). Also exports the ChallengeChartStyle type.",
       "dependencies": ["recharts"],
       "registryDependencies": ["chart"],
       "files": [
@@ -64,6 +92,98 @@
         }
       ],
       "categories": ["dashboard", "chart", "challenge"]
+    },
+    {
+      "name": "profile-stats",
+      "type": "registry:component",
+      "title": "Profile Stats",
+      "description": "Instagram-style creator header: avatar with a colorful \"posted today\" ring, a row of animated headline numbers, a Day X of 90 pill and per-platform follower chips. Props: name, handle?, avatarUrl?, bio?, active?, activeLabel?, ringColors? (theme chart colors), day?, totalDays? (90), stats [{ label, value, formatValue? }], platforms? [{ platform, followers, handle? }], countUp? (true), ringWidth? (3), classNames? { avatar, stats, value, label, name, pill, chip }, className?.",
+      "registryDependencies": ["avatar", "@idavoll/animated-number", "@idavoll/social-icon"],
+      "files": [
+        {
+          "path": "registry/idavoll/components/profile-stats.tsx",
+          "type": "registry:component",
+          "target": "components/idavoll/profile-stats.tsx"
+        }
+      ],
+      "categories": ["social", "profile", "challenge"]
+    },
+    {
+      "name": "metric-tabs",
+      "type": "registry:component",
+      "title": "Metric Tabs",
+      "description": "YouTube Studio-style row of clickable metric cards (animated value and % change) that switch the challenge chart below. Props: metrics [{ id, label, value, change?, data [{ day, value }], goal, milestones?, formatValue?, color? }], value?, onValueChange?, defaultValue?, totalDays? (90), today?, changeLabel?, label?, chart? { color, paceColor, strokeWidth, curve, showGrid, showPace, className }, classNames? { list, tab, value, content }, className?.",
+      "dependencies": ["lucide-react", "radix-ui"],
+      "registryDependencies": ["card", "@idavoll/animated-number", "@idavoll/challenge-chart"],
+      "files": [
+        {
+          "path": "registry/idavoll/components/metric-tabs.tsx",
+          "type": "registry:component",
+          "target": "components/idavoll/metric-tabs.tsx"
+        }
+      ],
+      "categories": ["dashboard", "chart", "challenge"]
+    },
+    {
+      "name": "platform-leaderboard",
+      "type": "registry:component",
+      "title": "Platform Leaderboard",
+      "description": "Ranked table comparing platforms: followers (animated), gain in the last N days, % growth since day 1, a trend sparkline and an ahead/on-pace/behind label. Props: platforms [{ platform, data [{ day, value }], goal?, label?, color? }], sortBy? (\"growth\" | \"gain\" | \"followers\", default growth), periodDays? (7), totalDays? (90), valueLabel? (\"Followers\"), formatValue?, showSparkline? (true), label? (accessible name of the scrollable table, default \"Platform leaderboard\"), className?.",
+      "registryDependencies": ["@idavoll/animated-number", "@idavoll/social-icon"],
+      "files": [
+        {
+          "path": "registry/idavoll/components/platform-leaderboard.tsx",
+          "type": "registry:component",
+          "target": "components/idavoll/platform-leaderboard.tsx"
+        }
+      ],
+      "categories": ["social", "dashboard", "comparison"]
+    },
+    {
+      "name": "platform-growth-chart",
+      "type": "registry:component",
+      "title": "Platform Growth Chart",
+      "description": "Line chart with one line per platform in brand colors, switchable between raw totals and % growth since day 1; legend chips hide/show platforms; black brands get dash patterns. Props: platforms [{ platform, data [{ day, value }], label?, color? }], mode? (\"total\" | \"growth\"), defaultMode? (growth), onModeChange?, showModeSwitch? (true), showLegend? (true), totalDays? (90), today?, valueLabel?, formatValue?, strokeWidth? (2.5), curve? (\"monotone\" | \"linear\" | \"step\"), showGrid? (true), chartClassName? (h-72), className?.",
+      "dependencies": ["recharts"],
+      "registryDependencies": ["chart", "@idavoll/animated-number", "@idavoll/social-icon"],
+      "files": [
+        {
+          "path": "registry/idavoll/components/platform-growth-chart.tsx",
+          "type": "registry:component",
+          "target": "components/idavoll/platform-growth-chart.tsx"
+        }
+      ],
+      "categories": ["social", "chart", "comparison"]
+    },
+    {
+      "name": "platform-breakdown",
+      "type": "registry:component",
+      "title": "Platform Breakdown",
+      "description": "Each platform's share of a total (e.g. followers) as a donut with the animated total in the middle, or a single stacked bar, plus a list with values and percentages. Props: platforms [{ platform, value, label?, color? }], variant? (\"donut\" | \"bar\"), valueLabel? (\"Followers\"), formatValue?, thickness? (0.28), chartClassName? (size-44), className?.",
+      "dependencies": ["recharts"],
+      "registryDependencies": ["chart", "@idavoll/animated-number", "@idavoll/social-icon"],
+      "files": [
+        {
+          "path": "registry/idavoll/components/platform-breakdown.tsx",
+          "type": "registry:component",
+          "target": "components/idavoll/platform-breakdown.tsx"
+        }
+      ],
+      "categories": ["social", "chart", "comparison"]
+    },
+    {
+      "name": "shimmer-border",
+      "type": "registry:component",
+      "title": "Shimmer Border",
+      "description": "Wraps a button or card and becomes its border, with a gold shimmer that moves along the edge, fading behind it; two shimmers on opposite sides by default. The wrapped element's own border and ring are turned off. Decorative (aria-hidden), still for reduced motion. Props: color? (var(--shimmer-border, gold)), borderColor? (var(--border)), beams? (2), duration? (4 s), width? (1 px), length? (70 deg tail), radius? (the wrapped element's corner radius, default var(--radius); cards use calc(var(--radius) * 1.4)), reverse? (false), backdrop? (solid color behind the wrapped element, default var(--background)), children, plus div props.",
+      "files": [
+        {
+          "path": "registry/idavoll/components/shimmer-border.tsx",
+          "type": "registry:component",
+          "target": "components/idavoll/shimmer-border.tsx"
+        }
+      ],
+      "categories": ["effects", "button", "card"]
     },
     {
       "name": "platform-badge-demo",
@@ -118,6 +238,467 @@
           "path": "registry/idavoll/demos/challenge-chart-demo.tsx",
           "type": "registry:component",
           "target": "components/idavoll/demos/challenge-chart-demo.tsx"
+        }
+      ]
+    },
+    {
+      "name": "animated-number-demo",
+      "type": "registry:block",
+      "title": "Animated Number example",
+      "description": "Example usage of animated-number: a live rolling follower counter and a counting view total with buttons.",
+      "registryDependencies": ["@idavoll/animated-number", "button", "card"],
+      "files": [
+        {
+          "path": "registry/idavoll/demos/animated-number-demo.tsx",
+          "type": "registry:component",
+          "target": "components/idavoll/demos/animated-number-demo.tsx"
+        }
+      ]
+    },
+    {
+      "name": "social-icon-demo",
+      "type": "registry:block",
+      "title": "Social Icon example",
+      "description": "Example usage of social-icon: every platform in tile, brand and mono styles.",
+      "registryDependencies": ["@idavoll/social-icon"],
+      "files": [
+        {
+          "path": "registry/idavoll/demos/social-icon-demo.tsx",
+          "type": "registry:component",
+          "target": "components/idavoll/demos/social-icon-demo.tsx"
+        }
+      ]
+    },
+    {
+      "name": "profile-stats-demo",
+      "type": "registry:block",
+      "title": "Profile Stats example",
+      "description": "Example usage of profile-stats with live-updating TikTok followers.",
+      "registryDependencies": ["@idavoll/profile-stats", "card"],
+      "files": [
+        {
+          "path": "registry/idavoll/demos/profile-stats-demo.tsx",
+          "type": "registry:component",
+          "target": "components/idavoll/demos/profile-stats-demo.tsx"
+        }
+      ]
+    },
+    {
+      "name": "metric-tabs-demo",
+      "type": "registry:block",
+      "title": "Metric Tabs example",
+      "description": "Example usage of metric-tabs with followers, views and watch time over 37 days.",
+      "registryDependencies": ["@idavoll/metric-tabs"],
+      "files": [
+        {
+          "path": "registry/idavoll/demos/metric-tabs-demo.tsx",
+          "type": "registry:component",
+          "target": "components/idavoll/demos/metric-tabs-demo.tsx"
+        }
+      ]
+    },
+    {
+      "name": "platform-leaderboard-demo",
+      "type": "registry:block",
+      "title": "Platform Leaderboard example",
+      "description": "Example usage of platform-leaderboard with four platforms and goals.",
+      "registryDependencies": ["@idavoll/platform-leaderboard"],
+      "files": [
+        {
+          "path": "registry/idavoll/demos/platform-leaderboard-demo.tsx",
+          "type": "registry:component",
+          "target": "components/idavoll/demos/platform-leaderboard-demo.tsx"
+        }
+      ]
+    },
+    {
+      "name": "platform-growth-chart-demo",
+      "type": "registry:block",
+      "title": "Platform Growth Chart example",
+      "description": "Example usage of platform-growth-chart with four platforms over 37 days.",
+      "registryDependencies": ["@idavoll/platform-growth-chart"],
+      "files": [
+        {
+          "path": "registry/idavoll/demos/platform-growth-chart-demo.tsx",
+          "type": "registry:component",
+          "target": "components/idavoll/demos/platform-growth-chart-demo.tsx"
+        }
+      ]
+    },
+    {
+      "name": "platform-breakdown-demo",
+      "type": "registry:block",
+      "title": "Platform Breakdown example",
+      "description": "Example usage of platform-breakdown as a donut and as a bar.",
+      "registryDependencies": ["@idavoll/platform-breakdown", "card"],
+      "files": [
+        {
+          "path": "registry/idavoll/demos/platform-breakdown-demo.tsx",
+          "type": "registry:component",
+          "target": "components/idavoll/demos/platform-breakdown-demo.tsx"
+        }
+      ]
+    },
+    {
+      "name": "shimmer-border-demo",
+      "type": "registry:block",
+      "title": "Shimmer Border example",
+      "description": "Example usage of shimmer-border on a milestone card and three buttons.",
+      "registryDependencies": ["@idavoll/shimmer-border", "@idavoll/animated-number", "button", "card"],
+      "files": [
+        {
+          "path": "registry/idavoll/demos/shimmer-border-demo.tsx",
+          "type": "registry:component",
+          "target": "components/idavoll/demos/shimmer-border-demo.tsx"
+        }
+      ]
+    },
+    {
+      "name": "theme-gilded",
+      "type": "registry:theme",
+      "title": "Gilded theme",
+      "description": "Warm ivory and ink with gold accents. Gold primary in dark mode. Sets every shadcn color variable for light and dark mode, the five chart colors, --radius and --shimmer-border.",
+      "cssVars": {
+        "light": {
+          "radius": "0.75rem",
+          "background": "oklch(0.99 0.004 85)",
+          "foreground": "oklch(0.19 0.012 60)",
+          "card": "oklch(1 0 0)",
+          "card-foreground": "oklch(0.19 0.012 60)",
+          "popover": "oklch(1 0 0)",
+          "popover-foreground": "oklch(0.19 0.012 60)",
+          "primary": "oklch(0.21 0.014 60)",
+          "primary-foreground": "oklch(0.98 0.006 85)",
+          "secondary": "oklch(0.96 0.008 85)",
+          "secondary-foreground": "oklch(0.19 0.012 60)",
+          "muted": "oklch(0.96 0.008 85)",
+          "muted-foreground": "oklch(0.52 0.016 60)",
+          "accent": "oklch(0.95 0.045 88)",
+          "accent-foreground": "oklch(0.38 0.08 70)",
+          "destructive": "oklch(0.58 0.22 27)",
+          "border": "oklch(0.91 0.012 80)",
+          "input": "oklch(0.91 0.012 80)",
+          "ring": "oklch(0.78 0.12 80)",
+          "chart-1": "oklch(0.78 0.15 80)",
+          "chart-2": "oklch(0.66 0.17 35)",
+          "chart-3": "oklch(0.6 0.11 190)",
+          "chart-4": "oklch(0.55 0.16 290)",
+          "chart-5": "oklch(0.45 0.03 60)",
+          "sidebar": "oklch(1 0 0)",
+          "sidebar-foreground": "oklch(0.19 0.012 60)",
+          "sidebar-primary": "oklch(0.21 0.014 60)",
+          "sidebar-primary-foreground": "oklch(0.98 0.006 85)",
+          "sidebar-accent": "oklch(0.96 0.008 85)",
+          "sidebar-accent-foreground": "oklch(0.19 0.012 60)",
+          "sidebar-border": "oklch(0.91 0.012 80)",
+          "sidebar-ring": "oklch(0.78 0.12 80)",
+          "shimmer-border": "oklch(0.82 0.15 82)"
+        },
+        "dark": {
+          "background": "oklch(0.16 0.008 60)",
+          "foreground": "oklch(0.96 0.006 85)",
+          "card": "oklch(0.2 0.01 60)",
+          "card-foreground": "oklch(0.96 0.006 85)",
+          "popover": "oklch(0.2 0.01 60)",
+          "popover-foreground": "oklch(0.96 0.006 85)",
+          "primary": "oklch(0.84 0.14 85)",
+          "primary-foreground": "oklch(0.2 0.02 70)",
+          "secondary": "oklch(0.26 0.012 60)",
+          "secondary-foreground": "oklch(0.96 0.006 85)",
+          "muted": "oklch(0.26 0.012 60)",
+          "muted-foreground": "oklch(0.7 0.016 80)",
+          "accent": "oklch(0.3 0.045 80)",
+          "accent-foreground": "oklch(0.9 0.08 85)",
+          "destructive": "oklch(0.7 0.19 22)",
+          "border": "oklch(1 0 0 / 10%)",
+          "input": "oklch(1 0 0 / 15%)",
+          "ring": "oklch(0.7 0.12 85)",
+          "chart-1": "oklch(0.84 0.14 85)",
+          "chart-2": "oklch(0.72 0.16 35)",
+          "chart-3": "oklch(0.72 0.11 190)",
+          "chart-4": "oklch(0.7 0.15 290)",
+          "chart-5": "oklch(0.62 0.02 80)",
+          "sidebar": "oklch(0.2 0.01 60)",
+          "sidebar-foreground": "oklch(0.96 0.006 85)",
+          "sidebar-primary": "oklch(0.84 0.14 85)",
+          "sidebar-primary-foreground": "oklch(0.2 0.02 70)",
+          "sidebar-accent": "oklch(0.26 0.012 60)",
+          "sidebar-accent-foreground": "oklch(0.96 0.006 85)",
+          "sidebar-border": "oklch(1 0 0 / 10%)",
+          "sidebar-ring": "oklch(0.7 0.12 85)",
+          "shimmer-border": "oklch(0.86 0.14 85)"
+        }
+      }
+    },
+    {
+      "name": "theme-dusk",
+      "type": "registry:theme",
+      "title": "Dusk theme",
+      "description": "Soft violet and pink, a creator-app feel. Sets every shadcn color variable for light and dark mode, the five chart colors, --radius and --shimmer-border.",
+      "cssVars": {
+        "light": {
+          "radius": "0.875rem",
+          "background": "oklch(0.99 0.004 300)",
+          "foreground": "oklch(0.2 0.03 290)",
+          "card": "oklch(1 0 0)",
+          "card-foreground": "oklch(0.2 0.03 290)",
+          "popover": "oklch(1 0 0)",
+          "popover-foreground": "oklch(0.2 0.03 290)",
+          "primary": "oklch(0.55 0.22 290)",
+          "primary-foreground": "oklch(0.99 0 0)",
+          "secondary": "oklch(0.96 0.012 300)",
+          "secondary-foreground": "oklch(0.2 0.03 290)",
+          "muted": "oklch(0.96 0.012 300)",
+          "muted-foreground": "oklch(0.52 0.03 290)",
+          "accent": "oklch(0.95 0.03 340)",
+          "accent-foreground": "oklch(0.45 0.15 340)",
+          "destructive": "oklch(0.58 0.22 27)",
+          "border": "oklch(0.91 0.014 300)",
+          "input": "oklch(0.91 0.014 300)",
+          "ring": "oklch(0.7 0.15 290)",
+          "chart-1": "oklch(0.58 0.22 290)",
+          "chart-2": "oklch(0.66 0.21 350)",
+          "chart-3": "oklch(0.76 0.15 60)",
+          "chart-4": "oklch(0.68 0.13 230)",
+          "chart-5": "oklch(0.74 0.13 165)",
+          "sidebar": "oklch(1 0 0)",
+          "sidebar-foreground": "oklch(0.2 0.03 290)",
+          "sidebar-primary": "oklch(0.55 0.22 290)",
+          "sidebar-primary-foreground": "oklch(0.99 0 0)",
+          "sidebar-accent": "oklch(0.96 0.012 300)",
+          "sidebar-accent-foreground": "oklch(0.2 0.03 290)",
+          "sidebar-border": "oklch(0.91 0.014 300)",
+          "sidebar-ring": "oklch(0.7 0.15 290)",
+          "shimmer-border": "oklch(0.72 0.19 330)"
+        },
+        "dark": {
+          "background": "oklch(0.17 0.02 290)",
+          "foreground": "oklch(0.96 0.01 300)",
+          "card": "oklch(0.21 0.025 290)",
+          "card-foreground": "oklch(0.96 0.01 300)",
+          "popover": "oklch(0.21 0.025 290)",
+          "popover-foreground": "oklch(0.96 0.01 300)",
+          "primary": "oklch(0.72 0.17 295)",
+          "primary-foreground": "oklch(0.18 0.03 290)",
+          "secondary": "oklch(0.27 0.03 290)",
+          "secondary-foreground": "oklch(0.96 0.01 300)",
+          "muted": "oklch(0.27 0.03 290)",
+          "muted-foreground": "oklch(0.72 0.03 295)",
+          "accent": "oklch(0.3 0.06 330)",
+          "accent-foreground": "oklch(0.88 0.08 340)",
+          "destructive": "oklch(0.7 0.19 22)",
+          "border": "oklch(1 0 0 / 10%)",
+          "input": "oklch(1 0 0 / 15%)",
+          "ring": "oklch(0.62 0.15 295)",
+          "chart-1": "oklch(0.72 0.17 295)",
+          "chart-2": "oklch(0.74 0.17 350)",
+          "chart-3": "oklch(0.8 0.14 60)",
+          "chart-4": "oklch(0.74 0.12 230)",
+          "chart-5": "oklch(0.78 0.12 165)",
+          "sidebar": "oklch(0.21 0.025 290)",
+          "sidebar-foreground": "oklch(0.96 0.01 300)",
+          "sidebar-primary": "oklch(0.72 0.17 295)",
+          "sidebar-primary-foreground": "oklch(0.18 0.03 290)",
+          "sidebar-accent": "oklch(0.27 0.03 290)",
+          "sidebar-accent-foreground": "oklch(0.96 0.01 300)",
+          "sidebar-border": "oklch(1 0 0 / 10%)",
+          "sidebar-ring": "oklch(0.62 0.15 295)",
+          "shimmer-border": "oklch(0.78 0.16 330)"
+        }
+      }
+    },
+    {
+      "name": "theme-electric",
+      "type": "registry:theme",
+      "title": "Electric theme",
+      "description": "Cool slate with a crisp lime accent. Lime primary in dark mode. Sets every shadcn color variable for light and dark mode, the five chart colors, --radius and --shimmer-border.",
+      "cssVars": {
+        "light": {
+          "radius": "0.625rem",
+          "background": "oklch(0.985 0.003 250)",
+          "foreground": "oklch(0.17 0.02 260)",
+          "card": "oklch(1 0 0)",
+          "card-foreground": "oklch(0.17 0.02 260)",
+          "popover": "oklch(1 0 0)",
+          "popover-foreground": "oklch(0.17 0.02 260)",
+          "primary": "oklch(0.2 0.025 260)",
+          "primary-foreground": "oklch(0.98 0.005 250)",
+          "secondary": "oklch(0.96 0.006 250)",
+          "secondary-foreground": "oklch(0.17 0.02 260)",
+          "muted": "oklch(0.96 0.006 250)",
+          "muted-foreground": "oklch(0.5 0.025 260)",
+          "accent": "oklch(0.94 0.1 125)",
+          "accent-foreground": "oklch(0.36 0.1 135)",
+          "destructive": "oklch(0.58 0.22 27)",
+          "border": "oklch(0.91 0.008 250)",
+          "input": "oklch(0.91 0.008 250)",
+          "ring": "oklch(0.6 0.2 260)",
+          "chart-1": "oklch(0.58 0.2 260)",
+          "chart-2": "oklch(0.8 0.19 130)",
+          "chart-3": "oklch(0.72 0.13 210)",
+          "chart-4": "oklch(0.62 0.23 330)",
+          "chart-5": "oklch(0.5 0.03 260)",
+          "sidebar": "oklch(1 0 0)",
+          "sidebar-foreground": "oklch(0.17 0.02 260)",
+          "sidebar-primary": "oklch(0.2 0.025 260)",
+          "sidebar-primary-foreground": "oklch(0.98 0.005 250)",
+          "sidebar-accent": "oklch(0.96 0.006 250)",
+          "sidebar-accent-foreground": "oklch(0.17 0.02 260)",
+          "sidebar-border": "oklch(0.91 0.008 250)",
+          "sidebar-ring": "oklch(0.6 0.2 260)",
+          "shimmer-border": "oklch(0.86 0.2 128)"
+        },
+        "dark": {
+          "background": "oklch(0.15 0.015 260)",
+          "foreground": "oklch(0.97 0.005 250)",
+          "card": "oklch(0.19 0.02 260)",
+          "card-foreground": "oklch(0.97 0.005 250)",
+          "popover": "oklch(0.19 0.02 260)",
+          "popover-foreground": "oklch(0.97 0.005 250)",
+          "primary": "oklch(0.89 0.2 128)",
+          "primary-foreground": "oklch(0.2 0.04 130)",
+          "secondary": "oklch(0.25 0.02 260)",
+          "secondary-foreground": "oklch(0.97 0.005 250)",
+          "muted": "oklch(0.25 0.02 260)",
+          "muted-foreground": "oklch(0.7 0.02 255)",
+          "accent": "oklch(0.3 0.06 130)",
+          "accent-foreground": "oklch(0.92 0.12 128)",
+          "destructive": "oklch(0.7 0.19 22)",
+          "border": "oklch(1 0 0 / 10%)",
+          "input": "oklch(1 0 0 / 15%)",
+          "ring": "oklch(0.7 0.17 128)",
+          "chart-1": "oklch(0.7 0.17 260)",
+          "chart-2": "oklch(0.89 0.2 128)",
+          "chart-3": "oklch(0.78 0.12 210)",
+          "chart-4": "oklch(0.7 0.21 330)",
+          "chart-5": "oklch(0.62 0.02 260)",
+          "sidebar": "oklch(0.19 0.02 260)",
+          "sidebar-foreground": "oklch(0.97 0.005 250)",
+          "sidebar-primary": "oklch(0.89 0.2 128)",
+          "sidebar-primary-foreground": "oklch(0.2 0.04 130)",
+          "sidebar-accent": "oklch(0.25 0.02 260)",
+          "sidebar-accent-foreground": "oklch(0.97 0.005 250)",
+          "sidebar-border": "oklch(1 0 0 / 10%)",
+          "sidebar-ring": "oklch(0.7 0.17 128)",
+          "shimmer-border": "oklch(0.9 0.2 128)"
+        }
+      }
+    },
+    {
+      "name": "settings-group",
+      "type": "registry:component",
+      "title": "Settings Group",
+      "description": "Building blocks for a settings page. SettingsGroup is a titled card of rows; props: title?, description?, footer?, headingLevel? (2\u20136, default 3), children, plus section props. SettingsRow is one setting with a control on the right, or a link row with a chevron when onClick is set; props: label, description?, icon?, iconColor? (tile background; icon turns white), destructive?, controlId? (id of the control in children; links the label, and the description gets id `${controlId}-description`), value? (text on the right, e.g. current language), onClick?, children?, className?. SettingsSwitch is a row with an on/off switch where the whole row is clickable; props: label, description?, icon?, iconColor?, destructive?, checked?, defaultChecked?, onCheckedChange?, disabled?, name?, className?.",
+      "dependencies": ["lucide-react"],
+      "registryDependencies": ["switch"],
+      "files": [
+        {
+          "path": "registry/idavoll/components/settings-group.tsx",
+          "type": "registry:component",
+          "target": "components/idavoll/settings-group.tsx"
+        }
+      ],
+      "categories": ["settings", "form"]
+    },
+    {
+      "name": "segmented-control",
+      "type": "registry:component",
+      "title": "Segmented Control",
+      "description": "Pick one of a few options, with a pill that slides to the chosen one (still for reduced motion). A radio group, so arrow keys move between options. Props: options [{ value, label, icon?, ariaLabel? (for icon-only options), disabled? }], value?, defaultValue? (first option), onValueChange?, label (accessible name, required), size? (\"sm\" | \"default\"), fullWidth? (false), disabled?, name?, className?.",
+      "dependencies": ["radix-ui"],
+      "files": [
+        {
+          "path": "registry/idavoll/components/segmented-control.tsx",
+          "type": "registry:component",
+          "target": "components/idavoll/segmented-control.tsx"
+        }
+      ],
+      "categories": ["settings", "form"]
+    },
+    {
+      "name": "connected-accounts",
+      "type": "registry:component",
+      "title": "Connected Accounts",
+      "description": "List of linked social platforms with status (connected, not connected, needs reconnecting) and Connect / Disconnect / Reconnect buttons, with a spinner while pending. Status changes are announced to screen readers, and busy buttons keep keyboard focus. Props: accounts [{ platform, status (\"connected\" | \"disconnected\" | \"error\"), handle?, detail? }], onConnect?(platform), onDisconnect?(platform), pending? (platforms showing a spinner), labels? ({ connect, disconnect, reconnect, connected, disconnected, error } for translation), className?.",
+      "dependencies": ["lucide-react"],
+      "registryDependencies": ["button", "@idavoll/social-icon"],
+      "files": [
+        {
+          "path": "registry/idavoll/components/connected-accounts.tsx",
+          "type": "registry:component",
+          "target": "components/idavoll/connected-accounts.tsx"
+        }
+      ],
+      "categories": ["settings", "social"]
+    },
+    {
+      "name": "notification-preferences",
+      "type": "registry:component",
+      "title": "Notification Preferences",
+      "description": "A grid of checkboxes: which notifications to get on which channel (e.g. Push, Email). Each checkbox is labelled \"<event> by <channel>\". Props: channels [{ id, label, icon? }], events [{ id, label, description? }], value? ({ [eventId]: channelId[] }), defaultValue?, onValueChange?(value), disabled?, label? (accessible name, default \"Notification preferences\"), className?.",
+      "registryDependencies": ["checkbox"],
+      "files": [
+        {
+          "path": "registry/idavoll/components/notification-preferences.tsx",
+          "type": "registry:component",
+          "target": "components/idavoll/notification-preferences.tsx"
+        }
+      ],
+      "categories": ["settings", "form"]
+    },
+    {
+      "name": "settings-group-demo",
+      "type": "registry:block",
+      "title": "Settings Group example",
+      "description": "Example settings page: profile and challenge switches, a link row, a segmented control in a row, and destructive actions.",
+      "registryDependencies": ["@idavoll/settings-group", "@idavoll/segmented-control"],
+      "files": [
+        {
+          "path": "registry/idavoll/demos/settings-group-demo.tsx",
+          "type": "registry:component",
+          "target": "components/idavoll/demos/settings-group-demo.tsx"
+        }
+      ]
+    },
+    {
+      "name": "segmented-control-demo",
+      "type": "registry:block",
+      "title": "Segmented Control example",
+      "description": "Examples of segmented-control: with icons, a controlled chart range, icon-only, and full width with a disabled option.",
+      "registryDependencies": ["@idavoll/segmented-control"],
+      "files": [
+        {
+          "path": "registry/idavoll/demos/segmented-control-demo.tsx",
+          "type": "registry:component",
+          "target": "components/idavoll/demos/segmented-control-demo.tsx"
+        }
+      ]
+    },
+    {
+      "name": "connected-accounts-demo",
+      "type": "registry:block",
+      "title": "Connected Accounts example",
+      "description": "Example of connected-accounts that fakes a connect/disconnect delay.",
+      "registryDependencies": ["@idavoll/connected-accounts"],
+      "files": [
+        {
+          "path": "registry/idavoll/demos/connected-accounts-demo.tsx",
+          "type": "registry:component",
+          "target": "components/idavoll/demos/connected-accounts-demo.tsx"
+        }
+      ]
+    },
+    {
+      "name": "notification-preferences-demo",
+      "type": "registry:block",
+      "title": "Notification Preferences example",
+      "description": "Example of notification-preferences with a pause-all switch.",
+      "registryDependencies": ["@idavoll/notification-preferences", "@idavoll/settings-group"],
+      "files": [
+        {
+          "path": "registry/idavoll/demos/notification-preferences-demo.tsx",
+          "type": "registry:component",
+          "target": "components/idavoll/demos/notification-preferences-demo.tsx"
         }
       ]
     }

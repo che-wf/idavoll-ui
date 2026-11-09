@@ -28,6 +28,7 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - run: pnpm check
       - run: pnpm build
+      - run: pnpm test:a11y
 
   secret-scan:
     runs-on: ubuntu-latest
