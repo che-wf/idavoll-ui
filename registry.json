@@ -51,7 +51,7 @@
       "type": "registry:component",
       "title": "Stat Card",
       "description": "One headline number with an optional up/down change; the number animates when it changes. Props: label, value, formatValue?, change? (fraction, 0.12 = +12%), changeLabel?, hint?, icon?, countUp? (false), classNames? { value, label }, className?.",
-      "dependencies": ["lucide-react"],
+      "dependencies": ["lucide-react@1.70.0"],
       "registryDependencies": ["card", "@idavoll/animated-number"],
       "files": [
         {
@@ -82,7 +82,7 @@
       "type": "registry:component",
       "title": "Challenge Chart",
       "description": "The 90-day challenge graph (Recharts): actual progress against a dashed straight line to the goal, with milestone and Today markers. Props: data [{ day, value }], goal, totalDays? (90), startValue?, today?, milestones? [{ day, label }], valueLabel?, formatValue?, color? (var(--primary)), paceColor? (var(--muted-foreground)), strokeWidth? (2.5), curve? (\"monotone\" | \"linear\" | \"step\"), showGrid? (true), showPace? (true), className? (size, default h-72). Also exports the ChallengeChartStyle type.",
-      "dependencies": ["recharts"],
+      "dependencies": ["recharts@3.8.0"],
       "registryDependencies": ["chart"],
       "files": [
         {
@@ -113,7 +113,7 @@
       "type": "registry:component",
       "title": "Metric Tabs",
       "description": "YouTube Studio-style row of clickable metric cards (animated value and % change) that switch the challenge chart below. Props: metrics [{ id, label, value, change?, data [{ day, value }], goal, milestones?, formatValue?, color? }], value?, onValueChange?, defaultValue?, totalDays? (90), today?, changeLabel?, label?, chart? { color, paceColor, strokeWidth, curve, showGrid, showPace, className }, classNames? { list, tab, value, content }, className?.",
-      "dependencies": ["lucide-react", "radix-ui"],
+      "dependencies": ["lucide-react@1.70.0", "radix-ui@1.8.1"],
       "registryDependencies": ["card", "@idavoll/animated-number", "@idavoll/challenge-chart"],
       "files": [
         {
@@ -144,7 +144,7 @@
       "type": "registry:component",
       "title": "Platform Growth Chart",
       "description": "Line chart with one line per platform in brand colors, switchable between raw totals and % growth since day 1; legend chips hide/show platforms; black brands get dash patterns; each line is named at its end so color is not the only cue. Props: platforms [{ platform, data [{ day, value }], label?, color? }], mode? (\"total\" | \"growth\"), defaultMode? (growth), onModeChange?, showModeSwitch? (true), showLegend? (true), totalDays? (90), today?, valueLabel?, formatValue?, strokeWidth? (2.5), curve? (\"monotone\" | \"linear\" | \"step\"), showGrid? (true), endLabels? (true), chartClassName? (h-72), className?.",
-      "dependencies": ["recharts"],
+      "dependencies": ["recharts@3.8.0"],
       "registryDependencies": ["chart", "@idavoll/animated-number", "@idavoll/social-icon"],
       "files": [
         {
@@ -160,7 +160,7 @@
       "type": "registry:component",
       "title": "Platform Breakdown",
       "description": "Each platform's share of a total (e.g. followers) as a donut with the animated total in the middle, or a single stacked bar, plus a list with values and percentages. Small platforms are grouped into one \"Other\" slice. Props: platforms [{ platform, value, label?, color? }], variant? (\"donut\" | \"bar\"), valueLabel? (\"Followers\"), formatValue?, maxSlices? (5), minShare? (0.03), otherLabel? (\"Other\"), thickness? (0.28), chartClassName? (size-44), className?.",
-      "dependencies": ["lucide-react", "recharts"],
+      "dependencies": ["lucide-react@1.70.0", "recharts@3.8.0"],
       "registryDependencies": ["chart", "@idavoll/animated-number", "@idavoll/social-icon"],
       "files": [
         {
@@ -190,7 +190,7 @@
       "type": "registry:component",
       "title": "Wizard Steps",
       "description": "A multi-step setup flow such as a first-login wizard. Shows progress (every step by name with done/skipped marks on wide containers; \"Step 2 of 5 · Pick platforms\" and a thin bar on phones), the current step's heading and content, and a footer with Back, Skip (optional steps) and Next/Finish. The app controls the step, so it can resume after a reload; the wizard holds no form state. Focus moves to the new step's heading on change. Busy Next keeps focus (aria-disabled) and shows a spinner. Props: steps [{ id, title, optional? }], current (step id), status? ({ [id]: \"done\" | \"skipped\" }), onBack?, onSkip?, onNext?, nextLabel? (default Next, Finish on the last step), nextDisabled?, busy?, headingLevel? (2), labels? (stepOf \"Step {current} of {total}\", progress, back, skip, next, finish, done, skipped, optional), children, className?.",
-      "dependencies": ["lucide-react"],
+      "dependencies": ["lucide-react@1.70.0"],
       "registryDependencies": ["button"],
       "files": [
         {
@@ -206,7 +206,7 @@
       "type": "registry:component",
       "title": "Platform Picker",
       "description": "Large toggle cards for picking several platforms, each a real checkbox (Tab between cards, Space to toggle). Picked cards show a check and a thicker border, not only color. Cards can be \"connected\" (ticked, locked, \"Already connected\") or \"soon\" (dashed, locked, \"Coming soon\"). Two columns on phones, four on wide containers. Props: platforms [{ platform (any SocialPlatform), note? (e.g. \"Needs a Business or Creator account\"), state? (\"available\" | \"connected\" | \"soon\") }], value (picked platforms), onChange(value), showLegend? (false; the legend is always there for screen readers), labels? (legend, connected, soon), className?.",
-      "dependencies": ["lucide-react"],
+      "dependencies": ["lucide-react@1.70.0"],
       "registryDependencies": ["@idavoll/social-icon"],
       "files": [
         {
@@ -222,7 +222,7 @@
       "type": "registry:component",
       "title": "Copy Field",
       "description": "A read-only value (e.g. an OAuth redirect URL) in a monospace box with a Copy button. After copying, the button shows \"Copied\" with a check for 2 seconds and screen readers hear it. Long values wrap inside the box. If the clipboard API is blocked or missing, the text is selected and the person is told to press Ctrl+C (or ⌘C). Never for secrets: there is no reveal mode. Props: value, label? (also names the button), hint?, labels? (copy, copied, manual \"Selected. Press {keys} to copy.\"), className?.",
-      "dependencies": ["lucide-react"],
+      "dependencies": ["lucide-react@1.70.0"],
       "registryDependencies": ["button"],
       "files": [
         {
@@ -238,7 +238,7 @@
       "type": "registry:component",
       "title": "Guide Steps",
       "description": "Numbered instructions, e.g. for creating a developer app. Each step has a title, optional body, an optional external link (new tab, with an icon and screen-reader note), an optional value to copy (copy-field) and an optional warning style (amber, icon, \"Important:\" for screen readers). With checkable, each step gets a checkbox so people can keep their place (visual help only, kept in local state). Props: steps [{ title, body?, href?, linkLabel?, copyValue?, copyLabel?, tone? (\"default\" | \"warning\") }], checkable? (false), labels? (newTab, warning, markDone \"Done: {title}\", copy, copied), className?.",
-      "dependencies": ["lucide-react"],
+      "dependencies": ["lucide-react@1.70.0"],
       "registryDependencies": ["checkbox", "@idavoll/copy-field"],
       "files": [
         {
@@ -254,7 +254,7 @@
       "type": "registry:component",
       "title": "Sync Status",
       "description": "Sync health per platform. States: syncing (spinner, \"Syncing… 12 of 40 posts\" and a bar), ok (\"Last synced 5 minutes ago\", full date in a tooltip and for screen readers), stale (amber), error (red, the message and an action button such as Reconnect), never (\"Not synced yet\"). Optional \"Next sync 6:00 AM\" line. Every state has words and an icon, not only color. Changes are announced politely; a new failure is announced at once (role=alert). Relative times refresh every minute. The compact variant shows platform icons with a status mark for a dashboard header. Props: items [{ platform, state (\"syncing\" | \"ok\" | \"stale\" | \"error\" | \"never\"), lastSyncedAt?, nextSyncAt? (Date or ISO string), progress? { done, total }, message?, action? { label, onClick } }], variant? (\"list\" | \"compact\"), announce? (true; turn off on a second view of the same data), now? (for tests and demos), locale?, labels? (syncing, progress, lastSynced, never, justNow, nextSync, error, list), className?.",
-      "dependencies": ["lucide-react"],
+      "dependencies": ["lucide-react@1.70.0"],
       "registryDependencies": ["button", "@idavoll/social-icon"],
       "files": [
         {
@@ -270,7 +270,7 @@
       "type": "registry:component",
       "title": "Post Card",
       "description": "A post or video at a glance: thumbnail (16:9 or 9:16, lazy-loaded, neutral placeholder if missing or broken), title clamped to two lines, challenge day, date, platform icons, and 2–4 headline numbers (compact like 12.4K, full number for screen readers). Optional badge over the thumbnail. With href or onClick the whole card is clickable through one link or button (the title), with a visible focus ring. Props: title, thumbnailUrl?, aspect? (\"landscape\" | \"portrait\"), day?, publishedAt (Date or ISO string), platforms, stats? [{ label, value (number or text) }], badge?, href?, linkComponent? (e.g. your router's Link; default <a>), onClick?, locale?, className?.",
-      "dependencies": ["lucide-react"],
+      "dependencies": ["lucide-react@1.70.0"],
       "registryDependencies": ["@idavoll/animated-number", "@idavoll/social-icon"],
       "files": [
         {
@@ -286,7 +286,7 @@
       "type": "registry:component",
       "title": "Comment List",
       "description": "Comments on a post, with replies one level deep (replies to replies join their thread), platform filter chips (All, YouTube…), sort by Newest or Most liked, comments clamped to 4 lines with Show more, and \"Show more comments\" past the page size. Each comment shows avatar (initials fallback), author, platform, relative time (full date on hover) and likes. Text is always plain text, never HTML. Empty state \"No comments yet\"; a note explains platforms that don't share comment text. The visible count is announced politely. Props: comments [{ id, platform, author, avatarUrl?, text, publishedAt, likes?, parentId? }], unavailablePlatforms?, pageSize? (50), now?, locale?, labels? (all, platformFilter, sort, newest, mostLiked, empty, unavailable \"{platforms}\", showMore, showLess, loadMore \"{count}\", count, likes, replies), className?.",
-      "dependencies": ["lucide-react"],
+      "dependencies": ["lucide-react@1.70.0"],
       "registryDependencies": ["avatar", "button", "@idavoll/segmented-control", "@idavoll/social-icon"],
       "files": [
         {
@@ -316,7 +316,7 @@
       "type": "registry:component",
       "title": "Post Link Input",
       "description": "A field for pasting a post link. Recognises YouTube, TikTok, Instagram and Threads links as you type and shows the platform icon inside the field (\"YouTube post\" under it). Unrecognised links get a clear message once the field is left or a link is pasted, linked with aria-describedby; links from platforms outside `allowed` are refused. Fetches nothing; onParsed hands the app the platform and id. PostLinkList (same file) shows several fields with \"Add another link\", remove buttons, focus on the new field, and a duplicate check. Re-exports parsePostUrl. Props: value, onChange(value), onParsed?(result | null), allowed? (default all four), error? (replaces the built-in message), hideLabel?, labels? (label, placeholder, invalid, recognised, notAllowed, duplicate, linkN, remove, addAnother), className?. PostLinkList props: value (string[]), onChange, onParsed?(results), allowed?, max?, labels?, className?.",
-      "dependencies": ["lucide-react"],
+      "dependencies": ["lucide-react@1.70.0"],
       "registryDependencies": ["button", "input", "label", "@idavoll/post-url", "@idavoll/social-icon"],
       "files": [
         {
@@ -332,7 +332,7 @@
       "type": "registry:component",
       "title": "Video Platform Chart",
       "description": "Stacked bars of each video's views split by platform, ordered by challenge day, in brand colors. Switch between total views and views at 48 hours or 7 days old so new and old videos compare fairly; videos too young for the chosen age show a striped \"not yet\" bar, not zero. The tooltip names each platform's number and the total; legend chips hide platforms (legend, stack and tooltip share one order). Only the latest maxBars are shown, and bars keep a usable width with sideways scrolling. Clicking a bar calls onSelect. \"Show as table\" gives the same numbers as a table, with buttons when onSelect is set. Props: videos [{ id, label, day, views (per platform), viewsAt? { \"48h\"?, \"7d\"? } (per platform), ageHours? }], mode? (\"total\" | \"48h\" | \"7d\"), defaultMode? (\"total\"), onModeChange?, onSelect?(id), maxBars? (30), chartClassName? (h-72), labels?, className?.",
-      "dependencies": ["recharts"],
+      "dependencies": ["recharts@3.8.0"],
       "registryDependencies": [
         "chart",
         "@idavoll/animated-number",
@@ -367,7 +367,7 @@
       "type": "registry:component",
       "title": "Date Field",
       "description": "A date you can type (\"Nov 9, 2026\", \"11/9/2026\" or \"2026-11-09\") or pick from a calendar popover (shadcn calendar). Values go in and out as \"YYYY-MM-DD\" strings, so the app does any time-zone math. Typed dates are reformatted on blur or Enter; unreadable or out-of-range dates get an error linked with aria-describedby, and the calendar greys out dates outside min and max. Props: value, onChange(value), label?, hint?, min?, max?, required?, locale?, labels? (placeholder, choose, invalid, tooEarly, tooLate), id?, className?. Also exports parseTypedDate(text).",
-      "dependencies": ["lucide-react"],
+      "dependencies": ["lucide-react@1.70.0"],
       "registryDependencies": ["button", "calendar", "input", "label", "popover"],
       "files": [
         {
@@ -383,7 +383,7 @@
       "type": "registry:component",
       "title": "Milestone Editor",
       "description": "Set milestones between a start value and a goal (\"2,000 → 12,000 followers\"). \"Suggest milestones\" fills in round numbers (1, 2.5 or 5 steps, at most 6). Each row has a target, an optional date (date-field) and an optional name, plus remove; \"Add milestone\" adds an empty row and focuses it. Values outside the range or repeated are flagged inline; the list sorts itself when a number is finished. An optional number line previews the milestones. Props: start, goal, value [{ value, date?, label? }] (a new row's value is NaN until typed), onChange(value), metricLabel?, formatValue? (full numbers), showPreview? (true), minDate?, maxDate?, maxSuggestions? (6), labels?, className?. Re-exports suggestMilestones.",
-      "dependencies": ["lucide-react"],
+      "dependencies": ["lucide-react@1.70.0"],
       "registryDependencies": [
         "button",
         "input",
@@ -406,7 +406,7 @@
       "type": "registry:component",
       "title": "Next Milestone",
       "description": "Always shows the next goal and how far away it is, with a progress bar from the last milestone to the next. Wording flips at halfway: before, it counts progress made (\"1,600 of 2,500 toward 5K followers\"); after, what's left (\"312 to 10K followers\"). Optional \"At your current pace: about 6 days\". After the last milestone it shows the main goal (trophy icon); once reached, a one-time celebration wrapped in shimmer-border. Numbers animate with animated-number. Props: current, milestones (numbers), goal, start? (0), metricLabel, dailyRate?, formatValue? (compact), celebrate? (true), labels?, children?, className?. Re-exports milestoneProgress.",
-      "dependencies": ["lucide-react"],
+      "dependencies": ["lucide-react@1.70.0"],
       "registryDependencies": ["@idavoll/animated-number", "@idavoll/milestones", "@idavoll/shimmer-border"],
       "files": [
         {
@@ -422,7 +422,7 @@
       "type": "registry:component",
       "title": "Source Badge",
       "description": "Says where a number came from: \"Verified\" (check icon, pulled from a platform's API) or \"Self-reported\" (pencil icon, typed in). Words, not only an icon or color; small enough for a table cell. Hover or keyboard focus shows a one-sentence explanation (\"Pulled from YouTube automatically.\"), which screen readers also get. Needs a TooltipProvider above it. Props: source (\"verified\" | \"self-reported\"), platform?, labels? (verified, selfReported, verifiedFrom \"{platform}\", verifiedHelp, selfReportedHelp), className?.",
-      "dependencies": ["lucide-react"],
+      "dependencies": ["lucide-react@1.70.0"],
       "registryDependencies": ["tooltip", "@idavoll/social-icon"],
       "files": [
         {
@@ -438,7 +438,7 @@
       "type": "registry:component",
       "title": "Status Banner",
       "description": "A banner across the app for something that needs attention, e.g. \"Your TikTok login expired. Reconnect so today's numbers aren't lost.\" Built on shadcn Alert. Tones info, success, warning and error each have an icon as well as a color; a platform icon can replace it. Optional action button and close button. Only announced (role=alert) when announce is set, so a banner that stays on every page doesn't interrupt each time. Props: tone? (\"warning\"), platform?, title, description?, action? { label, onClick }, onDismiss?, announce? (false), className?.",
-      "dependencies": ["lucide-react"],
+      "dependencies": ["lucide-react@1.70.0"],
       "registryDependencies": ["alert", "button", "@idavoll/social-icon"],
       "files": [
         {
@@ -525,7 +525,7 @@
       "type": "registry:block",
       "title": "Animated Number example",
       "description": "Example usage of animated-number: a live rolling follower counter and a counting view total with buttons.",
-      "dependencies": ["lucide-react"],
+      "dependencies": ["lucide-react@1.70.0"],
       "registryDependencies": ["@idavoll/animated-number", "button", "card"],
       "files": [
         {
@@ -554,7 +554,7 @@
       "type": "registry:block",
       "title": "Profile Stats example",
       "description": "Example usage of profile-stats with live-updating TikTok followers.",
-      "dependencies": ["lucide-react"],
+      "dependencies": ["lucide-react@1.70.0"],
       "registryDependencies": ["@idavoll/profile-stats", "button", "card"],
       "files": [
         {
@@ -870,7 +870,7 @@
       "type": "registry:component",
       "title": "Settings Group",
       "description": "Building blocks for a settings page. SettingsGroup is a titled card of rows; props: title?, description?, footer?, headingLevel? (2–6, default 3), children, plus section props. SettingsRow is one setting with a control on the right, or a link row with a chevron when onClick is set; props: label, description?, icon?, iconColor? (tile background; icon turns white), destructive?, controlId? (id of the control in children; links the label, and the description gets id `${controlId}-description`), value? (text on the right, e.g. current language), onClick?, children?, className?. SettingsSwitch is a row with an on/off switch where the whole row is clickable; props: label, description?, icon?, iconColor?, destructive?, checked?, defaultChecked?, onCheckedChange?, disabled?, name?, saveStatus?, className?. SettingsRow also takes saveStatus? (\"idle\" | \"saving\" | \"saved\" | \"error\"; inline feedback for settings that save right away). SaveStatus is that feedback on its own (announced politely; \"Saved\" hides after a moment); props: status?, savingLabel?, savedLabel?, errorLabel?, hideAfter? (2000 ms), className?.",
-      "dependencies": ["lucide-react"],
+      "dependencies": ["lucide-react@1.70.0"],
       "registryDependencies": ["switch"],
       "files": [
         {
@@ -886,7 +886,7 @@
       "type": "registry:component",
       "title": "Segmented Control",
       "description": "Pick one of a few options, with a pill that slides to the chosen one (still for reduced motion). A radio group, so arrow keys move between options. Props: options [{ value, label, icon?, ariaLabel? (for icon-only options), disabled? }], value?, defaultValue? (first option), onValueChange?, label (accessible name, required), size? (\"sm\" | \"default\"), fullWidth? (false), disabled?, name?, className?.",
-      "dependencies": ["radix-ui"],
+      "dependencies": ["radix-ui@1.8.1"],
       "files": [
         {
           "path": "registry/idavoll/components/segmented-control.tsx",
@@ -901,7 +901,7 @@
       "type": "registry:component",
       "title": "Connected Accounts",
       "description": "List of linked social platforms with status (connected, not connected, needs reconnecting) and Connect / Disconnect / Reconnect buttons, with a spinner while pending. Status changes are announced to screen readers, and busy buttons keep keyboard focus. Props: accounts [{ platform, status (\"connected\" | \"disconnected\" | \"error\"), handle?, detail? }], onConnect?(platform), onDisconnect?(platform), pending? (platforms showing a spinner), labels? ({ connect, disconnect, reconnect, connected, disconnected, error } for translation), className?.",
-      "dependencies": ["lucide-react"],
+      "dependencies": ["lucide-react@1.70.0"],
       "registryDependencies": ["button", "@idavoll/social-icon"],
       "files": [
         {
@@ -932,7 +932,7 @@
       "type": "registry:component",
       "title": "Data Table",
       "description": "A table with search, pick-from-a-list filters (each choice shows how many rows it would match), sortable columns, pages and an optional column menu. Applied filters show as removable chips with \"Clear all\"; the row count is announced to screen readers; an empty result offers to clear filters; wide tables scroll inside a focusable frame. Built on TanStack Table. Props: columns (TanStack ColumnDef[]; meta { label?, className? } per column), data, label (accessible name, e.g. \"Posts\"), searchable? (true), searchPlaceholder? (\"Search…\"), filters? [{ column, title, options? [{ value, label?, icon? }] }] (options default to every value in the column), columnToggle? (false), pageSize? (10; 0 shows all), initialSorting? (e.g. [{ id: \"views\", desc: true }]), countLabel?(count) (\"12 results\"), emptyMessage?, toolbar? (extra controls), getRowId?, getSubRows?(row) (child rows such as per-platform posts: expand buttons with aria-expanded, \"Expand all\" in the toolbar, search and filters match children and keep their parent open, pages count top-level rows), subRowsLabel?(row, count) (expand button name, default \"Show 3 more rows\"), getRowHref?(row) (the first cell becomes a real link and clicking elsewhere on the row follows it; return undefined for rows without a page), linkComponent? (e.g. your router's Link; gets href, className, children; default <a>), onRowClick?(row) (clickable rows without a link; the first cell becomes a button), className?. Also exports DataTableColumnHeader ({ column, title, className? }) for sortable headers, which set aria-sort.",
-      "dependencies": ["@tanstack/react-table", "lucide-react"],
+      "dependencies": ["@tanstack/react-table@8.21.3", "lucide-react@1.70.0"],
       "registryDependencies": ["button", "dropdown-menu", "input", "table"],
       "files": [
         {
@@ -948,7 +948,7 @@
       "type": "registry:component",
       "title": "Content Calendar",
       "description": "A calendar for planning and reviewing posts, with month, week and agenda views and a switcher. Days list their events with platform icons, plus markers for holidays, Moon phases or anything else. A \"Show\" menu hides platforms and marker categories (grouped, e.g. Holidays › Federal holidays, Astrology › Retrogrades); the choice can be controlled and saved. Month view: chips with \"+2 more\", colored dots and marker icons on narrow containers, arrow keys move between days, Home/End go to the week's start/end, Page Up/Down change month. Week view: seven columns (stacked when narrow) with every event and marker, with times. Agenda view: only the month's days that have events or markers. Picking a day calls onSelect so you can show its details; today is marked (aria-current). The viewer's own entries get an icon tile in their color (or their category's), a light tint, and a \"Your categories\" filter section; an \"Add\" button and clickable week/agenda entries hook up an entry form such as @idavoll/calendar-entry-dialog. Props: events [{ id, date (\"YYYY-MM-DD\"), title, time? (\"HH:MM\"), description?, platform?, color? (hex), icon? (CALENDAR_ICONS name), category? (category id), tentative? }], categories? [{ id, name, color (hex), icon? }], onAddEvent?(date) (shows an Add button), onEventClick?(event) (week and agenda), markers? [{ date, name, time?, description?, group? (filter section, default \"Other\"), category? (filter option), icon? (\"flag\" | \"star\" | \"moon\" | \"sun\" | \"eclipse\" | \"planet\" | \"retrograde\" | \"sparkles\" or a ReactNode), tone? (\"amber\" | \"violet\" | \"sky\" | \"rose\" | \"emerald\") }] (usHolidays() and astroEvents() return these), filterable? (true), hidden? / defaultHidden? / onHiddenChange?(keys) (keys are \"platform:tiktok\" or \"Group:Category\", e.g. \"Astrology:Retrogrades\"), maxMarkers? (2, month view), view?, defaultView? (\"month\"), onViewChange?, views? (default all three), date?, defaultDate?, onDateChange?, selected?, defaultSelected?, onSelect?(date), today?, weekStartsOn? (0 | 1, default 1), maxEvents? (3), dayLabel?(date), dayClassName?(date), locale?, headingLevel? (3), countLabel?(count), emptyMessage?, className?. Also exports CALENDAR_ICONS (20 icons by name: sparkles, star, heart, camera, video, mic, music, pen, book, coffee, dumbbell, leaf, moon, sun, flame, plane, gift, briefcase, party, flag) and readableOn(hex) (black or white text for a color).",
-      "dependencies": ["lucide-react"],
+      "dependencies": ["lucide-react@1.70.0"],
       "registryDependencies": ["button", "dropdown-menu", "@idavoll/segmented-control", "@idavoll/social-icon"],
       "files": [
         {
@@ -964,7 +964,7 @@
       "type": "registry:component",
       "title": "Calendar Entry Dialog",
       "description": "A form in a dialog for adding and editing the viewer's own calendar entries: title, date, optional time, category (or a new one made on the spot), icon (from CALENDAR_ICONS), color (preset swatches plus a custom color picker) and notes. Picking a category uses its icon and color unless the viewer picks their own; only overrides are saved, so editing a category updates its entries. Icon tiles pick black or white for contrast. Props: open, onOpenChange(open), entry? (edit this one; unset to add), defaultDate (\"YYYY-MM-DD\"), categories?, onSave(entry) (new entries get crypto.randomUUID()), onDelete?(id) (shows Delete when editing), onCreateCategory?(category) (shows \"New category\"), colors? ([{ name, value (hex) }], default CALENDAR_COLORS). Also exports CALENDAR_COLORS.",
-      "dependencies": ["lucide-react"],
+      "dependencies": ["lucide-react@1.70.0"],
       "registryDependencies": ["button", "dialog", "input", "label", "@idavoll/content-calendar"],
       "files": [
         {
@@ -994,7 +994,7 @@
       "type": "registry:component",
       "title": "Astro Events",
       "description": "astroEvents(year, options?) returns a year of astrological and astronomical events in the viewer's time zone, computed offline with astronomy-engine (no API): new and full Moons with their sign (\"Full Moon in Taurus\") and traditional name (Wolf, Harvest, Hunter's, Blue Moon…), lunar and solar eclipses with kind and sign, equinoxes and solstices, the Sun entering each sign (\"Scorpio season begins\"), Mercury through Pluto changing sign (including retrograding back into a sign), and retrograde and direct stations. Uses the tropical zodiac. Each item: { date, time (\"HH:MM\"), name, description?, kind (\"moon\" | \"eclipse\" | \"season\" | \"ingress\" | \"retrograde\"), sign?, group (\"Astrology\"), category, icon, tone }, ready for content-calendar's markers prop. Options: kinds? (default all), planets? (default Mercury–Pluto), moonQuarters? (false), hemisphere? (\"north\" | \"south\", names equinoxes and solstices). Takes about 0.2 s per year and caches results; compute only the years on screen. Also exports ZODIAC_SIGNS.",
-      "dependencies": ["astronomy-engine"],
+      "dependencies": ["astronomy-engine@2.1.19"],
       "files": [
         {
           "path": "registry/idavoll/components/astro-events.ts",
@@ -1065,7 +1065,7 @@
       "type": "registry:block",
       "title": "Data Table example",
       "description": "Example: a Videos table whose rows expand into each platform's post and link to a detail page, and a post log with search, Platform/Format/Status filters, sortable columns, a column menu and an Export button.",
-      "dependencies": ["@tanstack/react-table", "lucide-react"],
+      "dependencies": ["@tanstack/react-table@8.21.3", "lucide-react@1.70.0"],
       "registryDependencies": ["@idavoll/data-table", "@idavoll/social-icon", "@idavoll/animated-number", "button"],
       "files": [
         {
@@ -1096,7 +1096,7 @@
           "target": "components/idavoll/demos/content-calendar-demo.tsx"
         }
       ],
-      "dependencies": ["astronomy-engine", "lucide-react"]
+      "dependencies": ["astronomy-engine@2.1.19", "lucide-react@1.70.0"]
     },
     {
       "name": "wizard-steps-demo",
@@ -1165,7 +1165,7 @@
       "type": "registry:block",
       "title": "Sync Status example",
       "description": "Example: the compact header view and the full list with each state, plus a Sync now button that runs a short sync.",
-      "dependencies": ["lucide-react"],
+      "dependencies": ["lucide-react@1.70.0"],
       "registryDependencies": ["@idavoll/sync-status", "button"],
       "files": [
         {
@@ -1264,7 +1264,7 @@
       "type": "registry:block",
       "title": "Next Milestone example",
       "description": "Example: progress toward the next milestone with buttons to watch the wording flip at halfway, and a reached goal.",
-      "dependencies": ["lucide-react"],
+      "dependencies": ["lucide-react@1.70.0"],
       "registryDependencies": ["@idavoll/next-milestone", "button"],
       "files": [
         {
@@ -1307,7 +1307,7 @@
       "type": "registry:block",
       "title": "Empty State example",
       "description": "Example: \"No videos yet\" with a Sync now button, \"Waiting for the first sync\", and a skeleton shaped like a post card for loads over a second.",
-      "dependencies": ["lucide-react"],
+      "dependencies": ["lucide-react@1.70.0"],
       "registryDependencies": ["@idavoll/empty-state", "button", "skeleton"],
       "files": [
         {

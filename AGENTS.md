@@ -44,7 +44,8 @@ public/r/                         Built registry JSON (generated, gitignored)
    realistic usage. The shadcn MCP finds examples by this `-demo` name.
 3. Add both items to `registry.json`. The component is `registry:component` with
    `target: "components/idavoll/<name>.tsx"`. Its `description` must list every prop
-   (assistants read it). Fill in `dependencies` (npm packages) and
+   (assistants read it). Fill in `dependencies` (npm packages, pinned like `recharts@3.8.0` to the version in
+   `package.json`, so consumers get the version the component was tested with) and
    `registryDependencies` (shadcn items like `card`, or `@idavoll/<x>`). The demo is
    `registry:block` with `registryDependencies: ["@idavoll/<name>"]`.
 4. Add the demo to the `sections` list in `src/main.tsx`.
