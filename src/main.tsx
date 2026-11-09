@@ -7,19 +7,24 @@ import ChallengeChartDemo from "../registry/idavoll/demos/challenge-chart-demo";
 import ChallengeProgressDemo from "../registry/idavoll/demos/challenge-progress-demo";
 import ConnectedAccountsDemo from "../registry/idavoll/demos/connected-accounts-demo";
 import ContentCalendarDemo from "../registry/idavoll/demos/content-calendar-demo";
+import CopyFieldDemo from "../registry/idavoll/demos/copy-field-demo";
 import DataTableDemo from "../registry/idavoll/demos/data-table-demo";
+import GuideStepsDemo from "../registry/idavoll/demos/guide-steps-demo";
 import MetricTabsDemo from "../registry/idavoll/demos/metric-tabs-demo";
 import NotificationPreferencesDemo from "../registry/idavoll/demos/notification-preferences-demo";
 import PlatformBadgeDemo from "../registry/idavoll/demos/platform-badge-demo";
 import PlatformBreakdownDemo from "../registry/idavoll/demos/platform-breakdown-demo";
 import PlatformGrowthChartDemo from "../registry/idavoll/demos/platform-growth-chart-demo";
 import PlatformLeaderboardDemo from "../registry/idavoll/demos/platform-leaderboard-demo";
+import PlatformPickerDemo from "../registry/idavoll/demos/platform-picker-demo";
 import ProfileStatsDemo from "../registry/idavoll/demos/profile-stats-demo";
 import SegmentedControlDemo from "../registry/idavoll/demos/segmented-control-demo";
 import SettingsGroupDemo from "../registry/idavoll/demos/settings-group-demo";
 import ShimmerBorderDemo from "../registry/idavoll/demos/shimmer-border-demo";
 import SocialIconDemo from "../registry/idavoll/demos/social-icon-demo";
 import StatCardDemo from "../registry/idavoll/demos/stat-card-demo";
+import SyncStatusDemo from "../registry/idavoll/demos/sync-status-demo";
+import WizardStepsDemo from "../registry/idavoll/demos/wizard-steps-demo";
 import { ThemeControls } from "./theme-controls";
 
 const sections: { name: string; title: string; Demo: ComponentType }[] = [
@@ -41,6 +46,11 @@ const sections: { name: string; title: string; Demo: ComponentType }[] = [
   { name: "challenge-progress", title: "Challenge Progress", Demo: ChallengeProgressDemo },
   { name: "stat-card", title: "Stat Card", Demo: StatCardDemo },
   { name: "platform-badge", title: "Platform Badge", Demo: PlatformBadgeDemo },
+  { name: "wizard-steps", title: "Wizard Steps", Demo: WizardStepsDemo },
+  { name: "platform-picker", title: "Platform Picker", Demo: PlatformPickerDemo },
+  { name: "copy-field", title: "Copy Field", Demo: CopyFieldDemo },
+  { name: "guide-steps", title: "Guide Steps", Demo: GuideStepsDemo },
+  { name: "sync-status", title: "Sync Status", Demo: SyncStatusDemo },
 ];
 
 function Gallery() {

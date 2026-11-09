@@ -186,6 +186,86 @@
       "categories": ["effects", "button", "card"]
     },
     {
+      "name": "wizard-steps",
+      "type": "registry:component",
+      "title": "Wizard Steps",
+      "description": "A multi-step setup flow such as a first-login wizard. Shows progress (every step by name with done/skipped marks on wide containers; \"Step 2 of 5 · Pick platforms\" and a thin bar on phones), the current step's heading and content, and a footer with Back, Skip (optional steps) and Next/Finish. The app controls the step, so it can resume after a reload; the wizard holds no form state. Focus moves to the new step's heading on change. Busy Next keeps focus (aria-disabled) and shows a spinner. Props: steps [{ id, title, optional? }], current (step id), status? ({ [id]: \"done\" | \"skipped\" }), onBack?, onSkip?, onNext?, nextLabel? (default Next, Finish on the last step), nextDisabled?, busy?, headingLevel? (2), labels? (stepOf \"Step {current} of {total}\", progress, back, skip, next, finish, done, skipped, optional), children, className?.",
+      "dependencies": ["lucide-react"],
+      "registryDependencies": ["button"],
+      "files": [
+        {
+          "path": "registry/idavoll/components/wizard-steps.tsx",
+          "type": "registry:component",
+          "target": "components/idavoll/wizard-steps.tsx"
+        }
+      ],
+      "categories": ["onboarding", "form"]
+    },
+    {
+      "name": "platform-picker",
+      "type": "registry:component",
+      "title": "Platform Picker",
+      "description": "Large toggle cards for picking several platforms, each a real checkbox (Tab between cards, Space to toggle). Picked cards show a check and a thicker border, not only color. Cards can be \"connected\" (ticked, locked, \"Already connected\") or \"soon\" (dashed, locked, \"Coming soon\"). Two columns on phones, four on wide containers. Props: platforms [{ platform (any SocialPlatform), note? (e.g. \"Needs a Business or Creator account\"), state? (\"available\" | \"connected\" | \"soon\") }], value (picked platforms), onChange(value), showLegend? (false; the legend is always there for screen readers), labels? (legend, connected, soon), className?.",
+      "dependencies": ["lucide-react"],
+      "registryDependencies": ["@idavoll/social-icon"],
+      "files": [
+        {
+          "path": "registry/idavoll/components/platform-picker.tsx",
+          "type": "registry:component",
+          "target": "components/idavoll/platform-picker.tsx"
+        }
+      ],
+      "categories": ["onboarding", "form", "social"]
+    },
+    {
+      "name": "copy-field",
+      "type": "registry:component",
+      "title": "Copy Field",
+      "description": "A read-only value (e.g. an OAuth redirect URL) in a monospace box with a Copy button. After copying, the button shows \"Copied\" with a check for 2 seconds and screen readers hear it. Long values wrap inside the box. If the clipboard API is blocked or missing, the text is selected and the person is told to press Ctrl+C (or ⌘C). Never for secrets: there is no reveal mode. Props: value, label? (also names the button), hint?, labels? (copy, copied, manual \"Selected. Press {keys} to copy.\"), className?.",
+      "dependencies": ["lucide-react"],
+      "registryDependencies": ["button"],
+      "files": [
+        {
+          "path": "registry/idavoll/components/copy-field.tsx",
+          "type": "registry:component",
+          "target": "components/idavoll/copy-field.tsx"
+        }
+      ],
+      "categories": ["form", "utility"]
+    },
+    {
+      "name": "guide-steps",
+      "type": "registry:component",
+      "title": "Guide Steps",
+      "description": "Numbered instructions, e.g. for creating a developer app. Each step has a title, optional body, an optional external link (new tab, with an icon and screen-reader note), an optional value to copy (copy-field) and an optional warning style (amber, icon, \"Important:\" for screen readers). With checkable, each step gets a checkbox so people can keep their place (visual help only, kept in local state). Props: steps [{ title, body?, href?, linkLabel?, copyValue?, copyLabel?, tone? (\"default\" | \"warning\") }], checkable? (false), labels? (newTab, warning, markDone \"Done: {title}\", copy, copied), className?.",
+      "dependencies": ["lucide-react"],
+      "registryDependencies": ["checkbox", "@idavoll/copy-field"],
+      "files": [
+        {
+          "path": "registry/idavoll/components/guide-steps.tsx",
+          "type": "registry:component",
+          "target": "components/idavoll/guide-steps.tsx"
+        }
+      ],
+      "categories": ["onboarding"]
+    },
+    {
+      "name": "sync-status",
+      "type": "registry:component",
+      "title": "Sync Status",
+      "description": "Sync health per platform. States: syncing (spinner, \"Syncing… 12 of 40 posts\" and a bar), ok (\"Last synced 5 minutes ago\", full date in a tooltip and for screen readers), stale (amber), error (red, the message and an action button such as Reconnect), never (\"Not synced yet\"). Optional \"Next sync 6:00 AM\" line. Every state has words and an icon, not only color. Changes are announced politely; a new failure is announced at once (role=alert). Relative times refresh every minute. The compact variant shows platform icons with a status mark for a dashboard header. Props: items [{ platform, state (\"syncing\" | \"ok\" | \"stale\" | \"error\" | \"never\"), lastSyncedAt?, nextSyncAt? (Date or ISO string), progress? { done, total }, message?, action? { label, onClick } }], variant? (\"list\" | \"compact\"), announce? (true; turn off on a second view of the same data), now? (for tests and demos), locale?, labels? (syncing, progress, lastSynced, never, justNow, nextSync, error, list), className?.",
+      "dependencies": ["lucide-react"],
+      "registryDependencies": ["button", "@idavoll/social-icon"],
+      "files": [
+        {
+          "path": "registry/idavoll/components/sync-status.tsx",
+          "type": "registry:component",
+          "target": "components/idavoll/sync-status.tsx"
+        }
+      ],
+      "categories": ["data", "status", "social"]
+    },
+    {
       "name": "platform-badge-demo",
       "type": "registry:block",
       "title": "Platform Badge example",
@@ -818,6 +898,83 @@
         }
       ],
       "dependencies": ["astronomy-engine", "lucide-react"]
+    },
+    {
+      "name": "wizard-steps-demo",
+      "type": "registry:block",
+      "title": "Wizard Steps example",
+      "description": "Example: a five-step first-login wizard (welcome, pick platforms, connect YouTube, set up the challenge, first sync) that uses platform-picker, guide-steps and sync-status, with skipping and a saving spinner.",
+      "registryDependencies": [
+        "@idavoll/wizard-steps",
+        "@idavoll/platform-picker",
+        "@idavoll/guide-steps",
+        "@idavoll/sync-status",
+        "card"
+      ],
+      "files": [
+        {
+          "path": "registry/idavoll/demos/wizard-steps-demo.tsx",
+          "type": "registry:component",
+          "target": "components/idavoll/demos/wizard-steps-demo.tsx"
+        }
+      ]
+    },
+    {
+      "name": "platform-picker-demo",
+      "type": "registry:block",
+      "title": "Platform Picker example",
+      "description": "Example: picking platforms to track, with YouTube already connected, notes on TikTok and Instagram, and X and Bluesky coming soon.",
+      "registryDependencies": ["@idavoll/platform-picker", "@idavoll/social-icon"],
+      "files": [
+        {
+          "path": "registry/idavoll/demos/platform-picker-demo.tsx",
+          "type": "registry:component",
+          "target": "components/idavoll/demos/platform-picker-demo.tsx"
+        }
+      ]
+    },
+    {
+      "name": "copy-field-demo",
+      "type": "registry:block",
+      "title": "Copy Field example",
+      "description": "Example: a redirect URL with a hint, and a long webhook URL that wraps.",
+      "registryDependencies": ["@idavoll/copy-field"],
+      "files": [
+        {
+          "path": "registry/idavoll/demos/copy-field-demo.tsx",
+          "type": "registry:component",
+          "target": "components/idavoll/demos/copy-field-demo.tsx"
+        }
+      ]
+    },
+    {
+      "name": "guide-steps-demo",
+      "type": "registry:block",
+      "title": "Guide Steps example",
+      "description": "Example: checkable steps for setting up a Google Cloud OAuth app for YouTube, with links, a redirect URL to copy and a warning step.",
+      "registryDependencies": ["@idavoll/guide-steps"],
+      "files": [
+        {
+          "path": "registry/idavoll/demos/guide-steps-demo.tsx",
+          "type": "registry:component",
+          "target": "components/idavoll/demos/guide-steps-demo.tsx"
+        }
+      ]
+    },
+    {
+      "name": "sync-status-demo",
+      "type": "registry:block",
+      "title": "Sync Status example",
+      "description": "Example: the compact header view and the full list with each state, plus a Sync now button that runs a short sync.",
+      "dependencies": ["lucide-react"],
+      "registryDependencies": ["@idavoll/sync-status", "button"],
+      "files": [
+        {
+          "path": "registry/idavoll/demos/sync-status-demo.tsx",
+          "type": "registry:component",
+          "target": "components/idavoll/demos/sync-status-demo.tsx"
+        }
+      ]
     }
   ]
 }
