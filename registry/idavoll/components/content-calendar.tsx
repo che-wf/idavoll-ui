@@ -226,7 +226,9 @@ export interface ContentCalendarProps {
   headingLevel?: 2 | 3 | 4 | 5 | 6;
   /** Describes a day's event count for screen readers. Defaults to "2 posts". */
   countLabel?: (count: number) => string;
-  /** Shown in agenda view when the month has nothing. Defaults to "Nothing planned this month." */
+  /** Days in the agenda's rolling window; the arrows move by this many days. Defaults to 14. */
+  agendaDays?: number;
+  /** Shown in agenda view when the window has nothing. Defaults to "Nothing planned for these days." */
   emptyMessage?: ReactNode;
   className?: string;
 }
@@ -423,7 +425,8 @@ export function ContentCalendar({
   locale,
   headingLevel = 3,
   countLabel = defaultCount,
-  emptyMessage = "Nothing planned this month.",
+  agendaDays = 14,
+  emptyMessage = "Nothing planned for these days.",
   className,
 }: ContentCalendarProps) {
   const headingId = useId();
@@ -455,9 +458,13 @@ export function ContentCalendar({
     setCursorState(key);
     onDateChange?.(key);
   };
+  // The agenda is a rolling window of days starting at the cursor.
+  const agendaEnd = addDays(cursor, Math.max(1, agendaDays) - 1);
+  const inAgenda = (key: string) => key >= cursor && key <= agendaEnd;
   const select = (key: string) => {
     setSelectedState(key);
-    goTo(key);
+    // Picking a day already in the agenda window keeps the window where it is.
+    if (!(view === "agenda" && inAgenda(key))) goTo(key);
     onSelect?.(key);
   };
   const setView = (next: CalendarView) => {
@@ -525,7 +532,7 @@ export function ContentCalendar({
   const weeks = Array.from({ length: Math.ceil((offset + daysInMonth) / 7) }, (_, w) =>
     Array.from({ length: 7 }, (_, d) => addDays(gridStart, w * 7 + d)),
   );
-  const monthDays = Array.from({ length: daysInMonth }, (_, i) => addDays(month, i));
+  const agendaWindow = Array.from({ length: Math.max(1, agendaDays) }, (_, i) => addDays(cursor, i));
 
   const weekdayLong = new Intl.DateTimeFormat(locale, { weekday: "long" });
   const weekdayShort = new Intl.DateTimeFormat(locale, { weekday: "short" });
@@ -535,15 +542,20 @@ export function ContentCalendar({
     const [h = 0, m = 0] = time.split(":").map(Number);
     return timeFormat.format(new Date(2000, 0, 1, h, m));
   };
+  const rangeFormat = new Intl.DateTimeFormat(locale, { month: "short", day: "numeric", year: "numeric" });
   const title =
     view === "week"
-      ? new Intl.DateTimeFormat(locale, { month: "short", day: "numeric", year: "numeric" }).formatRange(
-          fromKey(weekDays[0] ?? cursor),
-          fromKey(weekDays[6] ?? cursor),
-        )
-      : new Intl.DateTimeFormat(locale, { month: "long", year: "numeric" }).format(first);
-  const step = view === "week" ? (n: number) => addDays(cursor, n * 7) : (n: number) => addMonths(cursor, n);
-  const unit = view === "week" ? "week" : "month";
+      ? rangeFormat.formatRange(fromKey(weekDays[0] ?? cursor), fromKey(weekDays[6] ?? cursor))
+      : view === "agenda"
+        ? rangeFormat.formatRange(fromKey(cursor), fromKey(agendaEnd))
+        : new Intl.DateTimeFormat(locale, { month: "long", year: "numeric" }).format(first);
+  const step =
+    view === "week"
+      ? (n: number) => addDays(cursor, n * 7)
+      : view === "agenda"
+        ? (n: number) => addDays(cursor, n * Math.max(1, agendaDays))
+        : (n: number) => addMonths(cursor, n);
+  const unit = view === "week" ? "week" : view === "agenda" ? `${Math.max(1, agendaDays)} days` : "month";
   const Heading = `h${headingLevel}` as const;
 
   /** The date part of a day header: weekday, date number (circled for today) and the day label. */
@@ -888,7 +900,7 @@ export function ContentCalendar({
 
         {view === "agenda" &&
           (() => {
-            const days = monthDays.filter((key) => byDay.has(key) || markersByDay.has(key));
+            const days = agendaWindow.filter((key) => byDay.has(key) || markersByDay.has(key));
             if (!days.length)
               return <p className="rounded-lg border p-6 text-center text-foreground/70">{emptyMessage}</p>;
             return (
