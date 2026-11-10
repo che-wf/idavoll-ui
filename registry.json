@@ -529,9 +529,9 @@
       "name": "big-three",
       "type": "registry:component",
       "title": "Big Three",
-      "description": "Sun, Moon and Rising signs for a profile, opt-in. BigThree shows the signs that are set (with glyphs) as chips or a list, and renders nothing if none are. Props: signs { sun?, moon?, rising? }, variant? (\"chips\" | \"list\"), labels?, className?. BigThreeEditor lets people pick their signs from three selects, with an optional calculator from birth date, time, time zone and birthplace latitude/longitude that runs on the device and passes on only the signs (it says so). Props: value, onChange(signs), labels?, className?. Also exports SIGN_GLYPHS, SIGNS and bigThree.",
+      "description": "Sun, Moon and Rising signs for a profile, opt-in, phrased the way astrology fans say them (\"Leo Sun · Pisces Moon · Virgo Rising\"), each with its glyph in a badge tinted by element (fire, earth, air, water). BigThree shows the signs that are set as chips or a list (with each placement's meaning: who you are, how you feel, how you come across), and renders nothing if none are. Props: signs { sun?, moon?, rising? }, variant? (\"chips\" | \"list\"), labels?, className?. BigThreeEditor shows three cards (Sun, Moon, Rising); each opens a grid of all twelve signs with glyphs and element colors (Sun shows the usual dates), plus Clear. An optional calculator works the signs out from birth date, time, time zone and birthplace latitude/longitude on the device and passes on only the signs. Props: value, onChange(signs), labels?, className?. Also exports SignGlyph, SIGN_GLYPHS, SIGN_INFO (element and Sun dates per sign), SIGNS and bigThree.",
       "dependencies": ["lucide-react@1.70.0"],
-      "registryDependencies": ["button", "input", "label", "@idavoll/birth-chart"],
+      "registryDependencies": ["@idavoll/birth-chart", "button", "input", "label", "popover"],
       "files": [
         {
           "path": "registry/idavoll/components/big-three.tsx",
