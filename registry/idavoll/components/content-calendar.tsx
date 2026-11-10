@@ -8,6 +8,7 @@ import {
   CalendarDays,
   CalendarRange,
   Camera,
+  ChevronDown,
   ChevronLeft,
   ChevronRight,
   Coffee,
@@ -16,6 +17,7 @@ import {
   Flame,
   Gift,
   Heart,
+  Layers,
   Leaf,
   List,
   Mic,
@@ -28,7 +30,6 @@ import {
   Plus,
   RotateCcw,
   Settings2,
-  SlidersHorizontal,
   Sparkles,
   Star,
   Sun,
@@ -39,15 +40,7 @@ import { type KeyboardEvent, type ReactNode, useEffect, useId, useRef, useState 
 import { SegmentedControl } from "@/components/idavoll/segmented-control";
 import { platformColor, SOCIAL_ICONS, SocialIcon, type SocialPlatform } from "@/components/idavoll/social-icon";
 import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuCheckboxItem,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 
 export interface CalendarEvent {
@@ -199,8 +192,16 @@ export interface ContentCalendarProps {
   onManageCategories?: () => void;
   /** Text for that menu item. Defaults to "Manage categories…". */
   manageCategoriesLabel?: string;
-  /** Shows an "Add" button, called with the selected day (or today). Open your entry form here. */
+  /** Shows a "New" button, called with the selected day (or today). Open your entry form here. */
   onAddEvent?: (date: string) => void;
+  /** Text for that button. Defaults to "New". */
+  addLabel?: string;
+  /** Name of the filter button and panel. Defaults to "Calendars". */
+  filterLabel?: string;
+  /** Explains the dashed style of tentative events in a small key under the calendar. Defaults to "Scheduled". */
+  tentativeLabel?: string;
+  /** Label for untimed items in the agenda's time column. Defaults to "All day". */
+  allDayLabel?: string;
   /** Makes events in week and agenda views clickable, e.g. to edit the viewer's own entries. */
   onEventClick?: (event: CalendarEvent) => void;
   /** Which view to show, when you control it. */
@@ -363,14 +364,23 @@ function MarkerTag({
   marker,
   className,
   formatTime,
+  muted,
 }: {
   marker: CalendarMarker;
   className?: string;
   /** Pass to show the time and description too. */
   formatTime?: (time: string) => string;
+  /** Grey instead of the marker's color, so it doesn't compete with posts. */
+  muted?: boolean;
 }) {
   return (
-    <span className={cn("flex min-w-0 items-start gap-1", MARKER_TONES[marker.tone ?? "amber"], className)}>
+    <span
+      className={cn(
+        "flex min-w-0 items-start gap-1",
+        muted ? "text-foreground/70" : MARKER_TONES[marker.tone ?? "amber"],
+        className,
+      )}
+    >
       <MarkerIcon marker={marker} className="mt-[0.2em]" />
       <span className="min-w-0">
         <span className="block truncate">{marker.name}</span>
@@ -389,10 +399,13 @@ function EventRow({
   event,
   formatTime,
   onClick,
+  hideTime,
 }: {
   event: CalendarEvent;
   formatTime: (time: string) => string;
   onClick?: (event: CalendarEvent) => void;
+  /** Leave the time out, when it's already shown beside the row. */
+  hideTime?: boolean;
 }) {
   const Tag = onClick ? "button" : "div";
   return (
@@ -407,10 +420,10 @@ function EventRow({
     >
       <EventIcon event={event} className="mt-px size-4" />
       <div className="min-w-0 flex-1 space-y-0.5">
-        <p className="font-medium text-sm leading-snug">{event.title}</p>
-        {(event.time || event.description || event.platform) && (
+        <p className="line-clamp-2 break-words font-medium text-sm leading-snug">{event.title}</p>
+        {((event.time && !hideTime) || event.description || event.platform) && (
           <p className="flex flex-wrap gap-x-2 text-foreground/70">
-            {event.time && <span className="tabular-nums">{formatTime(event.time)}</span>}
+            {event.time && !hideTime && <span className="tabular-nums">{formatTime(event.time)}</span>}
             <span>{event.description ?? (event.platform && SOCIAL_ICONS[event.platform].name)}</span>
           </p>
         )}
@@ -419,10 +432,106 @@ function EventRow({
   );
 }
 
+interface FilterOption {
+  key: string;
+  label: string;
+  icon: ReactNode;
+}
+
+/**
+ * One group in the Calendars panel: a checkbox for the whole group (a dash when only some are
+ * on) and an arrow that reveals its individual options.
+ */
+function FilterGroup({
+  title,
+  options,
+  hidden,
+  setShown,
+  children,
+}: {
+  title: string;
+  options: FilterOption[];
+  hidden: ReadonlySet<string>;
+  setShown: (keys: string[], show: boolean) => void;
+  /** Extra content at the end of the expanded list, e.g. a manage link. */
+  children?: ReactNode;
+}) {
+  const id = useId();
+  const visible = options.filter((o) => !hidden.has(o.key)).length;
+  const all = visible === options.length;
+  const some = visible > 0 && !all;
+  // Open by default when only some options are on, so it's clear which.
+  const [open, setOpen] = useState(some);
+  const groupRef = useRef<HTMLInputElement>(null);
+  useEffect(() => {
+    if (groupRef.current) groupRef.current.indeterminate = some;
+  }, [some]);
+  const box = "size-4 shrink-0 cursor-pointer accent-primary";
+
+  return (
+    <div className="py-1">
+      <div className="flex items-center gap-1 rounded-md pr-1 hover:bg-muted/60">
+        <label className="flex min-w-0 flex-1 cursor-pointer items-center gap-2.5 px-2 py-1.5 font-medium text-sm">
+          <input
+            ref={groupRef}
+            type="checkbox"
+            className={box}
+            checked={all}
+            onChange={() =>
+              setShown(
+                options.map((o) => o.key),
+                !all,
+              )
+            }
+          />
+          <span className="min-w-0 flex-1 truncate">{title}</span>
+          {!all && (
+            <span className="text-foreground/70 text-xs tabular-nums">
+              {visible} of {options.length}
+            </span>
+          )}
+        </label>
+        <button
+          type="button"
+          aria-expanded={open}
+          aria-controls={id}
+          aria-label={`${open ? "Hide" : "Choose"} ${title.toLowerCase()}`}
+          onClick={() => setOpen((o) => !o)}
+          className="grid size-7 shrink-0 cursor-pointer place-items-center rounded-md text-foreground/70 hover:bg-muted hover:text-foreground focus-visible:outline-2 focus-visible:outline-ring"
+        >
+          <ChevronDown
+            aria-hidden
+            className={cn("size-4 transition-transform motion-reduce:transition-none", open && "rotate-180")}
+          />
+        </button>
+      </div>
+      {open && (
+        <ul id={id} className="mt-0.5 space-y-0.5 pl-6">
+          {options.map((o) => (
+            <li key={o.key}>
+              <label className="flex cursor-pointer items-center gap-2.5 rounded-md px-2 py-1 text-sm hover:bg-muted/60">
+                <input
+                  type="checkbox"
+                  className={box}
+                  checked={!hidden.has(o.key)}
+                  onChange={(e) => setShown([o.key], e.target.checked)}
+                />
+                {o.icon}
+                <span className="min-w-0 flex-1 truncate">{o.label}</span>
+              </label>
+            </li>
+          ))}
+          {children && <li>{children}</li>}
+        </ul>
+      )}
+    </div>
+  );
+}
+
 /**
  * A calendar for planning and reviewing content, with month, week and agenda views.
  * Days list their posts with platform icons, plus markers such as holidays and Moon phases.
- * A "Show" menu hides platforms and marker types, and picking a day lets
+ * A "Calendars" panel hides platforms, the viewer's own calendars and marker types, and picking a day lets
  * you show its details. In month view, arrow keys move between days and Page Up and
  * Page Down change month; on narrow screens posts shrink to colored dots.
  */
@@ -440,6 +549,10 @@ export function ContentCalendar({
   onManageCategories,
   manageCategoriesLabel = "Manage categories…",
   onAddEvent,
+  addLabel = "New",
+  filterLabel = "Calendars",
+  tentativeLabel = "Scheduled",
+  allDayLabel = "All day",
   onEventClick,
   view: viewProp,
   defaultView = "month",
@@ -478,12 +591,15 @@ export function ContentCalendar({
     setHiddenState([...next]);
     onHiddenChange?.([...next]);
   };
-  const toggleHidden = (key: string, show: boolean) => {
+  const setShown = (keys: string[], show: boolean) => {
     const next = new Set(hidden);
-    if (show) next.delete(key);
-    else next.add(key);
+    for (const key of keys) {
+      if (show) next.delete(key);
+      else next.add(key);
+    }
     setHidden(next);
   };
+  const [filtersOpen, setFiltersOpen] = useState(false);
   const moveFocus = useRef(false);
   const bodyRef = useRef<HTMLDivElement>(null);
 
@@ -617,154 +733,161 @@ export function ContentCalendar({
     </>
   );
 
+  // Filter groups for the Calendars panel.
+  const filterGroups: { title: string; options: FilterOption[]; manage?: boolean }[] = [];
+  if (platformOptions.length) {
+    filterGroups.push({
+      title: "Platforms",
+      options: platformOptions.map((p) => ({
+        key: `platform:${p}`,
+        label: SOCIAL_ICONS[p].name,
+        icon: <SocialIcon platform={p} variant="tile" label="" className="size-4" />,
+      })),
+    });
+  }
+  if (ownCount > 0) {
+    filterGroups.push({
+      title: categoriesLabel,
+      manage: true,
+      options: [
+        ...usedCategories.map((c) => ({
+          key: `category:${c.id}`,
+          label: c.name,
+          icon: (
+            <EventIcon
+              event={{ id: c.id, date: "", title: c.name, color: c.color, icon: c.icon ?? "sparkles" }}
+              className="size-4"
+            />
+          ),
+        })),
+        ...(showUncategorized
+          ? [
+              {
+                key: "category:none",
+                label: uncategorizedLabel,
+                icon: <EventIcon event={{ id: "none", date: "", title: uncategorizedLabel }} className="size-4" />,
+              },
+            ]
+          : []),
+      ],
+    });
+  }
+  for (const [group, options] of markerGroups) {
+    filterGroups.push({
+      title: group,
+      options: [...options]
+        .sort(([a], [b]) => a.localeCompare(b))
+        .map(([key, sample]) => ({
+          key,
+          label: sample.category ?? group,
+          icon: <MarkerIcon marker={sample} className={cn("size-4", MARKER_TONES[sample.tone ?? "amber"])} />,
+        })),
+    });
+  }
+  const hasTentative = [...byDay.values()].some((list) => list.some((e) => e.tentative));
+
   return (
     <div className={cn("@container space-y-3", className)}>
-      <div className="flex flex-wrap items-center gap-2">
-        <Heading id={headingId} aria-live="polite" className="mr-auto font-heading font-semibold text-lg">
-          {title}
-        </Heading>
-        {views.length > 1 && (
-          <SegmentedControl
-            label="Calendar view"
-            size="sm"
-            value={view}
-            onValueChange={setView}
-            options={VIEW_OPTIONS.filter((o) => views.includes(o.value))}
-          />
-        )}
-        <div className="flex items-center gap-2">
+      {/* One toolbar, grouped like the calendars people already know: date navigation beside
+          the title on the left; the view, the Calendars panel and one primary action on the right. */}
+      <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
+        <div className="flex min-w-0 items-center gap-3">
+          <div className="flex shrink-0 items-center rounded-lg border bg-background">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="size-8 rounded-r-none"
+              aria-label={`Previous ${unit}`}
+              onClick={() => goTo(step(-1))}
+            >
+              <ChevronLeft aria-hidden />
+            </Button>
+            <Button variant="ghost" size="sm" className="h-8 rounded-none border-x px-3" onClick={() => select(today)}>
+              Today
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="size-8 rounded-l-none"
+              aria-label={`Next ${unit}`}
+              onClick={() => goTo(step(1))}
+            >
+              <ChevronRight aria-hidden />
+            </Button>
+          </div>
+          <Heading id={headingId} aria-live="polite" className="min-w-0 truncate font-heading font-semibold text-lg">
+            {title}
+          </Heading>
+        </div>
+        <div className="ml-auto flex items-center gap-2">
+          {views.length > 1 && (
+            <SegmentedControl
+              label="Calendar view"
+              size="sm"
+              value={view}
+              onValueChange={setView}
+              options={VIEW_OPTIONS.filter((o) => views.includes(o.value))}
+            />
+          )}
           {showFilters && (
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="outline" size="sm">
-                  <SlidersHorizontal aria-hidden />
-                  Show
+            <Popover open={filtersOpen} onOpenChange={setFiltersOpen}>
+              <PopoverTrigger asChild>
+                <Button variant="outline" size="sm" className="gap-1.5 px-2 @lg:px-3">
+                  <Layers aria-hidden />
+                  {/* Icon only on narrow containers; the name stays for screen readers. */}
+                  <span className="sr-only @lg:not-sr-only">{filterLabel}</span>
                   {hidden.size > 0 && (
-                    <span className="rounded-sm bg-primary px-1.5 font-semibold text-primary-foreground text-xs tabular-nums">
-                      <span className="sr-only">, </span>
+                    <span className="rounded-full bg-muted px-1.5 font-medium text-foreground/80 text-xs tabular-nums">
                       {hidden.size}
                       <span className="sr-only"> hidden</span>
                     </span>
                   )}
                 </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent
+              </PopoverTrigger>
+              <PopoverContent
                 align="end"
-                className="max-h-(--radix-dropdown-menu-content-available-height) min-w-56"
+                className="max-h-(--radix-popover-content-available-height) w-72 overflow-y-auto p-2"
               >
-                {platformOptions.length > 0 && (
-                  <>
-                    <DropdownMenuLabel>Platforms</DropdownMenuLabel>
-                    {platformOptions.map((p) => (
-                      <DropdownMenuCheckboxItem
-                        className="cursor-pointer"
-                        key={p}
-                        checked={!hidden.has(`platform:${p}`)}
-                        onSelect={(event) => event.preventDefault()}
-                        onCheckedChange={(on) => toggleHidden(`platform:${p}`, on)}
-                      >
-                        <SocialIcon platform={p} variant="tile" label="" className="size-4" />
-                        {SOCIAL_ICONS[p].name}
-                      </DropdownMenuCheckboxItem>
-                    ))}
-                  </>
-                )}
-                {ownCount > 0 && (
-                  <>
-                    {platformOptions.length > 0 && <DropdownMenuSeparator />}
-                    <DropdownMenuLabel>{categoriesLabel}</DropdownMenuLabel>
-                    {usedCategories.map((c) => (
-                      <DropdownMenuCheckboxItem
-                        className="cursor-pointer"
-                        key={c.id}
-                        checked={!hidden.has(`category:${c.id}`)}
-                        onSelect={(event) => event.preventDefault()}
-                        onCheckedChange={(on) => toggleHidden(`category:${c.id}`, on)}
-                      >
-                        <EventIcon
-                          event={{ id: c.id, date: "", title: c.name, color: c.color, icon: c.icon ?? "sparkles" }}
-                          className="size-4"
-                        />
-                        <span className="min-w-0 truncate">{c.name}</span>
-                      </DropdownMenuCheckboxItem>
-                    ))}
-                    {showUncategorized && (
-                      <DropdownMenuCheckboxItem
-                        className="cursor-pointer"
-                        checked={!hidden.has("category:none")}
-                        onSelect={(event) => event.preventDefault()}
-                        onCheckedChange={(on) => toggleHidden("category:none", on)}
-                      >
-                        <EventIcon event={{ id: "none", date: "", title: uncategorizedLabel }} className="size-4" />
-                        {uncategorizedLabel}
-                      </DropdownMenuCheckboxItem>
-                    )}
-                    {onManageCategories && (
-                      <DropdownMenuItem className="cursor-pointer" onSelect={onManageCategories}>
-                        <Settings2 aria-hidden className="size-4" />
-                        {manageCategoriesLabel}
-                      </DropdownMenuItem>
-                    )}
-                  </>
-                )}
-                {[...markerGroups].map(([group, categories], i) => (
-                  <div key={group} role="none">
-                    {(i > 0 || platformOptions.length + ownCount > 0) && <DropdownMenuSeparator />}
-                    <DropdownMenuLabel>{group}</DropdownMenuLabel>
-                    {[...categories]
-                      .sort(([a], [b]) => a.localeCompare(b))
-                      .map(([key, sample]) => (
-                        <DropdownMenuCheckboxItem
-                          className="cursor-pointer"
-                          key={key}
-                          checked={!hidden.has(key)}
-                          onSelect={(event) => event.preventDefault()}
-                          onCheckedChange={(on) => toggleHidden(key, on)}
+                <div className="flex items-center justify-between gap-2 px-2 pt-1 pb-1.5">
+                  <p className="font-heading font-semibold text-sm">{filterLabel}</p>
+                  {hidden.size > 0 && (
+                    <button
+                      type="button"
+                      onClick={() => setHidden(new Set())}
+                      className="cursor-pointer rounded-sm text-primary text-xs underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-ring"
+                    >
+                      Show all
+                    </button>
+                  )}
+                </div>
+                <div className="divide-y">
+                  {filterGroups.map((g) => (
+                    <FilterGroup key={g.title} title={g.title} options={g.options} hidden={hidden} setShown={setShown}>
+                      {g.manage && onManageCategories && (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setFiltersOpen(false);
+                            onManageCategories();
+                          }}
+                          className="flex w-full cursor-pointer items-center gap-2.5 rounded-md px-2 py-1 text-left text-foreground/80 text-sm hover:bg-muted/60 focus-visible:outline-2 focus-visible:outline-ring"
                         >
-                          <MarkerIcon marker={sample} className={cn("size-4", MARKER_TONES[sample.tone ?? "amber"])} />
-                          {sample.category ?? group}
-                        </DropdownMenuCheckboxItem>
-                      ))}
-                  </div>
-                ))}
-                {hidden.size > 0 && (
-                  <>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem onSelect={() => setHidden(new Set())} className="cursor-pointer justify-center">
-                      Show everything
-                    </DropdownMenuItem>
-                  </>
-                )}
-              </DropdownMenuContent>
-            </DropdownMenu>
+                          <Settings2 aria-hidden className="size-4" />
+                          {manageCategoriesLabel}
+                        </button>
+                      )}
+                    </FilterGroup>
+                  ))}
+                </div>
+              </PopoverContent>
+            </Popover>
           )}
           {onAddEvent && (
-            <Button size="sm" onClick={() => onAddEvent(selected ?? today)}>
+            <Button size="sm" className="gap-1.5 px-2 @lg:px-3" onClick={() => onAddEvent(selected ?? today)}>
               <Plus aria-hidden />
-              Add
+              <span className="sr-only @lg:not-sr-only">{addLabel}</span>
             </Button>
           )}
-          <Button variant="outline" size="sm" onClick={() => select(today)}>
-            Today
-          </Button>
-          <Button
-            variant="outline"
-            size="icon"
-            className="size-8"
-            aria-label={`Previous ${unit}`}
-            onClick={() => goTo(step(-1))}
-          >
-            <ChevronLeft aria-hidden />
-          </Button>
-          <Button
-            variant="outline"
-            size="icon"
-            className="size-8"
-            aria-label={`Next ${unit}`}
-            onClick={() => goTo(step(1))}
-          >
-            <ChevronRight aria-hidden />
-          </Button>
         </div>
       </div>
 
@@ -804,35 +927,35 @@ export function ContentCalendar({
                           onClick={() => select(key)}
                           onKeyDown={(event) => onGridKeyDown(event, key)}
                           className={cn(
-                            "cursor-pointer disabled:cursor-not-allowed flex size-full min-h-14 flex-col gap-1 p-1 text-left transition-colors hover:bg-muted/60 focus-visible:relative focus-visible:z-10 focus-visible:outline-2 focus-visible:outline-ring focus-visible:-outline-offset-2 @xl:min-h-24 @xl:p-1.5",
-                            !sameMonth(key, month) && "bg-muted/30 text-foreground/70",
+                            "cursor-pointer disabled:cursor-not-allowed flex size-full min-h-14 flex-col gap-1 p-1 text-left transition-colors hover:bg-muted/60 focus-visible:relative focus-visible:z-10 focus-visible:outline-2 focus-visible:outline-ring focus-visible:-outline-offset-2 @lg:min-h-24 @lg:p-1.5",
+                            !sameMonth(key, month) && "text-foreground/70",
                             isSelected && "bg-primary/10 hover:bg-primary/15",
                             dayClassName?.(key),
                           )}
                         >
                           {/* The button's name is built from its text: date, day label, holidays, count, posts. */}
                           <span className="flex w-full items-center justify-between gap-1">
-                            {dayHeader(key, false, "hidden @xl:inline")}
+                            {dayHeader(key, false, "hidden @lg:inline")}
                           </span>
                           {dayMarkers.length > 0 && (
                             <>
                               {/* Narrow: icons only, with names for screen readers. */}
-                              <span className="flex flex-wrap gap-0.5 px-0.5 @xl:hidden">
+                              <span className="flex flex-wrap gap-0.5 px-0.5 @lg:hidden">
                                 {dayMarkers.map((m) => (
-                                  <span key={`${m.name}${m.time}`} className={MARKER_TONES[m.tone ?? "amber"]}>
+                                  <span key={`${m.name}${m.time}`} className="text-foreground/60">
                                     <span className="sr-only">, {m.name}</span>
                                     <MarkerIcon marker={m} />
                                   </span>
                                 ))}
                               </span>
                               {/* Wide: names, up to maxMarkers. */}
-                              <span className="hidden w-full flex-col text-[0.65rem] leading-tight @xl:flex">
+                              <span className="hidden w-full flex-col text-[0.65rem] leading-tight @lg:flex">
                                 {dayMarkers
                                   .slice(0, dayMarkers.length > maxMarkers ? maxMarkers - 1 : maxMarkers)
                                   .map((m) => (
                                     <span key={`${m.name}${m.time}`}>
                                       <span className="sr-only">, </span>
-                                      <MarkerTag marker={m} />
+                                      <MarkerTag marker={m} muted />
                                     </span>
                                   ))}
                                 {dayMarkers.length > maxMarkers && (
@@ -855,7 +978,7 @@ export function ContentCalendar({
                           {dayEvents.length > 0 && (
                             <>
                               {/* Narrow: one dot per event. */}
-                              <span aria-hidden className="flex flex-wrap gap-0.5 px-1 @xl:hidden">
+                              <span aria-hidden className="flex flex-wrap gap-0.5 px-1 @lg:hidden">
                                 {dayEvents.slice(0, 4).map((e) => (
                                   <span
                                     key={e.id}
@@ -865,7 +988,7 @@ export function ContentCalendar({
                                 ))}
                               </span>
                               {/* Wide: a chip per event. */}
-                              <span className="hidden w-full flex-col gap-0.5 @xl:flex">
+                              <span className="hidden w-full flex-col gap-0.5 @lg:flex">
                                 {dayEvents.slice(0, extra > 0 ? maxEvents - 1 : maxEvents).map((e) => (
                                   <span
                                     key={e.id}
@@ -936,7 +1059,7 @@ export function ContentCalendar({
                       />
                     ))}
                     {dayEvents.length ? (
-                      <ul className="grid gap-1 @lg:grid-cols-2 @3xl:grid-cols-1">
+                      <ul className="grid gap-1">
                         {dayEvents.map((e) => (
                           <li key={e.id}>
                             <EventRow event={e} formatTime={formatTime} onClick={onEventClick} />
@@ -981,25 +1104,31 @@ export function ContentCalendar({
                       >
                         {dayHeader(key, true)}
                       </button>
-                      <div className="min-w-0 space-y-1">
-                        {(markersByDay.get(key) ?? []).map((m) => (
-                          <MarkerTag
-                            key={`${m.name}${m.time}`}
-                            marker={m}
-                            formatTime={formatTime}
-                            className="py-1 text-sm"
-                          />
-                        ))}
-                        {(byDay.get(key) ?? []).length > 0 && (
-                          <ul className="grid gap-1 @lg:grid-cols-2">
-                            {(byDay.get(key) ?? []).map((e) => (
-                              <li key={e.id}>
-                                <EventRow event={e} formatTime={formatTime} onClick={onEventClick} />
-                              </li>
-                            ))}
-                          </ul>
-                        )}
-                      </div>
+                      {/* One column in time order, times on the left, so the day reads top to bottom. */}
+                      <ul className="min-w-0 space-y-1.5">
+                        {[
+                          ...(markersByDay.get(key) ?? []).map((m) => ({ kind: "marker" as const, time: m.time, m })),
+                          ...(byDay.get(key) ?? []).map((e) => ({ kind: "event" as const, time: e.time, e })),
+                        ]
+                          .sort((a, b) => (a.time ?? "").localeCompare(b.time ?? ""))
+                          .map((item) => (
+                            <li
+                              key={item.kind === "event" ? item.e.id : `${item.m.name}${item.m.time}`}
+                              className="flex items-start gap-3"
+                            >
+                              <span className="w-16 shrink-0 pt-2 text-right text-foreground/70 text-xs tabular-nums">
+                                {item.time ? formatTime(item.time) : allDayLabel}
+                              </span>
+                              <div className="min-w-0 flex-1">
+                                {item.kind === "event" ? (
+                                  <EventRow event={item.e} formatTime={formatTime} onClick={onEventClick} hideTime />
+                                ) : (
+                                  <MarkerTag marker={item.m} className="py-1.5 text-sm" />
+                                )}
+                              </div>
+                            </li>
+                          ))}
+                      </ul>
                     </li>
                   );
                 })}
@@ -1007,6 +1136,12 @@ export function ContentCalendar({
             );
           })()}
       </div>
+      {hasTentative && (
+        <p className="flex items-center gap-2 text-foreground/70 text-xs">
+          <span aria-hidden className="inline-block h-3 w-5 rounded-sm border border-foreground/40 border-dashed" />
+          {tentativeLabel}
+        </p>
+      )}
     </div>
   );
 }

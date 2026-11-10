@@ -13,7 +13,6 @@ import {
 } from "@/components/idavoll/content-calendar";
 import type { SocialPlatform } from "@/components/idavoll/social-icon";
 import { usHolidays } from "@/components/idavoll/us-holidays";
-import { cn } from "@/lib/utils";
 
 const pad = (n: number) => String(n).padStart(2, "0");
 const toKey = (d: Date) => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
@@ -46,7 +45,8 @@ const events: CalendarEvent[] = Array.from({ length: TODAY_DAY + 7 }, (_, i) => 
     title: `${topics[(day + n) % topics.length]} #${Math.ceil(day / 6)}`,
     platform: rotation[(day + n) % rotation.length],
     time: times[(day + n * 2) % times.length],
-    description: day > TODAY_DAY ? "Scheduled" : `${(((day * 7919 + n * 104729) % 480) / 10 + 1).toFixed(1)}K views`,
+    // Scheduled posts get the dashed style (explained by the key), not a repeated word.
+    description: day > TODAY_DAY ? undefined : `${(((day * 7919 + n * 104729) % 480) / 10 + 1).toFixed(1)}K views`,
     tentative: day > TODAY_DAY,
   }));
 });
@@ -99,9 +99,9 @@ export default function ContentCalendarDemo() {
   const counts = Object.fromEntries(categories.map((c) => [c.id, entries.filter((e) => e.category === c.id).length]));
 
   return (
-    // Month view: the selected day's details sit beside the grid on wide screens and
-    // below it on narrow ones. Week and agenda views already list everything.
-    <div className={cn("grid gap-4", view === "month" && "lg:grid-cols-[minmax(0,1fr)_18rem]")}>
+    // Month view gets the full width so days show post titles; the selected day's details
+    // sit below the grid. Week and agenda views already list everything.
+    <div className="grid gap-4">
       <ContentCalendar
         events={allEvents}
         markers={markers}
@@ -125,7 +125,7 @@ export default function ContentCalendarDemo() {
       />
       {view === "month" && (
         <CalendarDayDetails
-          className="self-start"
+          className="max-w-xl"
           date={selected}
           events={allEvents}
           markers={markersAround(selected)}
