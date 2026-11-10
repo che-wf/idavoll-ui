@@ -1101,7 +1101,7 @@
       "name": "content-calendar",
       "type": "registry:component",
       "title": "Content Calendar",
-      "description": "A calendar for planning and reviewing posts, with month, week and agenda views and a switcher. Days list their events with platform icons, plus markers for holidays, Moon phases or anything else. A \"Show\" menu hides platforms and marker categories (grouped, e.g. Holidays › Federal holidays, Astrology › Retrogrades); the choice can be controlled and saved. Month view: chips with \"+2 more\", colored dots and marker icons on narrow containers, arrow keys move between days, Home/End go to the week's start/end, Page Up/Down change month. Week view: seven columns (stacked when narrow) with every event and marker, with times. Agenda view: a rolling window of days (14 by default) from the chosen day, listing only days with events or markers; the arrows move to the next or previous window and the heading shows the range. Picking a day calls onSelect so you can show its details; today is marked (aria-current). The viewer's own entries get an icon tile in their color (or their category's), a light tint, and a \"Your categories\" filter section; an \"Add\" button and clickable week/agenda entries hook up an entry form such as @idavoll/calendar-entry-dialog. Props: events [{ id, date (\"YYYY-MM-DD\"), title, time? (\"HH:MM\"), description?, platform?, color? (hex), icon? (CALENDAR_ICONS name), category? (category id), tentative? }], categories? [{ id, name, color (hex), icon? }], onAddEvent?(date) (shows an Add button), onEventClick?(event) (week and agenda), markers? [{ date, name, time?, description?, group? (filter section, default \"Other\"), category? (filter option), icon? (\"flag\" | \"star\" | \"moon\" | \"sun\" | \"eclipse\" | \"planet\" | \"retrograde\" | \"sparkles\" or a ReactNode), tone? (\"amber\" | \"violet\" | \"sky\" | \"rose\" | \"emerald\") }] (usHolidays() and astroEvents() return these), filterable? (true), hidden? / defaultHidden? / onHiddenChange?(keys) (keys are \"platform:tiktok\" or \"Group:Category\", e.g. \"Astrology:Retrogrades\"), maxMarkers? (2, month view), view?, defaultView? (\"month\"), onViewChange?, views? (default all three), date?, defaultDate?, onDateChange?, selected?, defaultSelected?, onSelect?(date), today?, weekStartsOn? (0 | 1, default 1), maxEvents? (3), dayLabel?(date), dayClassName?(date), locale?, headingLevel? (3), countLabel?(count), agendaDays? (14), emptyMessage?, className?. Also exports CALENDAR_ICONS (20 icons by name: sparkles, star, heart, camera, video, mic, music, pen, book, coffee, dumbbell, leaf, moon, sun, flame, plane, gift, briefcase, party, flag) and readableOn(hex) (black or white text for a color).",
+      "description": "A calendar for planning and reviewing posts, with month, week and agenda views and a switcher. Days list their events with platform icons, plus markers for holidays, Moon phases or anything else. A \"Show\" menu hides platforms and marker categories (grouped, e.g. Holidays › Federal holidays, Astrology › Retrogrades); the choice can be controlled and saved. Month view: chips with \"+2 more\", colored dots and marker icons on narrow containers, arrow keys move between days, Home/End go to the week's start/end, Page Up/Down change month. Week view: seven columns (stacked when narrow) with every event and marker, with times. Agenda view: a rolling window of days (14 by default) from the chosen day, listing only days with events or markers; the arrows move to the next or previous window and the heading shows the range. Picking a day calls onSelect so you can show its details; today is marked (aria-current). The viewer's own entries get an icon tile in their color (or their category's), a light tint, and a \"Your categories\" filter section; an \"Add\" button and clickable week/agenda entries hook up an entry form such as @idavoll/calendar-entry-dialog. Props: events [{ id, date (\"YYYY-MM-DD\"), title, time? (\"HH:MM\"), description?, platform?, color? (hex), icon? (CALENDAR_ICONS name), category? (category id), tentative? }], categories? [{ id, name, color (hex), icon? }], onAddEvent?(date) (shows an Add button), onEventClick?(event) (week and agenda), markers? [{ date, name, time?, description?, group? (filter section, default \"Other\"), category? (filter option), icon? (\"flag\" | \"star\" | \"moon\" | \"sun\" | \"eclipse\" | \"planet\" | \"retrograde\" | \"sparkles\" or a ReactNode), tone? (\"amber\" | \"violet\" | \"sky\" | \"rose\" | \"emerald\") }] (usHolidays() and astroEvents() return these), filterable? (true), hidden? / defaultHidden? / onHiddenChange?(keys) (keys are \"platform:tiktok\" or \"Group:Category\", e.g. \"Astrology:Retrogrades\"), maxMarkers? (2, month view), view?, defaultView? (\"month\"), onViewChange?, views? (default all three), date?, defaultDate?, onDateChange?, selected?, defaultSelected?, onSelect?(date), today?, weekStartsOn? (0 | 1, default 1), maxEvents? (3), dayLabel?(date), dayClassName?(date), locale?, headingLevel? (3), countLabel?(count), agendaDays? (14), emptyMessage?, className?. Also exports CALENDAR_ICONS (20 icons by name: sparkles, star, heart, camera, video, mic, music, pen, book, coffee, dumbbell, leaf, moon, sun, flame, plane, gift, briefcase, party, flag) and readableOn(hex) (black or white text for a color). Your categories: every category passed in gets a \"Show\" option (even before it has entries), the viewer's own entries without a category get one too (key \"category:none\"), and categoriesLabel? (\"Your categories\"), uncategorizedLabel? (\"No category\"), onManageCategories?() (adds a menu item, e.g. to open @idavoll/calendar-category-manager) and manageCategoriesLabel? (\"Manage categories…\") rename or extend that section. Also exports EventIcon, MarkerIcon, MARKER_TONES, markerKey(marker), markerGroup(marker), withCategory(event, categoriesById) and isEventHidden(event, hiddenSet) for companion components such as @idavoll/calendar-day-details.",
       "dependencies": ["lucide-react@1.70.0"],
       "registryDependencies": ["button", "dropdown-menu", "@idavoll/segmented-control", "@idavoll/social-icon"],
       "files": [
@@ -1117,7 +1117,7 @@
       "name": "calendar-entry-dialog",
       "type": "registry:component",
       "title": "Calendar Entry Dialog",
-      "description": "A form in a dialog for adding and editing the viewer's own calendar entries: title, date, optional time, category (or a new one made on the spot), icon (from CALENDAR_ICONS), color (preset swatches plus a custom color picker) and notes. Picking a category uses its icon and color unless the viewer picks their own; only overrides are saved, so editing a category updates its entries. Icon tiles pick black or white for contrast. Props: open, onOpenChange(open), entry? (edit this one; unset to add), defaultDate (\"YYYY-MM-DD\"), categories?, onSave(entry) (new entries get crypto.randomUUID()), onDelete?(id) (shows Delete when editing), onCreateCategory?(category) (shows \"New category\"), colors? ([{ name, value (hex) }], default CALENDAR_COLORS). Also exports CALENDAR_COLORS.",
+      "description": "A form in a dialog for adding and editing the viewer's own calendar entries: title, date, optional time, category (or a new one made on the spot), icon (from CALENDAR_ICONS), color (preset swatches plus a custom color picker) and notes. Picking a category uses its icon and color unless the viewer picks their own; only overrides are saved, so editing a category updates its entries. Icon tiles pick black or white for contrast. Props: open, onOpenChange(open), entry? (edit this one; unset to add), defaultDate (\"YYYY-MM-DD\"), categories?, onSave(entry) (new entries get crypto.randomUUID()), onDelete?(id) (shows Delete when editing), onCreateCategory?(category) (shows \"New category\"), colors? ([{ name, value (hex) }], default CALENDAR_COLORS). Also exports CALENDAR_COLORS, CalendarIconPicker ({ value, onChange(icon), label? (\"Icon\") }: the icons as radio buttons) and CalendarColorPicker ({ value, onChange(color), colors?, label? (\"Color\") }: swatches plus a custom color).",
       "dependencies": ["lucide-react@1.70.0"],
       "registryDependencies": ["button", "dialog", "input", "label", "@idavoll/content-calendar"],
       "files": [
@@ -1128,6 +1128,74 @@
         }
       ],
       "categories": ["calendar", "form"]
+    },
+    {
+      "name": "calendar-day-details",
+      "type": "registry:component",
+      "title": "Calendar Day Details",
+      "description": "Everything on one day, for showing beside a month calendar on wide screens and below it on narrow ones: the long date, an optional label (e.g. \"Challenge day 12\"), markers such as holidays and Moon phases with their times, posts (platform, time, Scheduled) and the viewer's own entries (category, time, notes), sorted by time, and an \"Add to this day\" button. Events become buttons when onEventClick is set: posts show a chevron (open), own entries a pencil (edit). Respects the same hidden keys as content-calendar, so both show the same things. Long text wraps; bad dates don't crash. The new date is announced politely when the day changes. Props: date (\"YYYY-MM-DD\"), events (all; only this day's are listed), markers?, categories?, hidden? (keys as in content-calendar), dayLabel?(date), onEventClick?(event), onAddEvent?(date), emptyMessage? (node or (date) => node; default \"Nothing planned yet.\"), locale?, headingLevel? (3), className?.",
+      "dependencies": ["lucide-react@1.70.0"],
+      "registryDependencies": ["button", "@idavoll/content-calendar", "@idavoll/social-icon"],
+      "files": [
+        {
+          "path": "registry/idavoll/components/calendar-day-details.tsx",
+          "type": "registry:component",
+          "target": "components/idavoll/calendar-day-details.tsx"
+        }
+      ],
+      "categories": ["calendar", "planning"]
+    },
+    {
+      "name": "calendar-category-manager",
+      "type": "registry:component",
+      "title": "Calendar Category Manager",
+      "description": "A dialog for the viewer's own calendar categories: lists each with its icon, color and entry count; add a new one; edit its name (60 characters max), icon and color; delete with a confirm step that says how many entries stay, without a category. Pair it with content-calendar's onManageCategories. Props: open, onOpenChange(open), categories, onSave(category) (new ones get crypto.randomUUID()), onDelete?(id) (shows Delete buttons), entryCounts? ({ [categoryId]: number }), colors? (default CALENDAR_COLORS), labels? ({ title? (\"Your categories\"), description?, noun? (\"category\"), e.g. \"calendar\" }).",
+      "dependencies": ["lucide-react@1.70.0"],
+      "registryDependencies": [
+        "button",
+        "dialog",
+        "input",
+        "label",
+        "@idavoll/content-calendar",
+        "@idavoll/calendar-entry-dialog"
+      ],
+      "files": [
+        {
+          "path": "registry/idavoll/components/calendar-category-manager.tsx",
+          "type": "registry:component",
+          "target": "components/idavoll/calendar-category-manager.tsx"
+        }
+      ],
+      "categories": ["calendar", "form"]
+    },
+    {
+      "name": "calendar-day-details-demo",
+      "type": "registry:block",
+      "title": "Calendar Day Details example",
+      "description": "Example: one day with a Full Moon, posts on TikTok and YouTube, a filming entry and a personal entry with a note.",
+      "registryDependencies": ["@idavoll/calendar-day-details"],
+      "files": [
+        {
+          "path": "registry/idavoll/demos/calendar-day-details-demo.tsx",
+          "type": "registry:component",
+          "target": "components/idavoll/demos/calendar-day-details-demo.tsx"
+        }
+      ]
+    },
+    {
+      "name": "calendar-category-manager-demo",
+      "type": "registry:block",
+      "title": "Calendar Category Manager example",
+      "description": "Example: a Manage calendars button that opens the manager with Filming, Rest and Brand deals.",
+      "dependencies": ["lucide-react@1.70.0"],
+      "registryDependencies": ["@idavoll/calendar-category-manager", "button"],
+      "files": [
+        {
+          "path": "registry/idavoll/demos/calendar-category-manager-demo.tsx",
+          "type": "registry:component",
+          "target": "components/idavoll/demos/calendar-category-manager-demo.tsx"
+        }
+      ]
     },
     {
       "name": "us-holidays",
@@ -1233,15 +1301,15 @@
       "name": "content-calendar-demo",
       "type": "registry:block",
       "title": "Content Calendar example",
-      "description": "Example: a 90-day challenge calendar with month, week and agenda views, US holidays, astrology (Moon phases, eclipses, Sun signs, planet sign changes, retrogrades), a Show filter, challenge day numbers, rest days, scheduled posts and a panel for the selected day. Includes the creator's own entries and categories (Filming, Rest, Brand deals) with Add and Edit through calendar-entry-dialog.",
+      "description": "Example: a 90-day challenge calendar with month, week and agenda views, US holidays, astrology (Moon phases, eclipses, Sun signs, planet sign changes, retrogrades), a Show filter, challenge day numbers, rest days, scheduled posts and the selected day's details beside the month grid (below it on narrow screens) through calendar-day-details. Includes the creator's own calendars (Filming, Rest, Brand deals) in the Show menu, with Add and Edit through calendar-entry-dialog and Manage calendars… through calendar-category-manager.",
       "registryDependencies": [
         "@idavoll/content-calendar",
         "@idavoll/calendar-entry-dialog",
+        "@idavoll/calendar-day-details",
+        "@idavoll/calendar-category-manager",
         "@idavoll/us-holidays",
         "@idavoll/astro-events",
-        "@idavoll/social-icon",
-        "button",
-        "card"
+        "@idavoll/social-icon"
       ],
       "files": [
         {

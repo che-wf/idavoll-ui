@@ -5,6 +5,8 @@ import { createRoot } from "react-dom/client";
 import AchievementBadgeDemo from "../registry/idavoll/demos/achievement-badge-demo";
 import AnimatedNumberDemo from "../registry/idavoll/demos/animated-number-demo";
 import BigThreeDemo from "../registry/idavoll/demos/big-three-demo";
+import CalendarCategoryManagerDemo from "../registry/idavoll/demos/calendar-category-manager-demo";
+import CalendarDayDetailsDemo from "../registry/idavoll/demos/calendar-day-details-demo";
 import ChallengeChartDemo from "../registry/idavoll/demos/challenge-chart-demo";
 import ChallengeProgressDemo from "../registry/idavoll/demos/challenge-progress-demo";
 import CommentListDemo from "../registry/idavoll/demos/comment-list-demo";
@@ -56,6 +58,8 @@ const sections: { name: string; title: string; Demo: ComponentType }[] = [
   { name: "notification-preferences", title: "Notification Preferences", Demo: NotificationPreferencesDemo },
   { name: "data-table", title: "Data Table", Demo: DataTableDemo },
   { name: "content-calendar", title: "Content Calendar", Demo: ContentCalendarDemo },
+  { name: "calendar-day-details", title: "Calendar Day Details", Demo: CalendarDayDetailsDemo },
+  { name: "calendar-category-manager", title: "Calendar Category Manager", Demo: CalendarCategoryManagerDemo },
   { name: "animated-number", title: "Animated Number", Demo: AnimatedNumberDemo },
   { name: "social-icon", title: "Social Icon", Demo: SocialIconDemo },
   { name: "challenge-chart", title: "Challenge Chart", Demo: ChallengeChartDemo },

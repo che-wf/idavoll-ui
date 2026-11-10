@@ -1,21 +1,18 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2026 idavoll-ui contributors. Part of idavoll-ui: https://github.com/che-wf/idavoll-ui
-import { Pencil } from "lucide-react";
 import { useMemo, useState } from "react";
 import { astroEvents } from "@/components/idavoll/astro-events";
+import { CalendarCategoryManager } from "@/components/idavoll/calendar-category-manager";
+import { CalendarDayDetails } from "@/components/idavoll/calendar-day-details";
 import { CalendarEntryDialog } from "@/components/idavoll/calendar-entry-dialog";
 import {
-  CALENDAR_ICONS,
   type CalendarCategory,
   type CalendarEvent,
   type CalendarView,
   ContentCalendar,
-  readableOn,
 } from "@/components/idavoll/content-calendar";
-import { SOCIAL_ICONS, SocialIcon, type SocialPlatform } from "@/components/idavoll/social-icon";
+import type { SocialPlatform } from "@/components/idavoll/social-icon";
 import { usHolidays } from "@/components/idavoll/us-holidays";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 
 const pad = (n: number) => String(n).padStart(2, "0");
@@ -62,9 +59,6 @@ function markersAround(date: string) {
   return years.flatMap((y) => [...usHolidays(y), ...astroEvents(y)]);
 }
 
-const timeFormat = new Intl.DateTimeFormat(undefined, { hour: "numeric", minute: "2-digit" });
-const formatTime = (time: string) => timeFormat.format(new Date(`2000-01-01T${time}`));
-
 // The creator's own categories and entries. In the app these would be saved to the database.
 const starterCategories: CalendarCategory[] = [
   { id: "filming", name: "Filming", color: "#0d9488", icon: "camera" },
@@ -85,31 +79,40 @@ const starterEntries: CalendarEvent[] = [
   { id: "custom-4", date: dayToDate(TODAY_DAY - 3), title: "Coffee with Sam", icon: "coffee", color: "#db2777" },
 ];
 
-const longDate = new Intl.DateTimeFormat(undefined, { weekday: "long", month: "long", day: "numeric" });
-
 export default function ContentCalendarDemo() {
   const today = dayToDate(TODAY_DAY);
   const [selected, setSelected] = useState(today);
   const [view, setView] = useState<CalendarView>("month");
   const [shown, setShown] = useState(today);
+  const [hidden, setHidden] = useState<string[]>([]);
   const markers = useMemo(() => markersAround(shown), [shown]);
   const [categories, setCategories] = useState(starterCategories);
   const [entries, setEntries] = useState(starterEntries);
-  const [editing, setEditing] = useState<{ open: boolean; entry?: CalendarEvent }>({ open: false });
+  const [editing, setEditing] = useState<{ open: boolean; entry?: CalendarEvent; date?: string }>({ open: false });
+  const [managing, setManaging] = useState(false);
   const allEvents = useMemo(() => [...events, ...entries], [entries]);
   const isEntry = (e: CalendarEvent) => entries.some((x) => x.id === e.id);
-  const dayPosts = allEvents.filter((e) => e.date === selected);
-  const dayMarkers = markersAround(selected).filter((m) => m.date === selected);
-  const day = challengeDay(selected);
+  const challengeLabel = (date: string) => {
+    const n = challengeDay(date);
+    return n >= 1 && n <= 90 ? `Day ${n}` : null;
+  };
+  const counts = Object.fromEntries(categories.map((c) => [c.id, entries.filter((e) => e.category === c.id).length]));
 
   return (
-    // The day panel sits beside the month grid; week and agenda views get the full width.
-    <div className={cn("grid gap-4", view === "month" && "lg:grid-cols-[1fr_16rem]")}>
+    // Month view: the selected day's details sit beside the grid on wide screens and
+    // below it on narrow ones. Week and agenda views already list everything.
+    <div className={cn("grid gap-4", view === "month" && "lg:grid-cols-[minmax(0,1fr)_18rem]")}>
       <ContentCalendar
         events={allEvents}
         markers={markers}
         categories={categories}
-        onAddEvent={() => setEditing({ open: true })}
+        categoriesLabel="Your calendars"
+        uncategorizedLabel="No calendar"
+        onManageCategories={() => setManaging(true)}
+        manageCategoriesLabel="Manage calendars…"
+        hidden={hidden}
+        onHiddenChange={setHidden}
+        onAddEvent={(date) => setEditing({ open: true, date })}
         onEventClick={(e) => isEntry(e) && setEditing({ open: true, entry: entries.find((x) => x.id === e.id) })}
         date={shown}
         onDateChange={setShown}
@@ -118,88 +121,33 @@ export default function ContentCalendarDemo() {
         today={today}
         selected={selected}
         onSelect={setSelected}
-        dayLabel={(date) => {
-          const n = challengeDay(date);
-          return n >= 1 && n <= 90 ? `Day ${n}` : null;
-        }}
+        dayLabel={challengeLabel}
       />
-      <Card className="self-start">
-        <CardContent className="space-y-3">
-          <div>
-            <p className="font-semibold">{longDate.format(new Date(`${selected}T12:00`))}</p>
-            {day >= 1 && day <= 90 && <p className="text-foreground/70 text-sm">Challenge day {day}</p>}
-            {dayMarkers.map((m) => (
-              <p
-                key={m.name}
-                className={cn(
-                  "text-sm",
-                  m.group === "Astrology"
-                    ? "text-violet-700 dark:text-violet-300"
-                    : "text-amber-800 dark:text-amber-300",
-                )}
-              >
-                {m.name}
-                {"time" in m && <span className="text-foreground/70"> · {formatTime(m.time)}</span>}
-              </p>
-            ))}
-          </div>
-          {dayPosts.length ? (
-            <ul className="space-y-2">
-              {dayPosts.map((e) => {
-                const category = categories.find((c) => c.id === e.category);
-                const color = e.color ?? category?.color ?? "#475569";
-                const Icon = CALENDAR_ICONS[e.icon ?? category?.icon ?? "sparkles"];
-                return (
-                  <li key={e.id} className="flex items-center gap-2 text-sm">
-                    {e.platform ? (
-                      <SocialIcon platform={e.platform} variant="tile" label="" className="size-6" />
-                    ) : (
-                      <span
-                        aria-hidden
-                        className="grid size-6 shrink-0 place-items-center rounded-md"
-                        style={{ background: color, color: readableOn(color) }}
-                      >
-                        <Icon className="size-3.5" strokeWidth={2.5} />
-                      </span>
-                    )}
-                    <span className="min-w-0 flex-1">
-                      <span className="block truncate font-medium">{e.title}</span>
-                      <span className="text-foreground/70 text-xs">
-                        {e.platform
-                          ? `${SOCIAL_ICONS[e.platform].name} · ${e.tentative ? "Scheduled" : "Posted"}`
-                          : [e.time && formatTime(e.time), category?.name].filter(Boolean).join(" · ") || "Your entry"}
-                      </span>
-                    </span>
-                    {isEntry(e) && (
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="size-8"
-                        aria-label={`Edit ${e.title}`}
-                        onClick={() => setEditing({ open: true, entry: e })}
-                      >
-                        <Pencil aria-hidden />
-                      </Button>
-                    )}
-                  </li>
-                );
-              })}
-            </ul>
-          ) : (
-            <p className="text-foreground/70 text-sm">
-              {day >= 1 && day <= TODAY_DAY ? "Rest day. Part of the plan." : "Nothing planned yet."}
-            </p>
-          )}
-          <Button variant="outline" size="sm" className="w-full" onClick={() => setEditing({ open: true })}>
-            Add to this day
-          </Button>
-        </CardContent>
-      </Card>
+      {view === "month" && (
+        <CalendarDayDetails
+          className="self-start"
+          date={selected}
+          events={allEvents}
+          markers={markersAround(selected)}
+          categories={categories}
+          hidden={hidden}
+          dayLabel={(date) => {
+            const label = challengeLabel(date);
+            return label ? `Challenge ${label.toLowerCase()}` : null;
+          }}
+          onEventClick={(e) => isEntry(e) && setEditing({ open: true, entry: entries.find((x) => x.id === e.id) })}
+          onAddEvent={(date) => setEditing({ open: true, date })}
+          emptyMessage={(date) => {
+            const day = challengeDay(date);
+            return day >= 1 && day <= TODAY_DAY ? "Rest day. Part of the plan." : "Nothing planned yet.";
+          }}
+        />
+      )}
       <CalendarEntryDialog
         open={editing.open}
         onOpenChange={(open) => setEditing((s) => ({ ...s, open }))}
         entry={editing.entry}
-        defaultDate={selected}
+        defaultDate={editing.date ?? selected}
         categories={categories}
         onCreateCategory={(c) => setCategories((list) => [...list, c])}
         onSave={(entry) => {
@@ -208,6 +156,22 @@ export default function ContentCalendarDemo() {
           setShown(entry.date);
         }}
         onDelete={(id) => setEntries((list) => list.filter((x) => x.id !== id))}
+      />
+      <CalendarCategoryManager
+        open={managing}
+        onOpenChange={setManaging}
+        categories={categories}
+        entryCounts={counts}
+        labels={{ title: "Your calendars", noun: "calendar" }}
+        onSave={(c) =>
+          setCategories((list) =>
+            list.some((x) => x.id === c.id) ? list.map((x) => (x.id === c.id ? c : x)) : [...list, c],
+          )
+        }
+        onDelete={(id) => {
+          setCategories((list) => list.filter((x) => x.id !== id));
+          setEntries((list) => list.map((e) => (e.category === id ? { ...e, category: undefined } : e)));
+        }}
       />
     </div>
   );

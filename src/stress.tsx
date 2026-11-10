@@ -5,11 +5,13 @@ import { Component, type ReactNode, useState } from "react";
 import { BadgeShelf, evaluateBadges } from "../registry/idavoll/components/achievement-badge";
 import { AnimatedNumber } from "../registry/idavoll/components/animated-number";
 import { BigThree } from "../registry/idavoll/components/big-three";
+import { CalendarCategoryManager } from "../registry/idavoll/components/calendar-category-manager";
+import { CalendarDayDetails } from "../registry/idavoll/components/calendar-day-details";
 import { ChallengeChart } from "../registry/idavoll/components/challenge-chart";
 import { ChallengeProgress } from "../registry/idavoll/components/challenge-progress";
 import { CommentList } from "../registry/idavoll/components/comment-list";
 import { ConnectedAccounts } from "../registry/idavoll/components/connected-accounts";
-import { ContentCalendar } from "../registry/idavoll/components/content-calendar";
+import { type CalendarCategory, ContentCalendar } from "../registry/idavoll/components/content-calendar";
 import { CopyField } from "../registry/idavoll/components/copy-field";
 import { DataTable } from "../registry/idavoll/components/data-table";
 import { DateField } from "../registry/idavoll/components/date-field";
@@ -277,6 +279,27 @@ export function StressPage() {
           />
         </Case>
 
+        <Case name="calendar-day-details">
+          <CalendarDayDetails
+            date={today}
+            events={[
+              { id: "1", date: today, title: LONG, platform: "youtube", time: "09:00", description: UNBROKEN },
+              { id: "2", date: today, title: UNBROKEN, category: "c", time: "25:99" },
+              { id: "3", date: today, title: HANDLE, icon: "heart", color: "#fde047" },
+            ]}
+            markers={[{ date: today, name: LONG, description: UNBROKEN, group: "Holidays", tone: "amber" as const }]}
+            categories={[{ id: "c", name: `${"Long".repeat(15)}`, color: "#fde047", icon: "sun" as const }]}
+            dayLabel={() => LONG}
+            onEventClick={() => {}}
+            onAddEvent={() => {}}
+          />
+          <CalendarDayDetails date="not-a-date" events={[]} />
+        </Case>
+
+        <Case name="calendar-category-manager">
+          <ManagerCase />
+        </Case>
+
         <Case name="wizard-steps">
           <WizardSteps
             steps={Array.from({ length: 8 }, (_, i) => ({
@@ -478,5 +501,33 @@ export function StressPage() {
         </Case>
       </main>
     </TooltipProvider>
+  );
+}
+
+/** The category manager is a dialog, so it opens from a button: 40 categories, a 60-character name. */
+function ManagerCase() {
+  const [open, setOpen] = useState(false);
+  const [categories, setCategories] = useState<CalendarCategory[]>(() =>
+    Array.from({ length: 40 }, (_, i) => ({
+      id: `c${i}`,
+      name: i === 0 ? "x".repeat(60) : `${NAME} ${i}`,
+      color: i % 2 ? "#fde047" : "#0f172a",
+      icon: "sparkles",
+    })),
+  );
+  return (
+    <>
+      <Button className="cursor-pointer" onClick={() => setOpen(true)}>
+        Open category manager
+      </Button>
+      <CalendarCategoryManager
+        open={open}
+        onOpenChange={setOpen}
+        categories={categories}
+        entryCounts={{ c0: 999, c1: 1 }}
+        onSave={(c) => setCategories((list) => list.map((x) => (x.id === c.id ? { ...x, ...c } : x)))}
+        onDelete={(id) => setCategories((list) => list.filter((x) => x.id !== id))}
+      />
+    </>
   );
 }

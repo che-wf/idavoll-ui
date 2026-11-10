@@ -138,7 +138,6 @@ export function CalendarEntryDialog({
   const chosen = categories.find((c) => c.id === category);
   const shownIcon = icon ?? chosen?.icon ?? "sparkles";
   const shownColor = color ?? chosen?.color ?? colors[0]?.value ?? "#475569";
-  const isCustomColor = !colors.some((c) => c.value === shownColor);
 
   const submit = (event: FormEvent) => {
     event.preventDefault();
@@ -268,73 +267,8 @@ export function CalendarEntryDialog({
             </fieldset>
           )}
 
-          <fieldset>
-            <legend className="mb-2 font-medium text-sm">Icon</legend>
-            <div className="grid grid-cols-10 gap-1">
-              {(Object.keys(CALENDAR_ICONS) as CalendarIconName[]).map((name) => {
-                const Icon = CALENDAR_ICONS[name];
-                return (
-                  <label key={name} className="relative">
-                    <input
-                      type="radio"
-                      name={`${id}-icon`}
-                      value={name}
-                      checked={shownIcon === name}
-                      onChange={() => setIcon(name)}
-                      className="peer sr-only"
-                      aria-label={ICON_LABELS[name]}
-                    />
-                    <span className="grid aspect-square cursor-pointer place-items-center rounded-md border border-transparent hover:bg-muted peer-checked:border-foreground peer-checked:bg-muted peer-focus-visible:outline-2 peer-focus-visible:outline-ring">
-                      <Icon aria-hidden className="size-4" />
-                    </span>
-                  </label>
-                );
-              })}
-            </div>
-          </fieldset>
-
-          <fieldset>
-            <legend className="mb-2 font-medium text-sm">Color</legend>
-            <div className="flex flex-wrap gap-2">
-              {colors.map((c) => (
-                <label key={c.value} className="relative">
-                  <input
-                    type="radio"
-                    name={`${id}-color`}
-                    value={c.value}
-                    checked={shownColor === c.value}
-                    onChange={() => setColor(c.value)}
-                    className="peer sr-only"
-                    aria-label={c.name}
-                  />
-                  <span aria-hidden className={swatch} style={{ background: c.value, color: readableOn(c.value) }}>
-                    {shownColor === c.value && <Check className="size-4" strokeWidth={3} />}
-                  </span>
-                </label>
-              ))}
-              <label className="relative" title="Custom color">
-                <input
-                  type="color"
-                  value={shownColor}
-                  onChange={(e) => setColor(e.target.value)}
-                  className="peer absolute inset-0 size-8 cursor-pointer opacity-0"
-                  aria-label="Custom color"
-                />
-                <span
-                  aria-hidden
-                  className={cn(
-                    swatch,
-                    "pointer-events-none bg-[conic-gradient(red,yellow,lime,cyan,blue,magenta,red)]",
-                    isCustomColor && "ring-2 ring-foreground",
-                  )}
-                >
-                  {isCustomColor && (
-                    <span className="size-4 rounded-full border-2 border-white" style={{ background: shownColor }} />
-                  )}
-                </span>
-              </label>
-            </div>
-          </fieldset>
+          <CalendarIconPicker value={shownIcon} onChange={setIcon} />
+          <CalendarColorPicker value={shownColor} onChange={setColor} colors={colors} />
 
           <div className="space-y-2">
             <Label htmlFor={`${id}-notes`}>
@@ -375,5 +309,109 @@ export function CalendarEntryDialog({
         </form>
       </DialogContent>
     </Dialog>
+  );
+}
+
+export interface CalendarIconPickerProps {
+  /** The chosen icon. */
+  value: CalendarIconName;
+  /** Called with the icon the viewer picks. */
+  onChange: (icon: CalendarIconName) => void;
+  /** Legend above the icons. Defaults to "Icon". */
+  label?: string;
+}
+
+/** A grid of CALENDAR_ICONS as radio buttons, each with a name for screen readers. */
+export function CalendarIconPicker({ value, onChange, label = "Icon" }: CalendarIconPickerProps) {
+  const id = useId();
+  return (
+    <fieldset className="min-w-0">
+      <legend className="mb-2 font-medium text-sm">{label}</legend>
+      <div className="grid grid-cols-10 gap-1">
+        {(Object.keys(CALENDAR_ICONS) as CalendarIconName[]).map((name) => {
+          const Icon = CALENDAR_ICONS[name];
+          return (
+            <label key={name} className="relative">
+              <input
+                type="radio"
+                name={`${id}-icon`}
+                value={name}
+                checked={value === name}
+                onChange={() => onChange(name)}
+                className="peer sr-only"
+                aria-label={ICON_LABELS[name]}
+              />
+              <span className="grid aspect-square cursor-pointer place-items-center rounded-md border border-transparent hover:bg-muted peer-checked:border-foreground peer-checked:bg-muted peer-focus-visible:outline-2 peer-focus-visible:outline-ring">
+                <Icon aria-hidden className="size-4" />
+              </span>
+            </label>
+          );
+        })}
+      </div>
+    </fieldset>
+  );
+}
+
+export interface CalendarColorPickerProps {
+  /** The chosen color, as a hex code. */
+  value: string;
+  /** Called with the color the viewer picks. */
+  onChange: (color: string) => void;
+  /** Preset colors. A "Custom color" picker is always added. Defaults to CALENDAR_COLORS. */
+  colors?: CalendarColor[];
+  /** Legend above the swatches. Defaults to "Color". */
+  label?: string;
+}
+
+/** Color swatches as radio buttons, plus a custom color picker. */
+export function CalendarColorPicker({
+  value,
+  onChange,
+  colors = CALENDAR_COLORS,
+  label = "Color",
+}: CalendarColorPickerProps) {
+  const id = useId();
+  const isCustom = !colors.some((c) => c.value === value);
+  return (
+    <fieldset className="min-w-0">
+      <legend className="mb-2 font-medium text-sm">{label}</legend>
+      <div className="flex flex-wrap gap-2">
+        {colors.map((c) => (
+          <label key={c.value} className="relative">
+            <input
+              type="radio"
+              name={`${id}-color`}
+              value={c.value}
+              checked={value === c.value}
+              onChange={() => onChange(c.value)}
+              className="peer sr-only"
+              aria-label={c.name}
+            />
+            <span aria-hidden className={swatch} style={{ background: c.value, color: readableOn(c.value) }}>
+              {value === c.value && <Check className="size-4" strokeWidth={3} />}
+            </span>
+          </label>
+        ))}
+        <label className="relative" title="Custom color">
+          <input
+            type="color"
+            value={value}
+            onChange={(e) => onChange(e.target.value)}
+            className="peer absolute inset-0 size-8 cursor-pointer opacity-0"
+            aria-label="Custom color"
+          />
+          <span
+            aria-hidden
+            className={cn(
+              swatch,
+              "pointer-events-none bg-[conic-gradient(red,yellow,lime,cyan,blue,magenta,red)]",
+              isCustom && "ring-2 ring-foreground",
+            )}
+          >
+            {isCustom && <span className="size-4 rounded-full border-2 border-white" style={{ background: value }} />}
+          </span>
+        </label>
+      </div>
+    </fieldset>
   );
 }

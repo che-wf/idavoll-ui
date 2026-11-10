@@ -27,6 +27,7 @@ import {
   Plane,
   Plus,
   RotateCcw,
+  Settings2,
   SlidersHorizontal,
   Sparkles,
   Star,
@@ -130,7 +131,8 @@ const MARKER_ICONS = {
   sparkles: Sparkles,
 };
 
-const TONES = {
+/** Text colors for marker tones. */
+export const MARKER_TONES = {
   amber: "text-amber-800 dark:text-amber-300",
   violet: "text-violet-700 dark:text-violet-300",
   sky: "text-sky-800 dark:text-sky-300",
@@ -158,7 +160,7 @@ export interface CalendarMarker {
   /** A built-in icon name, or your own icon. Defaults to "sparkles". */
   icon?: keyof typeof MARKER_ICONS | ReactNode;
   /** Text color. Defaults to "amber". */
-  tone?: keyof typeof TONES;
+  tone?: keyof typeof MARKER_TONES;
 }
 
 export type CalendarView = "month" | "week" | "agenda";
@@ -186,6 +188,17 @@ export interface ContentCalendarProps {
   maxMarkers?: number;
   /** The viewer's own event categories, each with a color and icon. Each gets a filter option. */
   categories?: CalendarCategory[];
+  /** Heading for the categories in the "Show" menu, e.g. "Your calendars". Defaults to "Your categories". */
+  categoriesLabel?: string;
+  /**
+   * Name of the "Show" option for the viewer's own entries without a category (key
+   * "category:none"). Defaults to "No category".
+   */
+  uncategorizedLabel?: string;
+  /** Adds a menu item under the categories, e.g. to open @idavoll/calendar-category-manager. */
+  onManageCategories?: () => void;
+  /** Text for that menu item. Defaults to "Manage categories…". */
+  manageCategoriesLabel?: string;
   /** Shows an "Add" button, called with the selected day (or today). Open your entry form here. */
   onAddEvent?: (date: string) => void;
   /** Makes events in week and agenda views clickable, e.g. to edit the viewer's own entries. */
@@ -289,7 +302,8 @@ function eventColor(e: CalendarEvent) {
   return e.color ?? (e.platform ? platformColor(e.platform) : "var(--primary)");
 }
 
-function EventIcon({ event, className }: { event: CalendarEvent; className?: string }) {
+/** An event's icon: its platform logo, or an icon tile in its color. */
+export function EventIcon({ event, className }: { event: CalendarEvent; className?: string }) {
   if (event.platform) {
     return <SocialIcon platform={event.platform} variant="tile" className={cn("shrink-0", className)} />;
   }
@@ -313,10 +327,26 @@ function EventIcon({ event, className }: { event: CalendarEvent; className?: str
 const tint = (e: CalendarEvent) =>
   !e.platform && e.color ? { background: `color-mix(in oklab, ${e.color} 14%, transparent)` } : undefined;
 
-const markerGroup = (m: CalendarMarker) => m.group ?? "Other";
-const markerKey = (m: CalendarMarker) => `${markerGroup(m)}:${m.category ?? markerGroup(m)}`;
+/** An event with its category's color and icon filled in, unless it has its own. */
+export function withCategory(e: CalendarEvent, categories: Map<string, CalendarCategory>): CalendarEvent {
+  const category = e.category ? categories.get(e.category) : undefined;
+  return category ? { ...e, color: e.color ?? category.color, icon: e.icon ?? category.icon } : e;
+}
 
-function MarkerIcon({ marker, className }: { marker: CalendarMarker; className?: string }) {
+/** Whether the "Show" choices hide this event (same keys as ContentCalendar's `hidden`). */
+export function isEventHidden(e: CalendarEvent, hidden: ReadonlySet<string>) {
+  if (e.platform && hidden.has(`platform:${e.platform}`)) return true;
+  if (e.category && hidden.has(`category:${e.category}`)) return true;
+  return !e.platform && !e.category && hidden.has("category:none");
+}
+
+/** A marker's "Show" section, e.g. "Holidays". */
+export const markerGroup = (m: CalendarMarker) => m.group ?? "Other";
+/** A marker's "Show" key, e.g. "Astrology:Retrogrades". */
+export const markerKey = (m: CalendarMarker) => `${markerGroup(m)}:${m.category ?? markerGroup(m)}`;
+
+/** A marker's icon. */
+export function MarkerIcon({ marker, className }: { marker: CalendarMarker; className?: string }) {
   const icon = marker.icon ?? "sparkles";
   if (typeof icon === "string" && icon in MARKER_ICONS) {
     const Icon = MARKER_ICONS[icon as keyof typeof MARKER_ICONS];
@@ -340,7 +370,7 @@ function MarkerTag({
   formatTime?: (time: string) => string;
 }) {
   return (
-    <span className={cn("flex min-w-0 items-start gap-1", TONES[marker.tone ?? "amber"], className)}>
+    <span className={cn("flex min-w-0 items-start gap-1", MARKER_TONES[marker.tone ?? "amber"], className)}>
       <MarkerIcon marker={marker} className="mt-[0.2em]" />
       <span className="min-w-0">
         <span className="block truncate">{marker.name}</span>
@@ -405,6 +435,10 @@ export function ContentCalendar({
   onHiddenChange,
   maxMarkers = 2,
   categories = [],
+  categoriesLabel = "Your categories",
+  uncategorizedLabel = "No category",
+  onManageCategories,
+  manageCategoriesLabel = "Manage categories…",
   onAddEvent,
   onEventClick,
   view: viewProp,
@@ -489,11 +523,13 @@ export function ContentCalendar({
 
   // Filter options: one per platform in the events, then one per marker group and category.
   const categoryById = new Map(categories.map((c) => [c.id, c]));
-  const resolved = events.map((e) => {
-    const category = e.category ? categoryById.get(e.category) : undefined;
-    return category ? { ...e, color: e.color ?? category.color, icon: e.icon ?? category.icon } : e;
-  });
-  const usedCategories = categories.filter((c) => events.some((e) => e.category === c.id));
+  const resolved = events.map((e) => withCategory(e, categoryById));
+  // Every category the viewer has made, even before it has entries, so it can be
+  // switched off ahead of time. Own entries without one get a "No category" option.
+  const usedCategories = categories;
+  const hasUncategorized = events.some((e) => !e.platform && !e.category);
+  const showUncategorized = hasUncategorized && (categories.length > 0 || onManageCategories !== undefined);
+  const ownCount = usedCategories.length + (showUncategorized ? 1 : 0) + (onManageCategories ? 1 : 0);
   const platformOptions = [...new Set(events.map((e) => e.platform).filter((p): p is SocialPlatform => !!p))].sort(
     (a, b) => SOCIAL_ICONS[a].name.localeCompare(SOCIAL_ICONS[b].name),
   );
@@ -503,14 +539,13 @@ export function ContentCalendar({
     if (!group.has(markerKey(m))) group.set(markerKey(m), m);
     markerGroups.set(markerGroup(m), group);
   }
-  const showFilters = filterable && platformOptions.length + usedCategories.length + markers.length > 0;
+  const showFilters = filterable && platformOptions.length + ownCount + markers.length > 0;
 
   // Visible events and markers by day, untimed first, then by time.
   const byTime = (a: { time?: string }, b: { time?: string }) => (a.time ?? "").localeCompare(b.time ?? "");
   const byDay = new Map<string, CalendarEvent[]>();
   for (const e of resolved) {
-    if (e.platform && hidden.has(`platform:${e.platform}`)) continue;
-    if (e.category && hidden.has(`category:${e.category}`)) continue;
+    if (isEventHidden(e, hidden)) continue;
     byDay.set(e.date, [...(byDay.get(e.date) ?? []), e]);
   }
   for (const list of byDay.values()) list.sort(byTime);
@@ -634,10 +669,10 @@ export function ContentCalendar({
                     ))}
                   </>
                 )}
-                {usedCategories.length > 0 && (
+                {ownCount > 0 && (
                   <>
                     {platformOptions.length > 0 && <DropdownMenuSeparator />}
-                    <DropdownMenuLabel>Your categories</DropdownMenuLabel>
+                    <DropdownMenuLabel>{categoriesLabel}</DropdownMenuLabel>
                     {usedCategories.map((c) => (
                       <DropdownMenuCheckboxItem
                         className="cursor-pointer"
@@ -650,14 +685,31 @@ export function ContentCalendar({
                           event={{ id: c.id, date: "", title: c.name, color: c.color, icon: c.icon ?? "sparkles" }}
                           className="size-4"
                         />
-                        {c.name}
+                        <span className="min-w-0 truncate">{c.name}</span>
                       </DropdownMenuCheckboxItem>
                     ))}
+                    {showUncategorized && (
+                      <DropdownMenuCheckboxItem
+                        className="cursor-pointer"
+                        checked={!hidden.has("category:none")}
+                        onSelect={(event) => event.preventDefault()}
+                        onCheckedChange={(on) => toggleHidden("category:none", on)}
+                      >
+                        <EventIcon event={{ id: "none", date: "", title: uncategorizedLabel }} className="size-4" />
+                        {uncategorizedLabel}
+                      </DropdownMenuCheckboxItem>
+                    )}
+                    {onManageCategories && (
+                      <DropdownMenuItem className="cursor-pointer" onSelect={onManageCategories}>
+                        <Settings2 aria-hidden className="size-4" />
+                        {manageCategoriesLabel}
+                      </DropdownMenuItem>
+                    )}
                   </>
                 )}
                 {[...markerGroups].map(([group, categories], i) => (
                   <div key={group} role="none">
-                    {(i > 0 || platformOptions.length + usedCategories.length > 0) && <DropdownMenuSeparator />}
+                    {(i > 0 || platformOptions.length + ownCount > 0) && <DropdownMenuSeparator />}
                     <DropdownMenuLabel>{group}</DropdownMenuLabel>
                     {[...categories]
                       .sort(([a], [b]) => a.localeCompare(b))
@@ -669,7 +721,7 @@ export function ContentCalendar({
                           onSelect={(event) => event.preventDefault()}
                           onCheckedChange={(on) => toggleHidden(key, on)}
                         >
-                          <MarkerIcon marker={sample} className={cn("size-4", TONES[sample.tone ?? "amber"])} />
+                          <MarkerIcon marker={sample} className={cn("size-4", MARKER_TONES[sample.tone ?? "amber"])} />
                           {sample.category ?? group}
                         </DropdownMenuCheckboxItem>
                       ))}
@@ -767,7 +819,7 @@ export function ContentCalendar({
                               {/* Narrow: icons only, with names for screen readers. */}
                               <span className="flex flex-wrap gap-0.5 px-0.5 @xl:hidden">
                                 {dayMarkers.map((m) => (
-                                  <span key={`${m.name}${m.time}`} className={TONES[m.tone ?? "amber"]}>
+                                  <span key={`${m.name}${m.time}`} className={MARKER_TONES[m.tone ?? "amber"]}>
                                     <span className="sr-only">, {m.name}</span>
                                     <MarkerIcon marker={m} />
                                   </span>
