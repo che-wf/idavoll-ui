@@ -37,6 +37,7 @@ import StatusBannerDemo from "../registry/idavoll/demos/status-banner-demo";
 import SyncStatusDemo from "../registry/idavoll/demos/sync-status-demo";
 import VideoPlatformChartDemo from "../registry/idavoll/demos/video-platform-chart-demo";
 import WizardStepsDemo from "../registry/idavoll/demos/wizard-steps-demo";
+import { StressPage } from "./stress";
 import { ThemeControls } from "./theme-controls";
 
 // The registry is published next to this page, so the install line uses wherever it's hosted.
@@ -121,7 +122,5 @@ function Gallery() {
 const root = document.getElementById("root");
 if (!root) throw new Error("Missing #root element");
 createRoot(root).render(
-  <StrictMode>
-    <Gallery />
-  </StrictMode>,
+  <StrictMode>{new URLSearchParams(window.location.search).has("stress") ? <StressPage /> : <Gallery />}</StrictMode>,
 );

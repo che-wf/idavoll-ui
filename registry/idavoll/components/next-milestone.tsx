@@ -21,6 +21,8 @@ const DEFAULT_LABELS = {
   /** {days} becomes e.g. "6 days". */
   pace: "At your current pace: about {days}",
   paceToday: "At your current pace: today",
+  paceLong: "At your current pace: more than a year",
+  noGoal: "Set a goal to see your next milestone.",
   /** {goal} and {metric} are filled in. */
   reached: "You reached {goal} {metric}!",
   reachedNote: "Every milestone done. Take a moment to enjoy it.",
@@ -81,6 +83,16 @@ export function NextMilestone({
       .replace("{goal}", formatValue(goal))
       .replace("{metric}", metricLabel)
       .trim();
+
+  // No real goal yet (zero, or not above the start): nothing to count toward.
+  if (!(goal > start)) {
+    return (
+      <div className={cn("rounded-xl border border-dashed bg-card p-4 text-foreground/75 text-sm", className)}>
+        {labels.noGoal}
+        {children}
+      </div>
+    );
+  }
 
   if (p.reached) {
     const card = (
@@ -147,7 +159,11 @@ export function NextMilestone({
       </div>
       {days !== undefined && (
         <p className="text-foreground/70 text-sm">
-          {days <= 1 && p.remaining <= (dailyRate ?? 0) ? labels.paceToday : labels.pace.replace("{days}", dayText)}
+          {days <= 1 && p.remaining <= (dailyRate ?? 0)
+            ? labels.paceToday
+            : days > 365
+              ? labels.paceLong
+              : labels.pace.replace("{days}", dayText)}
         </p>
       )}
       {children}

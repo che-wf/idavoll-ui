@@ -113,7 +113,7 @@ export function NotificationPreferences({
                     onCheckedChange={(on) => set(e.id, c.id, on === true)}
                     disabled={disabled}
                     aria-label={`${e.label} by ${c.label}`}
-                    className="mx-auto size-5 rounded-md border-foreground/45 [&_svg]:size-4"
+                    className="cursor-pointer disabled:cursor-not-allowed mx-auto size-5 rounded-md border-foreground/45 [&_svg]:size-4"
                   />
                 </td>
               ))}

@@ -1,6 +1,8 @@
 #!/usr/bin/env node
 // Accessibility scan: serves the built gallery (dist/), opens it in headless Chrome in every
 // theme and light/dark mode, at desktop and phone width, and runs axe-core (WCAG 2.2 AA).
+// Also checks that nothing makes the page scroll sideways and that every clickable element
+// shows the right cursor.
 // Run `pnpm build` first. Exits with 1 if anything fails.
 //
 // Uses the Chrome or Chromium already on the machine. Set CHROME_PATH to pick one.
@@ -21,6 +23,36 @@ const widths = [1100, 390];
 const servePort = 4179;
 const debugPort = 9339;
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+
+// Every clickable element shows the hand; disabled ones show not-allowed; busy ones wait.
+const cursorCheck = `(() => {
+  const sel = 'button, [role="button"], [role="radio"], [role="tab"], [role="checkbox"], [role="switch"], [role^="menuitem"], summary, select, a[href], label:has(> input)';
+  const bad = [];
+  for (const el of document.querySelectorAll(sel)) {
+    const r = el.getBoundingClientRect();
+    if (!r.width || !r.height || getComputedStyle(el).visibility === "hidden") continue;
+    const input = el.matches("label") ? el.querySelector(":scope > input") : null;
+    const disabled = el.disabled || input?.disabled || el.getAttribute("aria-disabled") === "true" || el.hasAttribute("data-disabled");
+    const want = el.getAttribute("aria-busy") === "true" ? ["wait", "progress"] : disabled ? ["not-allowed"] : ["pointer"];
+    const cursor = getComputedStyle(el).cursor;
+    if (!want.includes(cursor)) {
+      const name = (el.getAttribute("aria-label") || el.textContent || "").trim().slice(0, 40);
+      bad.push((el.closest("section[id]")?.id ?? "page") + ": " + el.tagName.toLowerCase() + ' "' + name + '" shows ' + cursor + ", expected " + want[0]);
+    }
+  }
+  return bad;
+})()`;
+
+// Nothing may make the page scroll sideways (scrollable regions like wide tables are fine).
+const overflowCheck = `(() => {
+  const limit = document.documentElement.clientWidth;
+  if (document.documentElement.scrollWidth <= limit + 1) return [];
+  const scrolls = (el) => { for (let p = el.parentElement; p; p = p.parentElement) { const o = getComputedStyle(p).overflowX; if (o === "auto" || o === "scroll" || o === "hidden") return true; } return false; };
+  return [...document.querySelectorAll("body *")]
+    .filter((el) => el.getBoundingClientRect().right > limit + 1 && !scrolls(el))
+    .slice(0, 5)
+    .map((el) => (el.closest("section[id]")?.id ?? "page") + ": " + el.tagName.toLowerCase() + "." + String(el.className).split(" ").slice(0, 3).join(".") + " ends at " + Math.round(el.getBoundingClientRect().right) + "px (screen " + limit + "px)");
+})()`;
 
 function findChrome() {
   if (process.env.CHROME_PATH) return process.env.CHROME_PATH;
@@ -102,6 +134,15 @@ try {
           nodes: v.nodes.map((n) => ({ target: n.target.join(" "), why: n.failureSummary })),
         })))`);
         const where = `${theme} / ${mode} / ${width}px`;
+        // Layout and cursor problems are reported like accessibility failures.
+        const extra = [...((await evaluate(overflowCheck)) ?? []).map((m) => `overflow: ${m}`)];
+        if (theme === themes[0] && mode === "light")
+          extra.push(...((await evaluate(cursorCheck)) ?? []).map((m) => `cursor: ${m}`));
+        if (extra.length) {
+          failed += extra.length;
+          console.log(`✖ ${where} (layout)`);
+          for (const m of extra) console.log(`  ${m}`);
+        }
         if (!violations?.length) {
           console.log(`✔ ${where}`);
           continue;
@@ -113,6 +154,35 @@ try {
           for (const n of v.nodes) console.log(`    ${n.target}\n      ${n.why.replace(/\n/g, "\n      ")}`);
         }
       }
+    }
+  }
+  // The stress page renders every component with awkward data (long text, empty lists,
+  // zeros, huge numbers). It must not crash, overflow or fail the scan.
+  for (const width of widths) {
+    await send("Emulation.setDeviceMetricsOverride", { width, height: 900, deviceScaleFactor: 1, mobile: width < 600 });
+    for (const mode of ["light", "dark"]) {
+      await send("Page.navigate", { url: `http://localhost:${servePort}/?stress&theme=${themes[0]}&mode=${mode}` });
+      await sleep(2500);
+      await evaluate(axeSource);
+      const violations = await evaluate(`axe.run(document, {
+        runOnly: { type: "tag", values: ["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22aa", "best-practice"] },
+      }).then((r) => r.violations.map((v) => v.impact + ": " + v.id + ": " + v.nodes.map((n) => n.target.join(" ")).slice(0, 3).join(", ")))`);
+      const crashes = await evaluate(
+        `[...document.querySelectorAll("[data-stress-error]")].map((e) => "crash: " + e.textContent)`,
+      );
+      const problems = [
+        ...(crashes ?? []),
+        ...(violations ?? []),
+        ...((await evaluate(overflowCheck)) ?? []).map((m) => `overflow: ${m}`),
+      ];
+      const where = `stress page / ${mode} / ${width}px`;
+      if (!problems.length) {
+        console.log(`✔ ${where}`);
+        continue;
+      }
+      failed += problems.length;
+      console.log(`✖ ${where}`);
+      for (const m of problems) console.log(`  ${m}`);
     }
   }
   ws.close();

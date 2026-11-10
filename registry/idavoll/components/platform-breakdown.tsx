@@ -110,7 +110,7 @@ export function PlatformBreakdown({
   const inner = Math.round(100 * (1 - Math.min(0.9, Math.max(0.1, thickness))));
 
   const list = (
-    <ul className="flex-1 space-y-2.5 text-sm">
+    <ul className="w-full min-w-0 flex-1 space-y-2.5 text-sm">
       {slices.map((s) => (
         <li key={s.key} className="flex items-center gap-2">
           {s.platform ? (
@@ -121,7 +121,7 @@ export function PlatformBreakdown({
             </span>
           )}
           <span className="min-w-0 flex-1">
-            <span className="font-medium">{s.name}</span>
+            <span className="break-words font-medium">{s.name}</span>
             {s.members && <span className="block truncate text-foreground/70 text-xs">{s.members.join(", ")}</span>}
           </span>
           <AnimatedNumber value={s.value} formatValue={formatValue} className="text-muted-foreground" />
@@ -133,7 +133,7 @@ export function PlatformBreakdown({
 
   if (variant === "bar") {
     return (
-      <div className={cn("space-y-4", className)}>
+      <div className={cn("min-w-0 space-y-4", className)}>
         <div className="flex items-baseline gap-2">
           <AnimatedNumber value={total} formatValue={formatValue} className="font-heading text-3xl font-bold" />
           <span className="text-muted-foreground text-sm">{valueLabel}</span>
@@ -153,7 +153,7 @@ export function PlatformBreakdown({
   }
 
   return (
-    <div className={cn("flex flex-col items-center gap-6 sm:flex-row", className)}>
+    <div className={cn("flex min-w-0 flex-col items-center gap-6 sm:flex-row", className)}>
       <div className={cn("relative size-44 shrink-0", chartClassName)}>
         <ChartContainer config={config} className="aspect-square size-full">
           <PieChart>
@@ -170,6 +170,19 @@ export function PlatformBreakdown({
                 />
               }
             />
+            {/* With nothing to show yet, an empty ring keeps the layout instead of a blank gap. */}
+            {total === 0 && (
+              <Pie
+                data={[{ key: "empty", value: 1 }]}
+                dataKey="value"
+                innerRadius={`${inner}%`}
+                outerRadius="100%"
+                strokeWidth={0}
+                fill="var(--muted)"
+                isAnimationActive={false}
+                tooltipType="none"
+              />
+            )}
             <Pie
               data={slices}
               dataKey="value"

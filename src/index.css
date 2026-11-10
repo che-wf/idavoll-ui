@@ -129,3 +129,20 @@
     @apply font-sans;
   }
 }
+
+/* Same rules as the optional @idavoll/idavoll-base registry item: Tailwind v4 dropped the
+   pointer cursor on buttons, so restore it for everything clickable. */
+@layer base {
+  button:not(:disabled),
+  [role="button"]:not([aria-disabled="true"]),
+  summary,
+  select:not(:disabled),
+  label:has(> input:not(:disabled)) {
+    cursor: pointer;
+  }
+  button:disabled,
+  [role="button"][aria-disabled="true"],
+  select:disabled {
+    cursor: not-allowed;
+  }
+}

@@ -94,7 +94,7 @@ export function ShimmerBorder({
     // biome-ignore lint/a11y/noStaticElementInteractions: hover and focus only replay the decoration; the wrapped element is the control.
     <div
       className={cn(
-        "relative isolate inline-flex overflow-hidden rounded-[calc(var(--sb-r)+var(--sb-w))] p-(--sb-w)",
+        "relative isolate inline-flex max-w-full overflow-hidden rounded-[calc(var(--sb-r)+var(--sb-w))] p-(--sb-w)",
         // The wrapped element sits on top, fills the frame and drops its own border.
         "[&>:not([data-shimmer])]:relative [&>:not([data-shimmer])]:z-10 [&>:not([data-shimmer])]:flex-1",
         "[&>:not([data-shimmer])]:rounded-(--sb-r) [&>:not([data-shimmer])]:border-0 [&>:not([data-shimmer])]:ring-0",

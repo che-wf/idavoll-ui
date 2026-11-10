@@ -4,6 +4,22 @@
   "homepage": "https://github.com/che-wf/idavoll-ui",
   "items": [
     {
+      "name": "idavoll-base",
+      "type": "registry:item",
+      "title": "Idavoll base styles",
+      "description": "Optional base CSS for apps using shadcn/ui with Tailwind CSS v4: restores the pointer (hand) cursor on buttons, summaries, selects and labels wrapping inputs, and shows not-allowed on disabled ones. Tailwind v4 dropped the pointer cursor for buttons, so without this shadcn buttons show the arrow. Idavoll components already set their own cursors; this covers the rest of the app. Rules sit in @layer base, so a component's own cursor class (e.g. cursor-wait while saving) still wins.",
+      "css": {
+        "@layer base": {
+          "button:not(:disabled), [role=\"button\"]:not([aria-disabled=\"true\"]), summary, select:not(:disabled), label:has(> input:not(:disabled))": {
+            "cursor": "pointer"
+          },
+          "button:disabled, [role=\"button\"][aria-disabled=\"true\"], select:disabled": {
+            "cursor": "not-allowed"
+          }
+        }
+      }
+    },
+    {
       "name": "animated-number",
       "type": "registry:component",
       "title": "Animated Number",
@@ -35,7 +51,7 @@
       "name": "platform-badge",
       "type": "registry:component",
       "title": "Platform Badge",
-      "description": "A small label naming a social platform (YouTube, TikTok, Instagram, Threads) with a color dot. Props: platform, label?, plus all Badge props.",
+      "description": "A small label naming a social platform (YouTube, TikTok, Instagram, Threads) with a color dot. Long labels such as handles are cut short with the full text on hover. Props: platform, label?, plus all Badge props.",
       "registryDependencies": ["badge"],
       "files": [
         {
@@ -159,7 +175,7 @@
       "name": "platform-breakdown",
       "type": "registry:component",
       "title": "Platform Breakdown",
-      "description": "Each platform's share of a total (e.g. followers) as a donut with the animated total in the middle, or a single stacked bar, plus a list with values and percentages. Small platforms are grouped into one \"Other\" slice. Props: platforms [{ platform, value, label?, color? }], variant? (\"donut\" | \"bar\"), valueLabel? (\"Followers\"), formatValue?, maxSlices? (5), minShare? (0.03), otherLabel? (\"Other\"), thickness? (0.28), chartClassName? (size-44), className?.",
+      "description": "Each platform's share of a total (e.g. followers) as a donut with the animated total in the middle, or a single stacked bar, plus a list with values and percentages. With no data yet, an empty ring keeps the layout. Small platforms are grouped into one \"Other\" slice. Props: platforms [{ platform, value, label?, color? }], variant? (\"donut\" | \"bar\"), valueLabel? (\"Followers\"), formatValue?, maxSlices? (5), minShare? (0.03), otherLabel? (\"Other\"), thickness? (0.28), chartClassName? (size-44), className?.",
       "dependencies": ["lucide-react@1.70.0", "recharts@3.8.0"],
       "registryDependencies": ["chart", "@idavoll/animated-number", "@idavoll/social-icon"],
       "files": [
@@ -253,7 +269,7 @@
       "name": "sync-status",
       "type": "registry:component",
       "title": "Sync Status",
-      "description": "Sync health per platform. States: syncing (spinner, \"Syncing… 12 of 40 posts\" and a bar), ok (\"Last synced 5 minutes ago\", full date in a tooltip and for screen readers), stale (amber), error (red, the message and an action button such as Reconnect), never (\"Not synced yet\"). Optional \"Next sync 6:00 AM\" line. Every state has words and an icon, not only color. Changes are announced politely; a new failure is announced at once (role=alert). Relative times refresh every minute. The compact variant shows platform icons with a status mark for a dashboard header. Props: items [{ platform, state (\"syncing\" | \"ok\" | \"stale\" | \"error\" | \"never\"), lastSyncedAt?, nextSyncAt? (Date or ISO string), progress? { done, total }, message?, action? { label, onClick } }], variant? (\"list\" | \"compact\"), announce? (true; turn off on a second view of the same data), now? (for tests and demos), locale?, labels? (syncing, progress, lastSynced, never, justNow, nextSync, error, list), className?.",
+      "description": "Sync health per platform. States: syncing (spinner, \"Syncing… 12 of 40 posts\" and a bar), ok (\"Last synced 5 minutes ago\", full date in a tooltip and for screen readers), stale (amber), error (red, the message and an action button such as Reconnect), never (\"Not synced yet\"). Optional \"Next sync 6:00 AM\" line. Every state has words and an icon, not only color. Changes are announced politely; a new failure is announced at once (role=alert). Relative times refresh every minute. The compact variant shows platform icons with a status mark for a dashboard header. Props: items [{ platform, state (\"syncing\" | \"ok\" | \"stale\" | \"error\" | \"never\"), lastSyncedAt?, nextSyncAt? (Date or ISO string), progress? { done, total }, message?, action? { label, onClick } }], variant? (\"list\" | \"compact\"), announce? (true; turn off on a second view of the same data), now? (for tests and demos), locale?, labels? (syncing, progress, lastSynced, never, upToDate, justNow, nextSync, error, list), className?.",
       "dependencies": ["lucide-react@1.70.0"],
       "registryDependencies": ["button", "@idavoll/social-icon"],
       "files": [
@@ -331,7 +347,7 @@
       "name": "video-platform-chart",
       "type": "registry:component",
       "title": "Video Platform Chart",
-      "description": "Stacked bars of each video's views split by platform, ordered by challenge day, in brand colors. Switch between total views and views at 48 hours or 7 days old so new and old videos compare fairly; videos too young for the chosen age show a striped \"not yet\" bar, not zero. The tooltip names each platform's number and the total; legend chips hide platforms (legend, stack and tooltip share one order). Only the latest maxBars are shown, and bars keep a usable width with sideways scrolling. Clicking a bar calls onSelect. \"Show as table\" gives the same numbers as a table, with buttons when onSelect is set. Props: videos [{ id, label, day, views (per platform), viewsAt? { \"48h\"?, \"7d\"? } (per platform), ageHours? }], mode? (\"total\" | \"48h\" | \"7d\"), defaultMode? (\"total\"), onModeChange?, onSelect?(id), maxBars? (30), chartClassName? (h-72), labels?, className?.",
+      "description": "Stacked bars of each video's views split by platform, ordered by challenge day, in brand colors. Switch between total views and views at 48 hours or 7 days old so new and old videos compare fairly; videos too young for the chosen age show a striped \"not yet\" bar, not zero. The tooltip names each platform's number and the total; legend chips hide platforms (legend, stack and tooltip share one order). Only the latest maxBars are shown, and bars keep a usable width with sideways scrolling. Clicking a bar calls onSelect. \"Show as table\" gives the same numbers as a table, with buttons when onSelect is set. Props: videos [{ id, label, day, views (per platform), viewsAt? { \"48h\"?, \"7d\"? } (per platform), ageHours? }], mode? (\"total\" | \"48h\" | \"7d\"), defaultMode? (\"total\"), onModeChange?, onSelect?(id), maxBars? (30), label? (screen-reader name, default \"Views by video\"; unique per page), chartClassName? (h-72), labels?, className?.",
       "dependencies": ["recharts@3.8.0"],
       "registryDependencies": [
         "chart",
@@ -405,7 +421,7 @@
       "name": "next-milestone",
       "type": "registry:component",
       "title": "Next Milestone",
-      "description": "Always shows the next goal and how far away it is, with a progress bar from the last milestone to the next. Wording flips at halfway: before, it counts progress made (\"1,600 of 2,500 toward 5K followers\"); after, what's left (\"312 to 10K followers\"). Optional \"At your current pace: about 6 days\". After the last milestone it shows the main goal (trophy icon); once reached, a one-time celebration wrapped in shimmer-border. Numbers animate with animated-number. Props: current, milestones (numbers), goal, start? (0), metricLabel, dailyRate?, formatValue? (compact), celebrate? (true), labels?, children?, className?. Re-exports milestoneProgress.",
+      "description": "Always shows the next goal and how far away it is, with a progress bar from the last milestone to the next. Wording flips at halfway: before, it counts progress made (\"1,600 of 2,500 toward 5K followers\"); after, what's left (\"312 to 10K followers\"). Optional \"At your current pace: about 6 days\" (or \"more than a year\"). With no real goal (not above the start), it asks the person to set one. After the last milestone it shows the main goal (trophy icon); once reached, a one-time celebration wrapped in shimmer-border. Numbers animate with animated-number. Props: current, milestones (numbers), goal, start? (0), metricLabel, dailyRate?, formatValue? (compact), celebrate? (true), labels?, children?, className?. Re-exports milestoneProgress.",
       "dependencies": ["lucide-react@1.70.0"],
       "registryDependencies": ["@idavoll/animated-number", "@idavoll/milestones", "@idavoll/shimmer-border"],
       "files": [
@@ -1069,7 +1085,7 @@
       "name": "data-table",
       "type": "registry:component",
       "title": "Data Table",
-      "description": "A table with search, pick-from-a-list filters (each choice shows how many rows it would match), sortable columns, pages and an optional column menu. Applied filters show as removable chips with \"Clear all\"; the row count is announced to screen readers; an empty result offers to clear filters; wide tables scroll inside a focusable frame. Built on TanStack Table. Props: columns (TanStack ColumnDef[]; meta { label?, className? } per column), data, label (accessible name, e.g. \"Posts\"), searchable? (true), searchPlaceholder? (\"Search…\"), filters? [{ column, title, options? [{ value, label?, icon? }] }] (options default to every value in the column), columnToggle? (false), pageSize? (10; 0 shows all), initialSorting? (e.g. [{ id: \"views\", desc: true }]), countLabel?(count) (\"12 results\"), emptyMessage?, toolbar? (extra controls), getRowId?, getSubRows?(row) (child rows such as per-platform posts: expand buttons with aria-expanded, \"Expand all\" in the toolbar, search and filters match children and keep their parent open, pages count top-level rows), subRowsLabel?(row, count) (expand button name, default \"Show 3 more rows\"), getRowHref?(row) (the first cell becomes a real link and clicking elsewhere on the row follows it; return undefined for rows without a page), linkComponent? (e.g. your router's Link; gets href, className, children; default <a>), onRowClick?(row) (clickable rows without a link; the first cell becomes a button), className?. Also exports DataTableColumnHeader ({ column, title, className? }) for sortable headers, which set aria-sort.",
+      "description": "A table with search, pick-from-a-list filters (each choice shows how many rows it would match), sortable columns, pages and an optional column menu. Applied filters show as removable chips with \"Clear all\"; the row count is announced to screen readers; an empty result offers to clear filters; wide tables scroll inside a focusable frame. Built on TanStack Table. Props: columns (TanStack ColumnDef[]; meta { label?, className?, nowrap? (keep cells on one line; cells wrap by default), lines? (1–4, clamp long text with the full text on hover), width?, minWidth? } per column), data, label (accessible name, e.g. \"Posts\"), searchable? (true), searchPlaceholder? (\"Search…\"), filters? [{ column, title, options? [{ value, label?, icon? }] }] (options default to every value in the column), columnToggle? (false), pageSize? (10; 0 shows all), initialSorting? (e.g. [{ id: \"views\", desc: true }]), countLabel?(count) (\"12 results\"), emptyMessage?, toolbar? (extra controls), getRowId?, getSubRows?(row) (child rows such as per-platform posts: expand buttons with aria-expanded, \"Expand all\" in the toolbar, search and filters match children and keep their parent open, pages count top-level rows), subRowsLabel?(row, count) (expand button name, default \"Show 3 more rows\"), getRowHref?(row) (the first cell becomes a real link and clicking elsewhere on the row follows it; return undefined for rows without a page), linkComponent? (e.g. your router's Link; gets href, className, children; default <a>), onRowClick?(row) (clickable rows without a link; the first cell becomes a button), className?. Also exports DataTableColumnHeader ({ column, title, className? }) for sortable headers, which set aria-sort.",
       "dependencies": ["@tanstack/react-table@8.21.3", "lucide-react@1.70.0"],
       "registryDependencies": ["button", "dropdown-menu", "input", "table"],
       "files": [

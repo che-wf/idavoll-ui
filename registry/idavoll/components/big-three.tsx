@@ -155,7 +155,7 @@ export function BigThreeEditor({ value, onChange, labels: labelOverrides, classN
   }
 
   const select =
-    "h-9 w-full rounded-md border border-input bg-background px-2 text-sm focus-visible:outline-2 focus-visible:outline-ring";
+    "h-9 w-full cursor-pointer rounded-md border border-input bg-background px-2 text-sm focus-visible:outline-2 focus-visible:outline-ring";
 
   return (
     <div className={cn("space-y-4", className)}>

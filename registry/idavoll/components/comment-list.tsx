@@ -109,7 +109,7 @@ function ClampedText({ text, labels }: { text: string; labels: typeof DEFAULT_LA
           type="button"
           aria-expanded={open}
           onClick={() => setOpen((o) => !o)}
-          className="mt-0.5 rounded-sm font-medium text-foreground/70 text-xs hover:text-foreground focus-visible:outline-2 focus-visible:outline-ring"
+          className="cursor-pointer disabled:cursor-not-allowed mt-0.5 rounded-sm font-medium text-foreground/70 text-xs hover:text-foreground focus-visible:outline-2 focus-visible:outline-ring"
         >
           {open ? labels.showLess : labels.showMore}
         </button>
@@ -162,7 +162,7 @@ export function CommentList({
       if (top.id === c.id) tops.push(c);
       else replies.set(top.id, [...(replies.get(top.id) ?? []), c]);
     }
-    const time = (c: CommentItem) => new Date(c.publishedAt).getTime();
+    const time = (c: CommentItem) => new Date(c.publishedAt).getTime() || 0;
     for (const list of replies.values()) list.sort((a, b) => time(a) - time(b));
     return {
       threads: tops.map((c) => ({ comment: c, replies: replies.get(c.id) ?? [] })),
@@ -175,12 +175,14 @@ export function CommentList({
     .sort((a, b) =>
       sort === "liked"
         ? (b.comment.likes ?? 0) - (a.comment.likes ?? 0)
-        : new Date(b.comment.publishedAt).getTime() - new Date(a.comment.publishedAt).getTime(),
+        : (new Date(b.comment.publishedAt).getTime() || 0) - (new Date(a.comment.publishedAt).getTime() || 0),
     );
   const total = visible.reduce((n, t) => n + 1 + t.replies.length, 0);
 
   const renderComment = (c: CommentItem, reply = false) => {
-    const date = new Date(c.publishedAt);
+    const parsed = new Date(c.publishedAt);
+    // An unreadable date is left out rather than crashing the list.
+    const date = Number.isNaN(parsed.getTime()) ? undefined : parsed;
     return (
       <article className="flex gap-3">
         <Avatar className={reply ? "size-7" : "size-9"}>
@@ -189,14 +191,16 @@ export function CommentList({
         </Avatar>
         <div className="min-w-0 flex-1 space-y-1">
           <p className="flex flex-wrap items-center gap-x-2 gap-y-0.5 text-xs">
-            <span className="font-semibold text-foreground text-sm">{c.author}</span>
+            <span className="min-w-0 font-semibold text-foreground text-sm [overflow-wrap:anywhere]">{c.author}</span>
             <span className="flex items-center gap-1 text-foreground/70">
               <SocialIcon platform={c.platform} variant="tile" label="" className="size-3.5" />
               {SOCIAL_ICONS[c.platform].name}
             </span>
-            <time dateTime={date.toISOString()} title={fullDate.format(date)} className="text-foreground/70">
-              {relative(date, now, locale)}
-            </time>
+            {date && (
+              <time dateTime={date.toISOString()} title={fullDate.format(date)} className="text-foreground/70">
+                {relative(date, now, locale)}
+              </time>
+            )}
           </p>
           <ClampedText text={c.text} labels={labels} />
           {c.likes !== undefined && c.likes > 0 && (
@@ -240,7 +244,7 @@ export function CommentList({
                     setShown(pageSize);
                   }}
                   className={cn(
-                    "flex items-center gap-1.5 rounded-full border px-3 py-1 text-sm transition-colors focus-visible:outline-2 focus-visible:outline-ring",
+                    "cursor-pointer disabled:cursor-not-allowed flex items-center gap-1.5 rounded-full border px-3 py-1 text-sm transition-colors focus-visible:outline-2 focus-visible:outline-ring",
                     platform === p ? "border-foreground bg-foreground text-background" : "hover:bg-muted",
                   )}
                 >

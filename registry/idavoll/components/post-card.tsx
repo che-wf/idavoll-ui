@@ -66,11 +66,13 @@ export function PostCard({
   className,
 }: PostCardProps) {
   const [broken, setBroken] = useState(false);
-  const date = new Date(publishedAt);
-  const dateText = new Intl.DateTimeFormat(locale, { month: "short", day: "numeric" }).format(date);
+  const parsed = new Date(publishedAt);
+  // An unreadable date is left out rather than crashing the card.
+  const date = Number.isNaN(parsed.getTime()) ? undefined : parsed;
+  const dateText = date ? new Intl.DateTimeFormat(locale, { month: "short", day: "numeric" }).format(date) : "";
   const showImage = thumbnailUrl && !broken;
   // The title is the card's one control; its ::after stretches over the whole card.
-  const stretch = "text-left after:absolute after:inset-0 after:rounded-xl focus-visible:outline-none";
+  const stretch = "cursor-pointer text-left after:absolute after:inset-0 after:rounded-xl focus-visible:outline-none";
 
   return (
     <article
@@ -96,14 +98,14 @@ export function PostCard({
           </div>
         )}
         {badge && (
-          <span className="absolute top-2 left-2 rounded-full bg-background/90 px-2 py-0.5 font-medium text-xs shadow-sm backdrop-blur">
+          <span className="absolute top-2 left-2 max-w-[calc(100%-1rem)] truncate rounded-full bg-background/90 px-2 py-0.5 font-medium text-xs shadow-sm backdrop-blur">
             {badge}
           </span>
         )}
       </div>
 
       <div className="flex flex-1 flex-col gap-2 p-3">
-        <h3 className="line-clamp-2 font-medium text-sm leading-snug">
+        <h3 className="line-clamp-2 font-medium text-sm leading-snug [overflow-wrap:anywhere]">
           {href ? (
             <Link href={href} className={stretch}>
               {title}
@@ -118,8 +120,13 @@ export function PostCard({
         </h3>
         <div className="flex items-center justify-between gap-2 text-foreground/70 text-xs">
           <span>
-            {day !== undefined && <>Day {day} · </>}
-            <time dateTime={date.toISOString()}>{dateText}</time>
+            {day !== undefined && (
+              <>
+                Day {day}
+                {date && " · "}
+              </>
+            )}
+            {date && <time dateTime={date.toISOString()}>{dateText}</time>}
           </span>
           <span className="flex -space-x-1">
             {platforms.map((p) => (
@@ -136,7 +143,7 @@ export function PostCard({
             {stats.slice(0, 4).map((s) => (
               <div key={s.label} className="flex min-w-0 flex-col-reverse">
                 <dt className="truncate text-foreground/70 text-xs">{s.label}</dt>
-                <dd className="font-semibold text-sm tabular-nums">
+                <dd className="truncate font-semibold text-sm tabular-nums">
                   {typeof s.value === "number" ? (
                     <>
                       <span aria-hidden>{formatCompact(s.value)}</span>

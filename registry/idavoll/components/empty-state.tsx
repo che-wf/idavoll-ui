@@ -29,10 +29,12 @@ export function EmptyState({ icon, title, description, action, headingLevel = 3,
             {icon}
           </EmptyMedia>
         )}
-        <EmptyTitle>
+        <EmptyTitle className="[overflow-wrap:anywhere]">
           <Heading className="font-heading font-semibold text-base">{title}</Heading>
         </EmptyTitle>
-        {description && <EmptyDescription className="text-foreground/75">{description}</EmptyDescription>}
+        {description && (
+          <EmptyDescription className="text-foreground/75 [overflow-wrap:anywhere]">{description}</EmptyDescription>
+        )}
       </EmptyHeader>
       {action && <EmptyContent>{action}</EmptyContent>}
     </Empty>

@@ -30,9 +30,12 @@ export interface PlatformBadgeProps extends Omit<ComponentProps<typeof Badge>, "
 /** A small label naming a social platform, with a color dot to tell platforms apart at a glance. */
 export function PlatformBadge({ platform, label, variant = "outline", className, ...props }: PlatformBadgeProps) {
   return (
-    <Badge variant={variant} className={cn("gap-1.5", className)} {...props}>
+    <Badge variant={variant} className={cn("max-w-full gap-1.5", className)} {...props}>
       <span aria-hidden className={cn("size-2 rounded-full", DOT_CLASS[platform])} />
-      {label ?? PLATFORM_LABELS[platform]}
+      {/* Long labels, like handles, are cut short rather than overflowing; hover shows the rest. */}
+      <span className="truncate" title={label}>
+        {label ?? PLATFORM_LABELS[platform]}
+      </span>
     </Badge>
   );
 }

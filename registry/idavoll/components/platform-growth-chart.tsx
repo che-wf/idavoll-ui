@@ -178,7 +178,7 @@ export function PlatformGrowthChart({
                       aria-pressed={!off}
                       onClick={() => toggle(l.platform)}
                       className={cn(
-                        "flex items-center gap-1.5 rounded-full border py-0.5 pr-2.5 pl-0.5 text-xs transition-opacity hover:bg-muted/50 focus-visible:outline-2 focus-visible:outline-ring",
+                        "cursor-pointer disabled:cursor-not-allowed flex items-center gap-1.5 rounded-full border py-0.5 pr-2.5 pl-0.5 text-xs transition-opacity hover:bg-muted/50 focus-visible:outline-2 focus-visible:outline-ring",
                         off && "opacity-40",
                       )}
                     >
@@ -202,7 +202,7 @@ export function PlatformGrowthChart({
                   aria-pressed={mode === m}
                   onClick={() => setMode(m)}
                   className={cn(
-                    "rounded-md px-2.5 py-1 font-medium text-foreground/70 transition-colors focus-visible:outline-2 focus-visible:outline-ring",
+                    "cursor-pointer disabled:cursor-not-allowed rounded-md px-2.5 py-1 font-medium text-foreground/70 transition-colors focus-visible:outline-2 focus-visible:outline-ring",
                     mode === m && "bg-background text-foreground shadow-xs",
                   )}
                 >

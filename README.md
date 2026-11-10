@@ -85,6 +85,20 @@ pnpm build        # builds public/r/*.json and the gallery
     The build uses relative paths, so it works at a site root or in a sub-folder.
 - AI assistants: see [`AGENTS.md`](AGENTS.md).
 
+## Cursors with Tailwind CSS v4
+
+Tailwind v4 no longer gives buttons a pointer cursor. Idavoll components set their own
+cursors, but shadcn's buttons elsewhere in your app don't. To restore the hand cursor
+app-wide, add the optional base styles: `npx shadcn@latest add @idavoll/idavoll-base`.
+
+## Testing
+
+`pnpm test:a11y` scans every theme in light and dark, at desktop and phone width, and also
+loads a stress page (`?stress`) that renders every component with awkward data: long text
+with no spaces, empty lists, zeros, huge numbers and bad dates. It fails on crashes, on
+anything that makes the page scroll sideways, on clickable elements without the right
+cursor, and on accessibility problems.
+
 ## License
 
 [MIT](LICENSE). Each component file starts with a short license header, so the notice

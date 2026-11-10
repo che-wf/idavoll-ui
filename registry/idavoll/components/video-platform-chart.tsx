@@ -55,6 +55,8 @@ export interface VideoPlatformChartProps {
   onSelect?: (id: string) => void;
   /** Most bars to show; the latest videos are kept. Defaults to 30. */
   maxBars?: number;
+  /** Name of the chart for screen readers; give each chart on a page its own. Defaults to "Views by video". */
+  label?: string;
   /** Classes for the chart area. Defaults to h-72. */
   chartClassName?: string;
   /** Text, for translation. */
@@ -78,6 +80,7 @@ export function VideoPlatformChart({
   onModeChange,
   onSelect,
   maxBars = 30,
+  label = "Views by video",
   chartClassName,
   labels: labelOverrides,
   className,
@@ -155,7 +158,7 @@ export function VideoPlatformChart({
                     })
                   }
                   className={cn(
-                    "flex items-center gap-1.5 rounded-full border py-0.5 pr-2.5 pl-0.5 text-xs transition-opacity hover:bg-muted/50 focus-visible:outline-2 focus-visible:outline-ring",
+                    "cursor-pointer disabled:cursor-not-allowed flex items-center gap-1.5 rounded-full border py-0.5 pr-2.5 pl-0.5 text-xs transition-opacity hover:bg-muted/50 focus-visible:outline-2 focus-visible:outline-ring",
                     off && "opacity-40",
                   )}
                 >
@@ -179,7 +182,7 @@ export function VideoPlatformChart({
 
       {/* Bars keep a usable width; many videos scroll sideways instead of turning into slivers. */}
       <section
-        aria-label={labels.axis}
+        aria-label={label}
         // biome-ignore lint/a11y/noNoninteractiveTabindex: scrollable regions must be focusable.
         tabIndex={0}
         className="overflow-x-auto rounded-md focus-visible:outline-2 focus-visible:outline-ring"
@@ -306,7 +309,7 @@ export function VideoPlatformChart({
                         <button
                           type="button"
                           onClick={() => onSelect(video.id)}
-                          className="rounded-sm text-left underline underline-offset-4 hover:no-underline focus-visible:outline-2 focus-visible:outline-ring"
+                          className="cursor-pointer disabled:cursor-not-allowed rounded-sm text-left underline underline-offset-4 hover:no-underline focus-visible:outline-2 focus-visible:outline-ring"
                         >
                           {name}
                         </button>

@@ -81,7 +81,7 @@ export function GuideSteps({ steps, checkable = false, labels: labelOverrides, c
                   "{title}",
                   typeof step.title === "string" ? step.title : String(i + 1),
                 )}
-                className="mt-0.5 size-6 rounded-full border-foreground/45 [&_svg]:size-4"
+                className="cursor-pointer disabled:cursor-not-allowed mt-0.5 size-6 rounded-full border-foreground/45 [&_svg]:size-4"
               />
             ) : (
               <span
@@ -111,9 +111,10 @@ export function GuideSteps({ steps, checkable = false, labels: labelOverrides, c
                   href={step.href}
                   target="_blank"
                   rel="noreferrer"
-                  className="inline-flex items-center gap-1 font-medium text-primary text-sm underline underline-offset-4 hover:no-underline focus-visible:outline-2 focus-visible:outline-ring"
+                  className="inline-flex max-w-full items-center gap-1 font-medium text-primary text-sm underline underline-offset-4 hover:no-underline focus-visible:outline-2 focus-visible:outline-ring"
                 >
-                  {step.linkLabel ?? step.href}
+                  {/* Long addresses break anywhere rather than running off the screen. */}
+                  <span className="min-w-0 [overflow-wrap:anywhere]">{step.linkLabel ?? step.href}</span>
                   <ExternalLink aria-hidden className="size-3.5" />
                   <span className="sr-only"> {labels.newTab}</span>
                 </a>

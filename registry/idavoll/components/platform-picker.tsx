@@ -69,10 +69,10 @@ export function PlatformPicker<P extends SocialPlatform = SocialPlatform>({
             <label
               key={platform}
               className={cn(
-                "relative flex cursor-pointer flex-col items-start gap-2 rounded-xl border-2 border-border p-3 transition-colors has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-ring has-[:focus-visible]:outline-offset-2",
+                "relative flex min-w-0 cursor-pointer flex-col items-start gap-2 rounded-xl border-2 border-border p-3 transition-colors has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-ring has-[:focus-visible]:outline-offset-2",
                 checked && !soon && "border-primary bg-primary/5",
                 !checked && !soon && "hover:border-foreground/30",
-                (connected || soon) && "cursor-default",
+                (connected || soon) && "cursor-not-allowed",
                 soon && "border-dashed bg-muted/30",
               )}
             >
@@ -103,7 +103,10 @@ export function PlatformPicker<P extends SocialPlatform = SocialPlatform>({
               </span>
               <span className="font-medium text-sm">{SOCIAL_ICONS[platform].name}</span>
               {(note || connected || soon) && (
-                <span id={`${id}-${platform}-note`} className="text-foreground/70 text-xs leading-snug">
+                <span
+                  id={`${id}-${platform}-note`}
+                  className="max-w-full text-foreground/70 text-xs leading-snug [overflow-wrap:anywhere]"
+                >
                   {connected ? labels.connected : soon ? labels.soon : note}
                 </span>
               )}

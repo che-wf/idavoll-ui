@@ -622,6 +622,7 @@ export function ContentCalendar({
                     <DropdownMenuLabel>Platforms</DropdownMenuLabel>
                     {platformOptions.map((p) => (
                       <DropdownMenuCheckboxItem
+                        className="cursor-pointer"
                         key={p}
                         checked={!hidden.has(`platform:${p}`)}
                         onSelect={(event) => event.preventDefault()}
@@ -639,6 +640,7 @@ export function ContentCalendar({
                     <DropdownMenuLabel>Your categories</DropdownMenuLabel>
                     {usedCategories.map((c) => (
                       <DropdownMenuCheckboxItem
+                        className="cursor-pointer"
                         key={c.id}
                         checked={!hidden.has(`category:${c.id}`)}
                         onSelect={(event) => event.preventDefault()}
@@ -661,6 +663,7 @@ export function ContentCalendar({
                       .sort(([a], [b]) => a.localeCompare(b))
                       .map(([key, sample]) => (
                         <DropdownMenuCheckboxItem
+                          className="cursor-pointer"
                           key={key}
                           checked={!hidden.has(key)}
                           onSelect={(event) => event.preventDefault()}
@@ -675,7 +678,7 @@ export function ContentCalendar({
                 {hidden.size > 0 && (
                   <>
                     <DropdownMenuSeparator />
-                    <DropdownMenuItem onSelect={() => setHidden(new Set())} className="justify-center">
+                    <DropdownMenuItem onSelect={() => setHidden(new Set())} className="cursor-pointer justify-center">
                       Show everything
                     </DropdownMenuItem>
                   </>
@@ -749,7 +752,7 @@ export function ContentCalendar({
                           onClick={() => select(key)}
                           onKeyDown={(event) => onGridKeyDown(event, key)}
                           className={cn(
-                            "flex size-full min-h-14 flex-col gap-1 p-1 text-left transition-colors hover:bg-muted/60 focus-visible:relative focus-visible:z-10 focus-visible:outline-2 focus-visible:outline-ring focus-visible:-outline-offset-2 @xl:min-h-24 @xl:p-1.5",
+                            "cursor-pointer disabled:cursor-not-allowed flex size-full min-h-14 flex-col gap-1 p-1 text-left transition-colors hover:bg-muted/60 focus-visible:relative focus-visible:z-10 focus-visible:outline-2 focus-visible:outline-ring focus-visible:-outline-offset-2 @xl:min-h-24 @xl:p-1.5",
                             !sameMonth(key, month) && "bg-muted/30 text-foreground/70",
                             isSelected && "bg-primary/10 hover:bg-primary/15",
                             dayClassName?.(key),
@@ -867,7 +870,7 @@ export function ContentCalendar({
                     aria-current={key === today ? "date" : undefined}
                     aria-pressed={isSelected}
                     onClick={() => select(key)}
-                    className="flex w-full flex-wrap items-center justify-between gap-x-1 self-start rounded-md p-1 text-left hover:bg-muted/60 focus-visible:outline-2 focus-visible:outline-ring"
+                    className="cursor-pointer disabled:cursor-not-allowed flex w-full flex-wrap items-center justify-between gap-x-1 self-start rounded-md p-1 text-left hover:bg-muted/60 focus-visible:outline-2 focus-visible:outline-ring"
                   >
                     {dayHeader(key, true)}
                   </button>
@@ -922,7 +925,7 @@ export function ContentCalendar({
                         aria-current={key === today ? "date" : undefined}
                         aria-pressed={isSelected}
                         onClick={() => select(key)}
-                        className="flex items-center gap-2 self-start rounded-md p-1 text-left hover:bg-muted/60 focus-visible:outline-2 focus-visible:outline-ring"
+                        className="cursor-pointer disabled:cursor-not-allowed flex items-center gap-2 self-start rounded-md p-1 text-left hover:bg-muted/60 focus-visible:outline-2 focus-visible:outline-ring"
                       >
                         {dayHeader(key, true)}
                       </button>

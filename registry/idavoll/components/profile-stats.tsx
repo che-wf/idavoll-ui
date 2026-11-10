@@ -164,8 +164,8 @@ export function ProfileStats({
             </span>
           )}
         </div>
-        {handle && <p className="text-muted-foreground text-sm">{handle}</p>}
-        {bio && <p className="text-sm">{bio}</p>}
+        {handle && <p className="text-muted-foreground text-sm [overflow-wrap:anywhere]">{handle}</p>}
+        {bio && <p className="text-sm [overflow-wrap:anywhere]">{bio}</p>}
         {extra}
       </div>
 

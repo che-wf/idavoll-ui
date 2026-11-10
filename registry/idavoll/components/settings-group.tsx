@@ -43,7 +43,7 @@ export function SettingsGroup({
         </div>
       )}
       <div className="divide-y overflow-hidden rounded-xl border bg-card text-card-foreground">{children}</div>
-      {footer && <p className="px-1 text-muted-foreground text-xs">{footer}</p>}
+      {footer && <p className="px-1 text-muted-foreground text-xs [overflow-wrap:anywhere]">{footer}</p>}
     </section>
   );
 }
@@ -164,7 +164,8 @@ function RowIcon({ icon, color }: { icon: ReactNode; color?: string }) {
   );
 }
 
-const rowClass = "relative flex w-full items-center gap-3 px-4 py-3 text-left";
+// Rows wrap, so a wide control drops below the text on narrow screens instead of squeezing it.
+const rowClass = "relative flex w-full flex-wrap items-center gap-x-3 gap-y-2 px-4 py-3 text-left";
 
 /** One setting: icon, label, description and a control on the right. With `onClick` it becomes a link row. */
 export function SettingsRow({
@@ -181,7 +182,7 @@ export function SettingsRow({
   className,
 }: SettingsRowProps) {
   const text = (
-    <span className="min-w-0 flex-1 space-y-0.5">
+    <span className="min-w-[min(100%,10rem)] flex-1 space-y-0.5 [overflow-wrap:anywhere]">
       {controlId && !onClick ? (
         <label htmlFor={controlId} className={cn("block font-medium text-sm", destructive && "text-destructive")}>
           {label}
@@ -207,13 +208,13 @@ export function SettingsRow({
         onClick={onClick}
         className={cn(
           rowClass,
-          "transition-colors hover:bg-muted/50 focus-visible:bg-muted/50 focus-visible:outline-2 focus-visible:outline-ring focus-visible:-outline-offset-2",
+          "cursor-pointer disabled:cursor-not-allowed transition-colors hover:bg-muted/50 focus-visible:bg-muted/50 focus-visible:outline-2 focus-visible:outline-ring focus-visible:-outline-offset-2",
           className,
         )}
       >
         {icon && <RowIcon icon={icon} color={iconColor} />}
         {text}
-        {value && <span className="truncate text-muted-foreground text-sm">{value}</span>}
+        {value && <span className="max-w-[50%] truncate text-muted-foreground text-sm">{value}</span>}
         {!destructive && <ChevronRight aria-hidden className="size-4 shrink-0 text-muted-foreground" />}
       </button>
     );
@@ -223,9 +224,9 @@ export function SettingsRow({
     <div className={cn(rowClass, className)}>
       {icon && <RowIcon icon={icon} color={iconColor} />}
       {text}
-      {value && <span className="truncate text-muted-foreground text-sm">{value}</span>}
+      {value && <span className="max-w-[50%] truncate text-muted-foreground text-sm">{value}</span>}
       {saveStatus && <SaveStatus status={saveStatus} />}
-      {children && <div className="flex shrink-0 items-center">{children}</div>}
+      {children && <div className="flex min-w-0 max-w-full shrink-0 items-center">{children}</div>}
     </div>
   );
 }
@@ -262,7 +263,7 @@ export function SettingsSwitch({
   return (
     <div className={cn(rowClass, disabled && "opacity-60", className)}>
       {icon && <RowIcon icon={icon} color={iconColor} />}
-      <span className="min-w-0 flex-1 space-y-0.5">
+      <span className="min-w-[min(100%,10rem)] flex-1 space-y-0.5 [overflow-wrap:anywhere]">
         {/* The label stretches over the whole row so the row is one big click target. */}
         <label
           htmlFor={id}
@@ -291,7 +292,7 @@ export function SettingsSwitch({
         aria-describedby={description ? `${id}-description` : undefined}
         // A darker "off" track than shadcn's, so the white thumb stands out at 3:1 (WCAG 1.4.11).
         // In dark mode the thumb is light, so a dim track is enough.
-        className="relative z-10 data-[state=unchecked]:bg-foreground/45! dark:data-[state=unchecked]:bg-foreground/25!"
+        className="cursor-pointer data-disabled:cursor-not-allowed relative z-10 data-[state=unchecked]:bg-foreground/45! dark:data-[state=unchecked]:bg-foreground/25!"
       />
     </div>
   );

@@ -73,7 +73,7 @@ export function SegmentedControl<T extends string = string>({
       disabled={disabled}
       name={name}
       className={cn(
-        "relative isolate grid auto-cols-fr grid-flow-col rounded-lg bg-muted p-0.5 text-foreground/70",
+        "relative isolate grid max-w-full auto-cols-fr grid-flow-col rounded-lg bg-muted p-0.5 text-foreground/70",
         fullWidth ? "w-full" : "w-fit",
         disabled && "opacity-50",
         className,
@@ -95,12 +95,17 @@ export function SegmentedControl<T extends string = string>({
           disabled={o.disabled}
           aria-label={o.ariaLabel}
           className={cn(
-            "inline-flex items-center justify-center gap-1.5 whitespace-nowrap rounded-md font-medium transition-colors hover:text-foreground focus-visible:outline-2 focus-visible:outline-ring disabled:pointer-events-none disabled:opacity-50 data-[state=checked]:text-foreground [&_svg]:shrink-0",
+            "cursor-pointer data-disabled:cursor-not-allowed inline-flex min-w-0 items-center justify-center gap-1.5 whitespace-nowrap rounded-md font-medium transition-colors hover:text-foreground focus-visible:outline-2 focus-visible:outline-ring disabled:pointer-events-none disabled:opacity-50 data-[state=checked]:text-foreground [&_svg]:shrink-0",
             size === "sm" ? "h-7 px-2.5 text-xs [&_svg]:size-3.5" : "h-8 px-3 text-sm [&_svg]:size-4",
           )}
         >
           {o.icon}
-          {o.label}
+          {/* Too-long labels are cut short rather than pushing past the screen; hover shows them. */}
+          {o.label && (
+            <span className="truncate" title={typeof o.label === "string" ? o.label : undefined}>
+              {o.label}
+            </span>
+          )}
         </RadioGroup.Item>
       ))}
     </RadioGroup.Root>

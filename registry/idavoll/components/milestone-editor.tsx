@@ -131,11 +131,16 @@ export function MilestoneEditor({
         </Button>
       </div>
 
-      {showPreview && (
+      {showPreview && high > low && (
         <div aria-hidden className="px-2 pt-1 pb-6">
           <div className="relative h-2 rounded-full bg-muted">
-            {valid.map((m) => {
-              const at = high > low ? ((m.value - start) / (goal - start)) * 100 : 0;
+            {valid.map((m, i) => {
+              const at = ((m.value - start) / (goal - start)) * 100;
+              // Skip a label that would collide with a neighbour or the ends; the dot still shows.
+              const near = (x: number) => Math.abs(x - at) < 8;
+              const prev = valid[i - 1];
+              const crowded =
+                near(0) || near(100) || (prev !== undefined && near(((prev.value - start) / (goal - start)) * 100));
               return (
                 <span
                   key={m.value}
@@ -143,9 +148,11 @@ export function MilestoneEditor({
                   style={{ left: `${at}%` }}
                 >
                   <span className="block size-3 rounded-full border-2 border-background bg-primary" />
-                  <span className="absolute top-4 left-1/2 -translate-x-1/2 whitespace-nowrap text-[0.65rem] text-foreground/70 tabular-nums">
-                    {formatCompact(m.value)}
-                  </span>
+                  {!crowded && (
+                    <span className="absolute top-4 left-1/2 -translate-x-1/2 whitespace-nowrap text-[0.65rem] text-foreground/70 tabular-nums">
+                      {formatCompact(m.value)}
+                    </span>
+                  )}
                 </span>
               );
             })}

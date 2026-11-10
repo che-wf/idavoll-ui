@@ -60,6 +60,12 @@ const posts: Post[] = Array.from({ length: 46 }, (_, i) => {
   };
 });
 
+// One long title, to show how long text wraps and clamps.
+const newest = posts.at(-1);
+if (newest)
+  newest.title =
+    "Behind the scenes: everything that went wrong building the floating desk, and the three fixes that finally made it level";
+
 const percent = new Intl.NumberFormat(undefined, { style: "percent", maximumFractionDigits: 1 });
 
 const STATUS_DOT: Record<Post["status"], string> = {
@@ -73,13 +79,15 @@ const columns: ColumnDef<Post>[] = [
     accessorKey: "day",
     header: ({ column }) => <DataTableColumnHeader column={column} title="Day" />,
     cell: ({ row }) => <span className="tabular-nums">Day {row.original.day}</span>,
-    meta: { label: "Day" },
+    meta: { label: "Day", nowrap: true },
   },
   {
     accessorKey: "title",
     header: "Post",
     cell: ({ row }) => <span className="font-medium">{row.original.title}</span>,
     enableHiding: false,
+    // Long titles wrap to two lines; hover shows the rest.
+    meta: { lines: 2, minWidth: "12rem" },
   },
   {
     accessorKey: "platform",
@@ -91,8 +99,9 @@ const columns: ColumnDef<Post>[] = [
       </span>
     ),
     enableGlobalFilter: false,
+    meta: { nowrap: true },
   },
-  { accessorKey: "format", header: "Format" },
+  { accessorKey: "format", header: "Format", meta: { nowrap: true } },
   {
     accessorKey: "status",
     header: "Status",
@@ -102,19 +111,20 @@ const columns: ColumnDef<Post>[] = [
         {row.original.status}
       </span>
     ),
+    meta: { nowrap: true },
   },
   {
     accessorKey: "views",
     header: ({ column }) => <DataTableColumnHeader column={column} title="Views" />,
     cell: ({ row }) => (row.original.views ? formatCompact(row.original.views) : "—"),
-    meta: { label: "Views", className: "text-right tabular-nums" },
+    meta: { label: "Views", className: "text-right tabular-nums", nowrap: true },
     enableGlobalFilter: false,
   },
   {
     accessorKey: "engagement",
     header: ({ column }) => <DataTableColumnHeader column={column} title="Engagement" />,
     cell: ({ row }) => (row.original.engagement ? percent.format(row.original.engagement) : "—"),
-    meta: { label: "Engagement", className: "text-right tabular-nums" },
+    meta: { label: "Engagement", className: "text-right tabular-nums", nowrap: true },
     enableGlobalFilter: false,
   },
 ];

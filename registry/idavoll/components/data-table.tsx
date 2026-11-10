@@ -54,7 +54,39 @@ declare module "@tanstack/react-table" {
     label?: string;
     /** Classes for this column's cells, e.g. "text-right" for numbers. */
     className?: string;
+    /** Keep this column's cells on one line, e.g. dates, statuses and numbers. Cells wrap by default. */
+    nowrap?: boolean;
+    /** Clamp long text to this many lines (1 to 4); the full text shows on hover when the value is text. */
+    lines?: 1 | 2 | 3 | 4;
+    /** Preferred column width, e.g. "12rem". */
+    width?: string;
+    /** Narrowest the column may get, e.g. "14rem", so wrapped text stays readable. */
+    minWidth?: string;
   }
+}
+
+const CLAMP = { 1: "line-clamp-1", 2: "line-clamp-2", 3: "line-clamp-3", 4: "line-clamp-4" } as const;
+
+/** Cell classes and size for a column: wrap by default, or keep to one line. */
+// biome-ignore lint/suspicious/noExplicitAny: works for any column value type.
+function cellLayout(column: Column<any, unknown>) {
+  const meta = column.columnDef.meta;
+  return {
+    className: cn("px-3", meta?.nowrap ? "whitespace-nowrap" : "whitespace-normal break-words", meta?.className),
+    style: meta?.width || meta?.minWidth ? { width: meta.width, minWidth: meta.minWidth } : undefined,
+  };
+}
+
+/** Wraps a cell's content in a line clamp when the column asks for one. */
+// biome-ignore lint/suspicious/noExplicitAny: works for any column value type.
+function clamped(column: Column<any, unknown>, value: unknown, content: ReactNode) {
+  const lines = column.columnDef.meta?.lines;
+  if (!lines) return content;
+  return (
+    <span className={CLAMP[lines]} title={typeof value === "string" ? value : undefined}>
+      {content}
+    </span>
+  );
 }
 
 export interface DataTableFilterOption {
@@ -153,7 +185,7 @@ export function DataTableColumnHeader<TData, TValue>({
       type="button"
       onClick={column.getToggleSortingHandler()}
       className={cn(
-        "-mx-2 inline-flex h-8 items-center gap-1.5 rounded-md px-2 font-medium hover:bg-muted focus-visible:outline-2 focus-visible:outline-ring",
+        "cursor-pointer disabled:cursor-not-allowed -mx-2 inline-flex h-8 items-center gap-1.5 rounded-md px-2 font-medium hover:bg-muted focus-visible:outline-2 focus-visible:outline-ring",
         sorted && "text-foreground",
         className,
       )}
@@ -196,6 +228,7 @@ function FilterMenu<TData>({ column, filter }: { column: Column<TData, unknown>;
           const count = counts.get(o.value) ?? 0;
           return (
             <DropdownMenuCheckboxItem
+              className="cursor-pointer"
               key={o.value}
               checked={chosen.includes(o.value)}
               // Keep the menu open so several choices can be ticked in a row.
@@ -211,7 +244,7 @@ function FilterMenu<TData>({ column, filter }: { column: Column<TData, unknown>;
         {chosen.length > 0 && (
           <>
             <DropdownMenuSeparator />
-            <DropdownMenuItem onSelect={() => set([])} className="justify-center">
+            <DropdownMenuItem onSelect={() => set([])} className="cursor-pointer justify-center">
               Clear {filter.title.toLowerCase()} filter
             </DropdownMenuItem>
           </>
@@ -380,6 +413,7 @@ export function DataTable<TData>({
                   .filter((c) => c.getCanHide())
                   .map((c) => (
                     <DropdownMenuCheckboxItem
+                      className="cursor-pointer"
                       key={c.id}
                       checked={c.getIsVisible()}
                       onSelect={(event) => event.preventDefault()}
@@ -409,7 +443,7 @@ export function DataTable<TData>({
                 type="button"
                 onClick={chip.remove}
                 aria-label={`Remove filter ${chip.text}`}
-                className="inline-flex items-center gap-1 rounded-full border bg-muted/50 py-0.5 pr-1.5 pl-2.5 text-xs hover:bg-muted focus-visible:outline-2 focus-visible:outline-ring"
+                className="cursor-pointer disabled:cursor-not-allowed inline-flex items-center gap-1 rounded-full border bg-muted/50 py-0.5 pr-1.5 pl-2.5 text-xs hover:bg-muted focus-visible:outline-2 focus-visible:outline-ring"
               >
                 {chip.text}
                 <X aria-hidden className="size-3.5" />
@@ -454,6 +488,7 @@ export function DataTable<TData>({
                         "whitespace-nowrap px-3 text-foreground/70",
                         header.column.columnDef.meta?.className,
                       )}
+                      style={cellLayout(header.column).style}
                     >
                       {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
                     </TableHead>
@@ -468,7 +503,7 @@ export function DataTable<TData>({
                 const href = getRowHref?.(row.original);
                 const clickable = !!href || !!onRowClick;
                 const linkClass =
-                  "rounded-sm text-left font-medium underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-ring";
+                  "cursor-pointer rounded-sm text-left font-medium underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-ring";
                 return (
                   <TableRow
                     key={row.id}
@@ -476,16 +511,21 @@ export function DataTable<TData>({
                     className={cn(clickable && "cursor-pointer", row.depth > 0 && "bg-muted/25")}
                   >
                     {row.getVisibleCells().map((cell, i) => {
-                      const content = flexRender(cell.column.columnDef.cell, cell.getContext());
+                      const content = clamped(
+                        cell.column,
+                        cell.getValue(),
+                        flexRender(cell.column.columnDef.cell, cell.getContext()),
+                      );
+                      const layout = cellLayout(cell.column);
                       if (i > 0 || (!clickable && !expandable)) {
                         return (
-                          <TableCell key={cell.id} className={cn("px-3", cell.column.columnDef.meta?.className)}>
+                          <TableCell key={cell.id} className={layout.className} style={layout.style}>
                             {content}
                           </TableCell>
                         );
                       }
                       return (
-                        <TableCell key={cell.id} className={cn("px-3", cell.column.columnDef.meta?.className)}>
+                        <TableCell key={cell.id} className={layout.className} style={layout.style}>
                           <div className="flex items-center gap-1" style={{ paddingLeft: `${row.depth * 1.75}rem` }}>
                             {expandable &&
                               (row.getCanExpand() ? (
@@ -494,7 +534,7 @@ export function DataTable<TData>({
                                   onClick={row.getToggleExpandedHandler()}
                                   aria-expanded={row.getIsExpanded()}
                                   aria-label={subRowsLabel(row.original, row.subRows.length)}
-                                  className="grid size-6 shrink-0 place-items-center rounded-md hover:bg-muted focus-visible:outline-2 focus-visible:outline-ring"
+                                  className="cursor-pointer disabled:cursor-not-allowed grid size-6 shrink-0 place-items-center rounded-md hover:bg-muted focus-visible:outline-2 focus-visible:outline-ring"
                                 >
                                   <ChevronRight
                                     aria-hidden

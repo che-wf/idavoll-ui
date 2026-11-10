@@ -15,6 +15,7 @@ const DEFAULT_LABELS = {
   /** {time} becomes "5 minutes ago". */
   lastSynced: "Last synced {time}",
   never: "Not synced yet",
+  upToDate: "Up to date",
   justNow: "just now",
   /** {time} becomes a time like "6:00 AM". */
   nextSync: "Next sync {time}",
@@ -68,7 +69,12 @@ const STATE_STYLE: Record<SyncState, { icon: typeof Clock; className: string }> 
   never: { icon: CircleDashed, className: "text-foreground/70" },
 };
 
-const toDate = (d: Date | string | undefined) => (d === undefined ? undefined : new Date(d));
+/** A valid Date, or undefined for missing or unreadable values (a bad date from an API shouldn't crash the page). */
+const toDate = (d: Date | string | undefined) => {
+  if (d === undefined) return undefined;
+  const date = new Date(d);
+  return Number.isNaN(date.getTime()) ? undefined : date;
+};
 
 function relative(from: Date, now: Date, locale: string | undefined, justNow: string) {
   const rtf = new Intl.RelativeTimeFormat(locale, { numeric: "auto" });
@@ -122,7 +128,8 @@ export function SyncStatus({
     const last = toDate(item.lastSyncedAt);
     switch (item.state) {
       case "syncing":
-        return item.progress
+        // Only show progress that makes sense (a total above zero, done no more than total).
+        return item.progress && item.progress.total > 0 && item.progress.done <= item.progress.total
           ? `${labels.syncing} ${labels.progress.replace("{done}", String(item.progress.done)).replace("{total}", String(item.progress.total))}`
           : labels.syncing;
       case "error":
@@ -130,7 +137,9 @@ export function SyncStatus({
       case "never":
         return labels.never;
       default:
-        return last ? labels.lastSynced.replace("{time}", relative(last, now, locale, labels.justNow)) : labels.never;
+        if (last) return labels.lastSynced.replace("{time}", relative(last, now, locale, labels.justNow));
+        // An ok sync without a readable time is still up to date; a stale one just says it's overdue.
+        return item.state === "ok" ? labels.upToDate : labels.never;
     }
   };
 
@@ -231,7 +240,8 @@ export function SyncStatus({
           return (
             <li key={item.platform} className="flex flex-wrap items-center gap-3 p-3">
               <SocialIcon platform={item.platform} variant="tile" label="" className="size-8" />
-              <div className="min-w-0 flex-1">
+              {/* Keeps a readable width; the action button drops below on narrow screens. */}
+              <div className="min-w-[min(100%,14rem)] flex-1">
                 <p className="font-medium text-sm">{SOCIAL_ICONS[item.platform].name}</p>
                 <p className={cn("flex items-center gap-1.5 text-sm", tone)}>
                   <Icon
@@ -247,7 +257,7 @@ export function SyncStatus({
                       <span className="sr-only"> ({full.format(last)})</span>
                     </time>
                   ) : (
-                    <span>{describe(item)}</span>
+                    <span className="min-w-0 [overflow-wrap:anywhere]">{describe(item)}</span>
                   )}
                 </p>
                 {item.state === "syncing" && item.progress && item.progress.total > 0 && (
