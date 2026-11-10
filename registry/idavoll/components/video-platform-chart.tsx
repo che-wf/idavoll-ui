@@ -220,10 +220,14 @@ export function VideoPlatformChart({
                 if (!active || !row) return null;
                 const pending = row.total === null;
                 return (
-                  <div className="min-w-44 space-y-1.5 rounded-lg border bg-background p-2.5 text-xs shadow-lg">
-                    <p className="font-medium">
-                      {labels.day} {row.day} · {row.label}
-                    </p>
+                  // Capped width: long titles wrap to two lines, then end with "…" (the table shows them in full).
+                  <div className="w-max min-w-44 max-w-64 space-y-1.5 rounded-lg border bg-background p-2.5 text-xs shadow-lg">
+                    <div>
+                      <p className="text-foreground/70">
+                        {labels.day} {row.day}
+                      </p>
+                      <p className="line-clamp-2 font-medium [overflow-wrap:anywhere]">{row.label}</p>
+                    </div>
                     {pending ? (
                       <p className="text-foreground/70">{labels.notYet}</p>
                     ) : (
