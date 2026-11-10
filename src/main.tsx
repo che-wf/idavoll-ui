@@ -29,6 +29,7 @@ import PlatformPickerDemo from "../registry/idavoll/demos/platform-picker-demo";
 import PostCardDemo from "../registry/idavoll/demos/post-card-demo";
 import PostLinkInputDemo from "../registry/idavoll/demos/post-link-input-demo";
 import ProfileStatsDemo from "../registry/idavoll/demos/profile-stats-demo";
+import ProgressChartDemo from "../registry/idavoll/demos/progress-chart-demo";
 import SegmentedControlDemo from "../registry/idavoll/demos/segmented-control-demo";
 import SettingsGroupDemo from "../registry/idavoll/demos/settings-group-demo";
 import ShimmerBorderDemo from "../registry/idavoll/demos/shimmer-border-demo";
@@ -83,6 +84,7 @@ const sections: { name: string; title: string; Demo: ComponentType }[] = [
   { name: "empty-state", title: "Empty State", Demo: EmptyStateDemo },
   { name: "achievement-badge", title: "Achievement Badge", Demo: AchievementBadgeDemo },
   { name: "big-three", title: "Big Three", Demo: BigThreeDemo },
+  { name: "progress-chart", title: "Progress Chart", Demo: ProgressChartDemo },
 ];
 
 function Gallery() {

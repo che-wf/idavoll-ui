@@ -175,7 +175,7 @@
       "name": "platform-breakdown",
       "type": "registry:component",
       "title": "Platform Breakdown",
-      "description": "Each platform's share of a total (e.g. followers) as a donut with the animated total in the middle, or a single stacked bar, plus a list with values and percentages. With no data yet, an empty ring keeps the layout. Small platforms are grouped into one \"Other\" slice. Props: platforms [{ platform, value, label?, color? }], variant? (\"donut\" | \"bar\"), valueLabel? (\"Followers\"), formatValue?, maxSlices? (5), minShare? (0.03), otherLabel? (\"Other\"), thickness? (0.28), chartClassName? (size-44), className?.",
+      "description": "Each platform's share of a total (e.g. followers) as a donut with the animated total in the middle, or a single stacked bar, plus a list with values and percentages. The list stacks under the donut when the component is narrow (by its own width), and long names are cut short. With no data yet, an empty ring keeps the layout. Small platforms are grouped into one \"Other\" slice. Props: platforms [{ platform, value, label?, color? }], variant? (\"donut\" | \"bar\"), valueLabel? (\"Followers\"), formatValue?, maxSlices? (5), minShare? (0.03), otherLabel? (\"Other\"), thickness? (0.28), chartClassName? (size-44), className?.",
       "dependencies": ["lucide-react@1.70.0", "recharts@3.8.0"],
       "registryDependencies": ["chart", "@idavoll/animated-number", "@idavoll/social-icon"],
       "files": [
@@ -540,6 +540,29 @@
         }
       ],
       "categories": ["astrology", "profile"]
+    },
+    {
+      "name": "progress-chart",
+      "type": "registry:component",
+      "title": "Progress Chart",
+      "description": "Progress toward a challenge goal over time, for a home or audience page. Lines join across days with no data (connectNulls). Post dots sit on the line in their platform's color; hovering shows what was posted, clicking or pressing Enter calls onSelectPost, and a Posts switch hides them. The dashed steady-pace line runs from the start on day 1 to the goal on the last day in both zooms, and \"Steady pace today: 5.6K · You: 55\" is shown under the chart (emphasized when the line runs off the top). Zoom: \"How far you've come\" fits the data up to today; \"Whole challenge\" shows day 1 to the end and 0 to the goal. One combined line or one per platform. Days can be fractional (5.5 = noon on day 5); when the data spans under hourlyUnder days the axis shows hours. Choices can be remembered per chart. Props: combined? [{ day, value }] (default: platforms added up, each carrying its last value forward), platforms? [{ platform, data, label?, color? }], goal?, start? (default first combined value), totalDays? (90), today?, milestones?, posts? [{ id, platform, day, label }], onSelectPost?(post), valueLabel? (\"Followers\"), formatValue? (compact), zoom?/defaultZoom? (\"progress\" | \"challenge\", default \"progress\")/onZoomChange?, show?/defaultShow? (\"combined\" | \"platforms\")/onShowChange?, showPosts?/defaultShowPosts? (true)/onShowPostsChange?, storageKey? (remembers zoom, lines and posts in localStorage), hourlyUnder? (3), chartClassName? (h-80), labels?, className?.",
+      "dependencies": ["recharts@3.8.0"],
+      "registryDependencies": [
+        "chart",
+        "label",
+        "switch",
+        "@idavoll/animated-number",
+        "@idavoll/segmented-control",
+        "@idavoll/social-icon"
+      ],
+      "files": [
+        {
+          "path": "registry/idavoll/components/progress-chart.tsx",
+          "type": "registry:component",
+          "target": "components/idavoll/progress-chart.tsx"
+        }
+      ],
+      "categories": ["chart", "goals", "social"]
     },
     {
       "name": "platform-badge-demo",
@@ -1101,7 +1124,7 @@
       "name": "content-calendar",
       "type": "registry:component",
       "title": "Content Calendar",
-      "description": "Layout follows the calendars people already know: one toolbar with date navigation (‹ Today ›) beside the title on the left, and the view switcher, a \"Calendars\" panel and one primary \"New\" button on the right (icon-only on narrow containers). The Calendars panel groups filters (Platforms, the viewer's calendars, then each marker group such as Holidays or Astrology): one checkbox per group, showing a dash when only some are on, and an arrow to choose single items; plus Show all and an optional manage link. Month view shows one-line titles from about 32rem wide and dots below that; holiday and astrology markers are grey in the grid so posts carry the color. Agenda is one column in time order with times on the left. A small key explains the dashed style of tentative events. A calendar for planning and reviewing posts, with month, week and agenda views and a switcher. Days list their events with platform icons, plus markers for holidays, Moon phases or anything else. The Calendars panel hides platforms and marker categories (grouped, e.g. Holidays › Federal holidays, Astrology › Retrogrades); the choice can be controlled and saved. Month view: chips with \"+2 more\", colored dots and marker icons on narrow containers, arrow keys move between days, Home/End go to the week's start/end, Page Up/Down change month. Week view: seven columns (stacked when narrow) with every event and marker, with times. Agenda view: a rolling window of days (14 by default) from the chosen day, listing only days with events or markers; the arrows move to the next or previous window and the heading shows the range. Picking a day calls onSelect so you can show its details; today is marked (aria-current). The viewer's own entries get an icon tile in their color (or their category's), a light tint, and a \"Your categories\" filter section; an \"Add\" button and clickable week/agenda entries hook up an entry form such as @idavoll/calendar-entry-dialog. Props: events [{ id, date (\"YYYY-MM-DD\"), title, time? (\"HH:MM\"), description?, platform?, color? (hex), icon? (CALENDAR_ICONS name), category? (category id), tentative? }], categories? [{ id, name, color (hex), icon? }], onAddEvent?(date) (shows a New button), addLabel? (\"New\"), filterLabel? (\"Calendars\"), tentativeLabel? (\"Scheduled\"), allDayLabel? (\"All day\"), onEventClick?(event) (week and agenda), markers? [{ date, name, time?, description?, group? (filter section, default \"Other\"), category? (filter option), icon? (\"flag\" | \"star\" | \"moon\" | \"sun\" | \"eclipse\" | \"planet\" | \"retrograde\" | \"sparkles\" or a ReactNode), tone? (\"amber\" | \"violet\" | \"sky\" | \"rose\" | \"emerald\") }] (usHolidays() and astroEvents() return these), filterable? (true), hidden? / defaultHidden? / onHiddenChange?(keys) (keys are \"platform:tiktok\" or \"Group:Category\", e.g. \"Astrology:Retrogrades\"), maxMarkers? (2, month view), view?, defaultView? (\"month\"), onViewChange?, views? (default all three), date?, defaultDate?, onDateChange?, selected?, defaultSelected?, onSelect?(date), today?, weekStartsOn? (0 | 1, default 1), maxEvents? (3), dayLabel?(date), dayClassName?(date), locale?, headingLevel? (3), countLabel?(count), agendaDays? (14), emptyMessage?, className?. Also exports CALENDAR_ICONS (20 icons by name: sparkles, star, heart, camera, video, mic, music, pen, book, coffee, dumbbell, leaf, moon, sun, flame, plane, gift, briefcase, party, flag) and readableOn(hex) (black or white text for a color). Your categories: every category passed in gets a \"Show\" option (even before it has entries), the viewer's own entries without a category get one too (key \"category:none\"), and categoriesLabel? (\"Your categories\"), uncategorizedLabel? (\"No category\"), onManageCategories?() (adds a menu item, e.g. to open @idavoll/calendar-category-manager) and manageCategoriesLabel? (\"Manage categories…\") rename or extend that section. Also exports EventIcon, MarkerIcon, MARKER_TONES, markerKey(marker), markerGroup(marker), withCategory(event, categoriesById) and isEventHidden(event, hiddenSet) for companion components such as @idavoll/calendar-day-details.",
+      "description": "Layout follows the calendars people already know: one toolbar with date navigation (‹ Today ›) beside the title on the left, and the view switcher, a \"Calendars\" panel and one primary \"New\" button on the right (icon-only on narrow containers). The Calendars panel groups filters (Platforms, the viewer's calendars, then each marker group such as Holidays or Astrology): one checkbox per group, showing a dash when only some are on, and an arrow to choose single items; plus Show all and an optional manage link. Month view shows one-line titles from about 32rem wide and dots below that; holiday and astrology markers are grey in the grid so posts carry the color. Agenda is one column in time order with times on the left. A small key explains the dashed style of tentative events. A calendar for planning and reviewing posts, with month, week and agenda views and a switcher. Days list their events with platform icons, plus markers for holidays, Moon phases or anything else. The Calendars panel hides platforms and marker categories (grouped, e.g. Holidays › Federal holidays, Astrology › Retrogrades); the choice can be controlled and saved. Month view: chips with \"+2 more\", colored dots and marker icons on narrow containers, arrow keys move between days, Home/End go to the week's start/end, Page Up/Down change month. Week view: seven columns (stacked when narrow) with every event and marker, with times. Agenda view: a rolling window of days (14 by default) from the chosen day, listing only days with events or markers; the arrows move to the next or previous window and the heading shows the range. Picking a day calls onSelect so you can show its details; today is marked (aria-current). The viewer's own entries get an icon tile in their color (or their category's), a light tint, and a \"Your categories\" filter section; an \"Add\" button and clickable week/agenda entries hook up an entry form such as @idavoll/calendar-entry-dialog. Props: events [{ id, date (\"YYYY-MM-DD\"), title, time? (\"HH:MM\"), description?, platform?, color? (hex), icon? (CALENDAR_ICONS name), category? (category id), tentative? }], categories? [{ id, name, color (hex), icon? }], onAddEvent?(date) (shows a New button), addLabel? (\"New\"), filterLabel? (\"Calendars\"), tentativeLabel? (\"Scheduled\"), allDayLabel? (\"All day\"), fillHeight? (stretch to the parent's height: month rows share the space, week days grow), onEventClick?(event) (week and agenda), markers? [{ date, name, time?, description?, group? (filter section, default \"Other\"), category? (filter option), icon? (\"flag\" | \"star\" | \"moon\" | \"sun\" | \"eclipse\" | \"planet\" | \"retrograde\" | \"sparkles\" or a ReactNode), tone? (\"amber\" | \"violet\" | \"sky\" | \"rose\" | \"emerald\") }] (usHolidays() and astroEvents() return these), filterable? (true), hidden? / defaultHidden? / onHiddenChange?(keys) (keys are \"platform:tiktok\" or \"Group:Category\", e.g. \"Astrology:Retrogrades\"), maxMarkers? (2, month view), view?, defaultView? (\"month\"), onViewChange?, views? (default all three), date?, defaultDate?, onDateChange?, selected?, defaultSelected?, onSelect?(date), today?, weekStartsOn? (0 | 1, default 1), maxEvents? (3), dayLabel?(date), dayClassName?(date), locale?, headingLevel? (3), countLabel?(count), agendaDays? (14), emptyMessage?, className?. Also exports CALENDAR_ICONS (20 icons by name: sparkles, star, heart, camera, video, mic, music, pen, book, coffee, dumbbell, leaf, moon, sun, flame, plane, gift, briefcase, party, flag) and readableOn(hex) (black or white text for a color). Your categories: every category passed in gets a \"Show\" option (even before it has entries), the viewer's own entries without a category get one too (key \"category:none\"), and categoriesLabel? (\"Your categories\"), uncategorizedLabel? (\"No category\"), onManageCategories?() (adds a menu item, e.g. to open @idavoll/calendar-category-manager) and manageCategoriesLabel? (\"Manage categories…\") rename or extend that section. Also exports EventIcon, MarkerIcon, MARKER_TONES, markerKey(marker), markerGroup(marker), withCategory(event, categoriesById) and isEventHidden(event, hiddenSet) for companion components such as @idavoll/calendar-day-details.",
       "dependencies": ["lucide-react@1.70.0"],
       "registryDependencies": ["button", "@idavoll/segmented-control", "@idavoll/social-icon", "popover"],
       "files": [
@@ -1565,6 +1588,20 @@
           "path": "registry/idavoll/demos/big-three-demo.tsx",
           "type": "registry:component",
           "target": "components/idavoll/demos/big-three-demo.tsx"
+        }
+      ]
+    },
+    {
+      "name": "progress-chart-demo",
+      "type": "registry:block",
+      "title": "Progress Chart example",
+      "description": "Example: day 37 with four platforms, missing days, a 25K goal, milestones and clickable post dots; and day 2 of a new challenge with hourly points, a 100K goal and the pace shown in words.",
+      "registryDependencies": ["@idavoll/progress-chart", "@idavoll/social-icon", "card"],
+      "files": [
+        {
+          "path": "registry/idavoll/demos/progress-chart-demo.tsx",
+          "type": "registry:component",
+          "target": "components/idavoll/demos/progress-chart-demo.tsx"
         }
       ]
     }

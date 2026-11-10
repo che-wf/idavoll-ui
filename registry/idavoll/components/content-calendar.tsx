@@ -202,6 +202,11 @@ export interface ContentCalendarProps {
   tentativeLabel?: string;
   /** Label for untimed items in the agenda's time column. Defaults to "All day". */
   allDayLabel?: string;
+  /**
+   * Stretch to fill the parent's height (give the parent a height): month rows share the
+   * space and week days grow. Defaults to false.
+   */
+  fillHeight?: boolean;
   /** Makes events in week and agenda views clickable, e.g. to edit the viewer's own entries. */
   onEventClick?: (event: CalendarEvent) => void;
   /** Which view to show, when you control it. */
@@ -553,6 +558,7 @@ export function ContentCalendar({
   filterLabel = "Calendars",
   tentativeLabel = "Scheduled",
   allDayLabel = "All day",
+  fillHeight = false,
   onEventClick,
   view: viewProp,
   defaultView = "month",
@@ -787,7 +793,7 @@ export function ContentCalendar({
   const hasTentative = [...byDay.values()].some((list) => list.some((e) => e.tentative));
 
   return (
-    <div className={cn("@container space-y-3", className)}>
+    <div className={cn("@container space-y-3", fillHeight && "flex h-full flex-col", className)}>
       {/* One toolbar, grouped like the calendars people already know: date navigation beside
           the title on the left; the view, the Calendars panel and one primary action on the right. */}
       <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
@@ -891,9 +897,12 @@ export function ContentCalendar({
         </div>
       </div>
 
-      <div ref={bodyRef}>
+      <div ref={bodyRef} className={cn(fillHeight && "min-h-0 flex-1")}>
         {view === "month" && (
-          <table aria-labelledby={headingId} className="w-full table-fixed border-collapse text-sm">
+          <table
+            aria-labelledby={headingId}
+            className={cn("w-full table-fixed border-collapse text-sm", fillHeight && "h-full")}
+          >
             <thead>
               <tr>
                 {(weeks[0] ?? []).map((key) => (
@@ -917,7 +926,7 @@ export function ContentCalendar({
                     const isSelected = key === selected;
                     const extra = dayEvents.length - maxEvents;
                     return (
-                      <td key={key} className="border p-0 align-top">
+                      <td key={key} className={cn("border p-0 align-top", fillHeight && "h-px")}>
                         <button
                           type="button"
                           data-date={key}
@@ -1025,7 +1034,10 @@ export function ContentCalendar({
         )}
 
         {view === "week" && (
-          <ol aria-labelledby={headingId} className="grid gap-2 @3xl:grid-cols-7 @3xl:gap-1.5">
+          <ol
+            aria-labelledby={headingId}
+            className={cn("grid gap-2 @3xl:grid-cols-7 @3xl:gap-1.5", fillHeight && "@3xl:h-full")}
+          >
             {weekDays.map((key) => {
               const dayEvents = byDay.get(key) ?? [];
               const dayMarkers = markersByDay.get(key) ?? [];
@@ -1034,7 +1046,8 @@ export function ContentCalendar({
                 <li
                   key={key}
                   className={cn(
-                    "grid min-w-0 content-start gap-1.5 rounded-lg border p-1.5 @md:grid-cols-[8rem_1fr] @3xl:min-h-64 @3xl:grid-cols-1",
+                    // At least as tall as a month cell, so switching views doesn't shrink the days.
+                    "grid min-h-24 min-w-0 content-start gap-1.5 rounded-lg border p-1.5 @md:grid-cols-[8rem_1fr] @3xl:min-h-64 @3xl:grid-cols-1",
                     isSelected && "border-primary/40 bg-primary/5",
                     dayClassName?.(key),
                   )}

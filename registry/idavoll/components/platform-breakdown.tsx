@@ -121,7 +121,9 @@ export function PlatformBreakdown({
             </span>
           )}
           <span className="min-w-0 flex-1">
-            <span className="break-words font-medium">{s.name}</span>
+            <span className="block truncate font-medium" title={s.name}>
+              {s.name}
+            </span>
             {s.members && <span className="block truncate text-foreground/70 text-xs">{s.members.join(", ")}</span>}
           </span>
           <AnimatedNumber value={s.value} formatValue={formatValue} className="text-muted-foreground" />
@@ -152,59 +154,63 @@ export function PlatformBreakdown({
     );
   }
 
+  // Stacks by the component's own width, not the screen's, so a narrow card on a wide
+  // screen puts the list under the donut instead of squeezing the names.
   return (
-    <div className={cn("flex min-w-0 flex-col items-center gap-6 sm:flex-row", className)}>
-      <div className={cn("relative size-44 shrink-0", chartClassName)}>
-        <ChartContainer config={config} className="aspect-square size-full">
-          <PieChart>
-            <ChartTooltip
-              content={
-                <ChartTooltipContent
-                  hideLabel
-                  formatter={(value, name) => (
-                    <div className="flex w-full justify-between gap-4">
-                      <span className="text-muted-foreground">{config[name as string]?.label ?? name}</span>
-                      <span className="font-mono tabular-nums">{formatValue(Number(value))}</span>
-                    </div>
-                  )}
+    <div className={cn("@container min-w-0", className)}>
+      <div className="flex min-w-0 flex-col items-center gap-6 @md:flex-row">
+        <div className={cn("relative size-44 shrink-0", chartClassName)}>
+          <ChartContainer config={config} className="aspect-square size-full">
+            <PieChart>
+              <ChartTooltip
+                content={
+                  <ChartTooltipContent
+                    hideLabel
+                    formatter={(value, name) => (
+                      <div className="flex w-full justify-between gap-4">
+                        <span className="text-muted-foreground">{config[name as string]?.label ?? name}</span>
+                        <span className="font-mono tabular-nums">{formatValue(Number(value))}</span>
+                      </div>
+                    )}
+                  />
+                }
+              />
+              {/* With nothing to show yet, an empty ring keeps the layout instead of a blank gap. */}
+              {total === 0 && (
+                <Pie
+                  data={[{ key: "empty", value: 1 }]}
+                  dataKey="value"
+                  innerRadius={`${inner}%`}
+                  outerRadius="100%"
+                  strokeWidth={0}
+                  fill="var(--muted)"
+                  isAnimationActive={false}
+                  tooltipType="none"
                 />
-              }
-            />
-            {/* With nothing to show yet, an empty ring keeps the layout instead of a blank gap. */}
-            {total === 0 && (
+              )}
               <Pie
-                data={[{ key: "empty", value: 1 }]}
+                data={slices}
                 dataKey="value"
+                nameKey="key"
                 innerRadius={`${inner}%`}
                 outerRadius="100%"
+                paddingAngle={2}
+                cornerRadius={4}
                 strokeWidth={0}
-                fill="var(--muted)"
-                isAnimationActive={false}
-                tooltipType="none"
-              />
-            )}
-            <Pie
-              data={slices}
-              dataKey="value"
-              nameKey="key"
-              innerRadius={`${inner}%`}
-              outerRadius="100%"
-              paddingAngle={2}
-              cornerRadius={4}
-              strokeWidth={0}
-            >
-              {slices.map((s, i) => (
-                <Cell key={s.key} fill={s.fill} fillOpacity={shades[i]} />
-              ))}
-            </Pie>
-          </PieChart>
-        </ChartContainer>
-        <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center">
-          <AnimatedNumber value={total} formatValue={formatValue} className="font-heading text-2xl font-bold" />
-          <span className="text-muted-foreground text-xs">{valueLabel}</span>
+              >
+                {slices.map((s, i) => (
+                  <Cell key={s.key} fill={s.fill} fillOpacity={shades[i]} />
+                ))}
+              </Pie>
+            </PieChart>
+          </ChartContainer>
+          <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center">
+            <AnimatedNumber value={total} formatValue={formatValue} className="font-heading text-2xl font-bold" />
+            <span className="text-muted-foreground text-xs">{valueLabel}</span>
+          </div>
         </div>
+        {list}
       </div>
-      {list}
     </div>
   );
 }

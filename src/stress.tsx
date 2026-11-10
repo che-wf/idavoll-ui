@@ -29,6 +29,7 @@ import { PlatformPicker } from "../registry/idavoll/components/platform-picker";
 import { PostCard } from "../registry/idavoll/components/post-card";
 import { PostLinkInput } from "../registry/idavoll/components/post-link-input";
 import { ProfileStats } from "../registry/idavoll/components/profile-stats";
+import { ProgressChart } from "../registry/idavoll/components/progress-chart";
 import { SegmentedControl } from "../registry/idavoll/components/segmented-control";
 import { SettingsGroup, SettingsRow, SettingsSwitch } from "../registry/idavoll/components/settings-group";
 import { ShimmerBorder } from "../registry/idavoll/components/shimmer-border";
@@ -482,6 +483,42 @@ export function StressPage() {
 
         <Case name="empty-state">
           <EmptyState title={LONG} description={UNBROKEN} action={<Button>Sync now</Button>} />
+        </Case>
+
+        <Case name="progress-chart">
+          <div className="space-y-6">
+            <ProgressChart combined={[]} goal={0} />
+            <ProgressChart
+              combined={[{ day: 1, value: 55 }]}
+              goal={HUGE}
+              today={1}
+              posts={[{ id: "x", platform: "tiktok", day: 40, label: LONG }]}
+            />
+            <ProgressChart
+              platforms={ALL.slice(0, 6).map((platform, i) => ({
+                platform,
+                label: i === 0 ? LONG : undefined,
+                data:
+                  i % 2
+                    ? []
+                    : [
+                        { day: 1.25, value: i },
+                        { day: 1.75, value: HUGE },
+                        { day: 3, value: HUGE / 2 },
+                      ],
+              }))}
+              today={2}
+              posts={[{ id: "y", platform: "youtube", day: 1.5, label: UNBROKEN }]}
+              onSelectPost={() => {}}
+              defaultShow="platforms"
+            />
+          </div>
+        </Case>
+
+        <Case name="content-calendar-fill">
+          <div className="h-[36rem]">
+            <ContentCalendar today={today} fillHeight events={[{ id: "f", date: today, title: LONG }]} />
+          </div>
         </Case>
 
         <Case name="achievement-badge">
