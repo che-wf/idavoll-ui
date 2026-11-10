@@ -145,8 +145,13 @@ export function BigThree({ signs, variant = "chips", labels: labelOverrides, cla
         return variant === "chips" ? (
           <li key={key} className="flex items-center gap-1.5 rounded-full border bg-card py-0.5 pr-3 pl-0.5 text-sm">
             <SignGlyph sign={sign} />
-            <span>
-              <span className="font-medium">{sign}</span> <span className="text-foreground/70">{labels[key]}</span>
+            <span className="flex items-center gap-1">
+              <span className="font-medium">{sign}</span>
+              {/* The placement's own symbol: sun, moon or rising arrow. */}
+              <span className="flex items-center gap-0.5 text-foreground/70">
+                <Icon aria-hidden className="size-3.5" />
+                {labels[key]}
+              </span>
             </span>
           </li>
         ) : (
